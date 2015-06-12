@@ -65,6 +65,29 @@ class ReutCricketRss(object):
                             }
                     print __dict
                     self.news.append(__dict)
+        def __filter(self):
+                """
+                Filter rss on the basis if they are prsent in the mongodb or not
+                he purpose of checking the enteries in the mongodb is to save the goose
+                scraping og the full text
+                """
+                news_list = list()
+                for news in self.news_entries:
+                        soup = BeautifulSoup(news["summary"])
+                        text = soup.getText()
+                        news_id = hashlib.md5(news["id"]).hexdigest(),
+                        news_list.append({"link": news["id"],
+                                        "published": news["published"],
+                                        "epoch": time.mktime(time.strptime(news["published"], "%a, %d %b %Y %H:%M:%S %Z")),
+                                        "text": text,
+                                        "title": news["title"],
+                                        "news_id": news_id,
+                                        "scraped": CricFeedMongo.check_cric(news_id),
+                                        "base_link": self.base_link,
+                                        "website": "BBC",
+                                        })
+
+                return filter(lambda x: not x["scraped"], news_list)
 
 
 

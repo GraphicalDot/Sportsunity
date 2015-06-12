@@ -23,7 +23,7 @@ parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspat
 sys.path.append(parent_dir_path)
 
 from Links import BBC_CRIC_FEED 
-
+from DbScripts.mongo_db import CricFeedMongo
 
 
 class BBCCricketRss(object):
@@ -42,26 +42,43 @@ class BBCCricketRss(object):
 
 
         def __rss(self):
+                news_list = self.__filter()
+                for news in news_list:
+                        time.sleep(random.choice(range(20)))
+
+                        full_text = self.__full_text(self.goose_instance, news.get("link"))
+                        news.pop("scraped")
+                        news.update({"full_text": full_text})
+                        news.update({"images": self.image})
+                        print full_text
+                        CricFeedMongo.insert_news(news)
+                return 
+
+
+        def __filter(self):
+                """
+                Filter rss on the basis if they are prsent in the mongodb or not
+                he purpose of checking the enteries in the mongodb is to save the goose
+                scraping og the full text
+                """
+                news_list = list()
                 for news in self.news_entries:
-                    time.sleep(random.choice(range(10)))
-                    soup = BeautifulSoup(news["summary"]) 
-                    text = soup.getText()
+                        soup = BeautifulSoup(news["summary"]) 
+                        text = soup.getText()
+                        news_id = hashlib.md5(news["id"]).hexdigest(),
+                        news_list.append({"link": news["id"],
+                                        "published": news["published"],
+                                        "epoch": time.mktime(time.strptime(news["published"], "%a, %d %b %Y %H:%M:%S %Z")), 
+                                        "text": text, 
+                                        "title": news["title"],
+                                        "news_id": news_id, 
+                                        "scraped": CricFeedMongo.check_cric(news_id), 
+                                        "base_link": self.base_link, 
+                                        "website": "BBC", 
+                                        })
 
-                    full_text = self.__full_text(self.goose_instance, news["id"])
-                    __dict = {"link": news["id"],
-                            "published": news["published"],
-                            "published_parsed": news["published_parsed"], 
-                            "text": text, 
-                            "title": news["title"],
-                            "news_id": hashlib.md5(news["id"]).hexdigest(),
-                            "images": self.image,
-                            "full_text": full_text,
-                            "base_link": self.base_link, 
-                            "website": "BBC", 
-                            }
-                    print __dict
-                    self.news.append(__dict)
-
+                return filter(lambda x: not x["scraped"], news_list)
+                
 
 
         def __full_text(self, goose_instance, link):
@@ -80,4 +97,13 @@ class BBCCricketRss(object):
 if __name__ == "__main__":
         instance = BBCCricketRss(scrape_links=True)
         print instance.news
-        
+
+
+
+
+
+
+
+
+
+
