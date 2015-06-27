@@ -72,15 +72,29 @@ Phase 1:
 			But that will notify us whenever that friend of the user will join our app.
 
 
+		Status: Not Completed
+		Expected: In a week
+
+	Phase1.3:
+		Player Statistics, Live Scores, Match Statistics, Upcoming sports events
+		
+
+		
+Phase 2:
+	Deals with group Creation, User discovery, group keywords
+		
 
 
 
 
 
+	Architecture:
+		Chats:
+			Postgresql for chat data consistency and batch storage in Elastic search.
+		User Discovery:
+			Mongodb as it supports geo-location search
 
 
 
-
-
-
-
+Phase 3:
+	Deals with Match walls
