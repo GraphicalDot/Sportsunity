@@ -24,6 +24,7 @@ import random
 parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(parent_dir_path)
 
+from DbScripts.mongo_db import CricFeedMongo
 from Links import NDTV_CRICKET_FEED 
 
 
@@ -64,6 +65,7 @@ class NdtvCricketRss(object):
                             "website": "NDTV", 
                             }
                     print __dict
+                    CricFeedMongo.insert_news(__dict)
                     self.news.append(__dict)
         def __filter(self):
                 """
@@ -99,3 +101,7 @@ class NdtvCricketRss(object):
 
 
 if __name__ == "__main__":
+    obj = NdtvCricketRss(object)
+    #obj._rss
+    #obj._filter
+    #obj._full_text
