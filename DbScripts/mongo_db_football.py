@@ -24,7 +24,11 @@ class FootFeedMongo(object):
         @staticmethod
         def insert_news(news):
                 news_collection_ftbl.insert(news)
-                return 
+                return
+
+	@staticmethod
+	def show_news():
+		return list(news_collection_ftbl.find(fields={'_id':False}).sort("time_of_sharing",-1))
 
 
 

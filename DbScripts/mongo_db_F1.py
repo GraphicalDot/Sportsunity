@@ -24,7 +24,11 @@ class Formula1FeedMongo(object):
         @staticmethod
         def insert_news(news):
                 news_collection_f1rc.insert(news)
-                return 
+                return
+
+	@staticmethod
+	def show_news():
+		return list(news_collection_f1rc.find(fields={'_id':False}).sort("time_of_storing",-1))
 
 
 

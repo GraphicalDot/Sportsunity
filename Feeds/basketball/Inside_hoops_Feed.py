@@ -3,26 +3,29 @@
 import sys
 import os
 import time
+import json
 import feedparser
 from goose import Goose
 parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(parent_dir_path)
 print parent_dir_path
-from DbScripts.mongo_db_tennis import TennFeedMongo
-from Links_Tennis import CBS
-class Tennis:
+from flask import jsonify
+from DbScripts.mongo_db_basketball import BasketFeedMongo
+from GlobalLinks import *
+#from Links_Basketball import Inside_hoops
+class Basketball_Hoops:
     """
     This function gets the links 
     of all the news articles on the
     Rss Feed and stores them in list_of_links.
     """
-    def rss_feeds(self,CBS):
+    def rss_feeds(self,Inside_hoops):
         list_of_links = list()
         self.list_of_links = list_of_links
-        self.d = feedparser.parse(CBS)
+        self.d = feedparser.parse(Inside_hoops)
         self.details = self.d.entries
         for entry in self.details:
-            self.list_of_links.append(entry['id'])
+            self.list_of_links.append(entry['link'])
             
         print self.list_of_links
     
@@ -38,25 +41,43 @@ class Tennis:
             article = goose_instance.extract(val)
             full_text = article.cleaned_text.format()
             title = article.title
-	    _dict = {"website":"CBS", "news_id":val, "news":full_text, "title":title, "time_of_storing":time.mktime(time.localtime())}
-            TennFeedMongo.insert_news(_dict)
+	    _dict = {"website":"Inside_hoops", "news_id":val, "news":full_text, "title":title, "time_of_storing":time.mktime(time.localtime())}
+            BasketFeedMongo.insert_news(_dict)
+            #print BasketFeedMongo.show_news()
+        #return BasketFeedMongo.show_news()
+        #return json.dumps((_dict))
     
     """
     This function checks for duplicate news_ids.
     If a duplicate is found function full_news doesn't run
     """
-    
+
     def checking(self):
         for val in self.list_of_links:
-            if not TennFeedMongo.check_tenn(val):
+            if not BasketFeedMongo.check_basket(val):
                 self.full_news()
+
+    def reflect_data(self):
+        return json.dumps(BasketFeedMongo.show_news())
+        
+
+    def run(self):
+        self.rss_feeds(Inside_hoops)
+        self.checking()
+        self.reflect_data()
 
 
 if __name__ == '__main__':
-    obj = Tennis()
-    obj.rss_feeds(CBS)
-    obj.checking()
+    obj = Basketball_Hoops()
+    obj.run()
+    #obj.rss_feeds(Inside_hoops)
+    #obj.checking()
+    #obj.reflect_data()
     #obj.full_news()
+
+
+
+
 
 
 

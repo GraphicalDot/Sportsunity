@@ -3,14 +3,15 @@
 import sys
 import os
 import time
+import json
 import feedparser
 from goose import Goose
 parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(parent_dir_path)
 print parent_dir_path
 from DbScripts.mongo_db_tennis import TennFeedMongo
-from Links_Tennis import BBC_FEED
-class Tennis:
+from GlobalLinks import *
+class Tennis_BBC:
     """
     This function gets the links 
     of all the news articles on the
@@ -40,6 +41,7 @@ class Tennis:
             title = article.title
             _dict = {"website":"BBC_FEED", "news_id":val, "news":full_text, "title":title, "time_of_storing":time.mktime(time.localtime())}
             TennFeedMongo.insert_news(_dict)
+        TennFeedMongo.show_news()
     
     """
     This function checks for duplicate news_ids.
@@ -51,11 +53,26 @@ class Tennis:
             if not TennFeedMongo.check_tenn(val):
                 self.full_news()
 
+    """
+    This function is used in the API to
+    reflect the data from the database.
+    """
+
+    def reflect_data(self):
+        return json.dumps(TennFeedMongo.show_news())
+
+
+    def run(self):
+        self.rss_feeds(BBC_FEED)
+        self.checking()
+        self.reflect_data()
+
 
 if __name__ == '__main__':
-    obj = Tennis()
-    obj.rss_feeds(BBC_FEED)
-    obj.checking()
+    obj = Tennis_BBC()
+    obj.run()
+    #obj.rss_feeds(BBC_FEED)
+    #obj.checking()
     #obj.full_news()
 
 

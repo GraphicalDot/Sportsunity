@@ -3,14 +3,16 @@
 import sys
 import os
 import time
+import json
 import feedparser
 from goose import Goose
 parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(parent_dir_path)
 print parent_dir_path
 from DbScripts.mongo_db_football import FootFeedMongo
-from Links_Football import Football_Fancast
-class Football:
+from GlobalLinks import *
+#from Links_Football import Football_Fancast
+class Football_Fancast:
     """
     This function gets the links 
     of all the news articles on the
@@ -40,6 +42,8 @@ class Football:
             title = article.title
             _dict = {"website":"Football_Fancast", "news_id":val, "news":full_text, "title":title, "time_of_storing":time.mktime(time.localtime())}
             FootFeedMongo.insert_news(_dict)
+	FootFeedMongo.show_news()
+
     
     """
     This function checks for duplicate news_ids.
@@ -51,11 +55,27 @@ class Football:
             if not FootFeedMongo.check_foot(val):
                 self.full_news()
 
+    """
+    This function is used in the API to
+    reflect the data from the database.
+    """
+
+    def reflect_data(self):
+	return json.dumps(FootFeedMongo.show_news())
+
+
+
+    def run(self):
+	self.rss_feeds(Football_Fancast)
+        self.checking()
+        self.reflect_data()
+
 
 if __name__ == '__main__':
-    obj = Football()
-    obj.rss_feeds(Football_Fancast)
-    obj.checking()
+    obj = Football_Fancast()
+    obj.run()
+    #obj.rss_feeds(Football_Fancast)
+    #obj.checking()
     #obj.full_news()
 
 

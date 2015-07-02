@@ -3,26 +3,27 @@
 import sys
 import os
 import time
+import json
 import feedparser
 from goose import Goose
 parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(parent_dir_path)
 print parent_dir_path
 from DbScripts.mongo_db_tennis import TennFeedMongo
-from Links_Tennis import TENNIS_DOT_COM_FEED
-class Tennis:
+from GlobalLinks import *
+class Tennis_WTA:
     """
     This function gets the links 
     of all the news articles on the
     Rss Feed and stores them in list_of_links.
     """
-    def rss_feeds(self,TENNIS_DOT_COM_FEED):
+    def rss_feeds(self,WTA):
         list_of_links = list()
         self.list_of_links = list_of_links
-        self.d = feedparser.parse(TENNIS_DOT_COM_FEED)
+        self.d = feedparser.parse(WTA)
         self.details = self.d.entries
         for entry in self.details:
-            self.list_of_links.append(entry['id'])
+            self.list_of_links.append(entry['link'])
             
         print self.list_of_links
     
@@ -38,8 +39,9 @@ class Tennis:
             article = goose_instance.extract(val)
             full_text = article.cleaned_text.format()
             title = article.title
-	    _dict = {"website":"TENNIS_DOT_COM_FEED", "news_id":val, "news":full_text, "title":title, "time_of_storing":time.mktime(time.localtime())}
+            _dict = {"website":"WTA", "news_id":val, "news":full_text, "title":title, "time_of_storing":time.mktime(time.localtime())}
             TennFeedMongo.insert_news(_dict)
+        TennFeedMongo.show_news()
     
     """
     This function checks for duplicate news_ids.
@@ -51,11 +53,26 @@ class Tennis:
             if not TennFeedMongo.check_tenn(val):
                 self.full_news()
 
+    """
+    This function is used in the API to
+    reflect the data from the database.
+    """
+
+    def reflect_data(self):
+        return json.dumps(TennFeedMongo.show_news())
+
+
+    def run(self):
+        self.rss_feeds(WTA)
+        self.checking()
+        self.reflect_data()
+
 
 if __name__ == '__main__':
-    obj = Tennis()
-    obj.rss_feeds(TENNIS_DOT_COM_FEED)
-    obj.checking()
+    obj = Tennis_WTA()
+    obj.run()
+    #obj.rss_feeds(WTA)
+    #obj.checking()
     #obj.full_news()
 
 
