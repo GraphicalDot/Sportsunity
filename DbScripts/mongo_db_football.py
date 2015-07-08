@@ -28,7 +28,19 @@ class FootFeedMongo(object):
 
 	@staticmethod
 	def show_news():
-		return list(news_collection_ftbl.find(fields={'_id':False}).sort("time_of_sharing",-1))
+		return list(news_collection_ftbl.find(fields={'_id':False}).sort("publish_date",1))
+
+	@staticmethod
+	def recent_news(args):
+		return list(news_collection_ftbl.find(fields={'_id':False}).sort("publish_date",1).skip(0).limit(args))
+
+	@staticmethod
+	def number_of_news(args):
+		return list(news_collection_ftbl.find(fields={'_id':False}).sort("publish_date",1).limit(args))
+	
+	@staticmethod
+	def news_in_between():
+		return list(news_collection_ftbl.find({'publish_date': {'$gte':args , '$lt':kwargs}},{'_id':False}).sort('publish_date',1))
 
 
 

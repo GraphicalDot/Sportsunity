@@ -3,7 +3,7 @@
 
 import sys
 from Feeds.basketball.NBA_Feed import Basketball_NBA
-from Feeds.basketball.Inside_hoops_Feed import Basketball_Hoops
+#from Feeds.basketball.Inside_hoops_Feed import Basketball_Hoops
 from Feeds.basketball.Real_gm_Feed import Basketball_Real
 from Feeds.basketball.Roto_world_Feed import Basketball_Roto
 from Feeds.Cricket.BBC_Cric_Feed import Cricket_BBC
@@ -22,7 +22,7 @@ from Feeds.Tennis.Tennis_X_Feed import Tennis_X
 from Feeds.Tennis.WTA_Feed import Tennis_WTA
 
 Instance_bask1 = Basketball_NBA()
-Instance_bask2 = Basketball_Hoops()
+#Instance_bask2 = Basketball_Hoops()
 Instance_bask3 = Basketball_Real()
 Instance_bask4 = Basketball_Roto()
 
@@ -51,9 +51,14 @@ news and stores it in the database.
 
 def run_basketball_rss():
     Instance_bask1.run()
-    Instance_bask2.run()
+    #Instance_bask2.run()
     Instance_bask3.run()
     Instance_bask4.run()
+
+"""
+This function fetches all the cricket
+news and stores it in the database.
+"""
 
 def run_cricket_rss():
     Instance_cric1.run()
@@ -61,26 +66,34 @@ def run_cricket_rss():
     Instance_cric3.run()
     Instance_cric4.run()
 
+"""
+This function fetches all the formula1
+news and stores it in the database.
+"""
+
 def run_f1_rss():
-    Instance_formula1.run()
-    Instance_formula2.run()
-    Instance_formula3.run()
+    return Instance_formula1.run()+Instance_formula2.run()+Instance_formula3.run()
+
+"""
+This function fetches all the football
+news and stores it in the database.
+"""
 
 def run_football_rss():
-    Instance_football1.run()
-    Instance_football2.run()
-    Instance_football3.run()
-    Instance_football4.run()
+    return Instance_football1.run()+Instance_football2.run()+Instance_football3.run()+Instance_football4.run()
+
+"""
+This function fetches all the tennis
+news and stores it in the database.
+"""
 
 def run_tennis_rss():
-    Instance_tennis1.run()
-    Instance_tennis2.run()
-    Instance_tennis3.run()
+    return Instance_tennis1.run()+Instance_tennis2.run()+Instance_tennis3.run()
 
 
 if __name__ == "__main__":
     run_basketball_rss()
-    run_cricket_rss()
-    run_f1_rss()
-    run_football_rss()
-    run_tennis_rss()
+    #run_cricket_rss()
+    #run_f1_rss()
+    #run_football_rss()
+    #run_tennis_rss()

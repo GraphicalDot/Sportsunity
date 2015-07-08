@@ -5,6 +5,8 @@ import os
 import json
 import feedparser
 import time
+import urllib
+from nltk.tokenize import sent_tokenize
 from goose import Goose
 parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(parent_dir_path)
@@ -37,10 +39,20 @@ class Basketball_NBA:
     def full_news(self):
         goose_instance = Goose()
         for val in self.list_of_links:
+	    response = urllib.urlopen(val)
+	    headers = response.info()
+	    publish_date=time.mktime(time.strptime(headers['date'], "%a, %d %b %Y %H:%M:%S %Z"))
             article = goose_instance.extract(val)
             full_text = article.cleaned_text.format()
             title = article.title
-            _dict = {"website":"NBA", "news_id":val, "news":full_text, "title":title, "time_of_storing":time.mktime(time.localtime())}
+	    tokenized_data = sent_tokenize(full_text)
+	    if tokenized_data[1]:
+		summary=tokenized_data[0]+tokenized_data[1]
+	    else:
+		summary = article.meta_description
+            #summary = article.meta_description
+	    image = article.top_image.get_src()
+	    _dict = {"website":"NBA", "news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text, "title":title,"image": image, "time_of_storing":time.mktime(time.localtime())}
             BasketFeedMongo.insert_news(_dict)
 	BasketFeedMongo.show_news() 
 
@@ -63,7 +75,7 @@ class Basketball_NBA:
     def run(self):
 	self.rss_feeds(NBA)
 	self.checking()
-	self.reflect_data()
+	return self.reflect_data()
 
 
 
