@@ -13,7 +13,7 @@ sys.path.append(parent_dir_path)
 print parent_dir_path
 from DbScripts.mongo_db import CricFeedMongo
 from GlobalLinks import *
-#from dbdb_mongo import Data_Management 
+from Feeds.download_image import ImageDownload
 class Cricket_BBC:
     
     """
@@ -47,13 +47,26 @@ class Cricket_BBC:
             publish_date=time.mktime(time.strptime(headers['date'], "%a, %d %b %Y %H:%M:%S %Z"))
             article = goose_instance.extract(val)
             full_text = article.cleaned_text.format()
-            #tokenized_data = sent_tokenize(full_text)
-            #print tokenized_data
-            summary = full_text[:280]
             title = article.title
-            #summary = article.meta_description
+            tokenized_data = sent_tokenize(full_text)
+            length_tokenized_data=len(tokenized_data)
+            
+            if length_tokenized_data > 2:
+                summary=tokenized_data[0]+tokenized_data[1]+tokenized_data[2]
+            elif length_tokenized_data <2:
+                summary=tokenized_data[0]
+            else:
+                summary = article.meta_description 
+
             image = article.top_image.get_src()
-            _dict = {"website":"BBC_CRIC_FEED","news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image,"time_of_storing":time.mktime(time.localtime())}
+
+            if image.endswith(".jpg") or image.endswith(".png")==True:
+                obj1=ImageDownload(image)
+                all_formats_image=obj1.runn()
+            else:
+                all_formats_image={'ldpi':None,'mdpi':None,'hdpi':None}
+
+            _dict = {"website":"BBC_CRIC_FEED","news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image,'ldpi':all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())}
             CricFeedMongo.insert_news(_dict)
 	CricFeedMongo.show_news()
 

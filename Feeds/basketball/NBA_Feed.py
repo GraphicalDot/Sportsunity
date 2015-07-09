@@ -13,7 +13,8 @@ sys.path.append(parent_dir_path)
 print parent_dir_path
 from DbScripts.mongo_db_basketball import BasketFeedMongo
 from GlobalLinks import *
-#from Links_Basketball import NBA
+from Feeds.download_image import ImageDownload
+#obj1=ImageDownload()
 class Basketball_NBA:
     """
     This function gets the links 
@@ -38,21 +39,33 @@ class Basketball_NBA:
 
     def full_news(self):
         goose_instance = Goose()
-        for val in self.list_of_links:
-	    response = urllib.urlopen(val)
+        for val in self.list_of_fresh_links:
+	    #obj1 = ImageDownload(val)
+            response = urllib.urlopen(val)
 	    headers = response.info()
 	    publish_date=time.mktime(time.strptime(headers['date'], "%a, %d %b %Y %H:%M:%S %Z"))
             article = goose_instance.extract(val)
             full_text = article.cleaned_text.format()
             title = article.title
 	    tokenized_data = sent_tokenize(full_text)
-	    if tokenized_data[1]:
-		summary=tokenized_data[0]+tokenized_data[1]
-	    else:
-		summary = article.meta_description
-            #summary = article.meta_description
+	    length_tokenized_data = len(tokenized_data)
+
+            if length_tokenized_data > 2:
+                summary=tokenized_data[0]+tokenized_data[1]+tokenized_data[2]
+            elif length_tokenized_data <2:
+                summary=tokenized_data[0]
+            else:
+                summary = article.meta_description
+
 	    image = article.top_image.get_src()
-	    _dict = {"website":"NBA", "news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text, "title":title,"image": image, "time_of_storing":time.mktime(time.localtime())}
+
+            if image.endswith(".jpg") or image.endswith(".png")==True:
+                obj1=ImageDownload(image)
+                all_formats_image=obj1.runn()
+            else:
+                all_formats_image={'ldpi':None,'mdpi':None,'hdpi':None}
+
+	    _dict = {"website":"NBA", "news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text, "title":title,"image": image,'ldpi':all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':all_formats_image['hdpi'], "time_of_storing":time.mktime(time.localtime())}
             BasketFeedMongo.insert_news(_dict)
 	BasketFeedMongo.show_news() 
 
@@ -63,9 +76,12 @@ class Basketball_NBA:
     """
     
     def checking(self):
+        list_of_fresh_links=list()
+        self.list_of_fresh_links=list_of_fresh_links
         for val in self.list_of_links:
             if not BasketFeedMongo.check_basket(val):
-                self.full_news()
+                self.list_of_fresh_links.append(val)
+        self.full_news()
 
 
     def reflect_data(self):

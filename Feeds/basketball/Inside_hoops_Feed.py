@@ -14,7 +14,9 @@ print parent_dir_path
 from flask import jsonify
 from DbScripts.mongo_db_basketball import BasketFeedMongo
 from GlobalLinks import *
-#from Links_Basketball import Inside_hoops
+from Feeds.download_image import ImageDownload
+
+#obj1 = ImageDownload()
 class Basketball_Hoops:
     """
     This function gets the links 
@@ -40,6 +42,7 @@ class Basketball_Hoops:
     def full_news(self):
         goose_instance = Goose()
         for val in self.list_of_links:
+            obj1 = ImageDownload(val)
 	    response = urllib.urlopen(val)
             headers = response.info()
 	    publish_date=time.mktime(time.strptime(headers['date'], "%a, %d %b %Y %H:%M:%S %Z"))
@@ -53,8 +56,10 @@ class Basketball_Hoops:
                 summary = article.meta_description
 	    #summary = article.meta_description
 	    image = article.top_image.get_src()
-	    _dict = {"website":"Inside_hoops", "news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image, "time_of_storing":time.mktime(time.localtime())}
+            all_formats_image=obj1.run()
+            _dict = {"website":"Inside_hoops", "news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image,'ldpi':all_formats_image['ldpi'],"time_of_storing":time.mktime(time.localtime())}
             BasketFeedMongo.insert_news(_dict)
+        
             #print BasketFeedMongo.show_news()
         #return BasketFeedMongo.show_news()
         #return json.dumps((_dict))

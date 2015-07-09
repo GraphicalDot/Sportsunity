@@ -5,7 +5,7 @@ import sys
 
 file_path = os.path.abspath(os.path.abspath(__file__))
 sys.path.append(file_path)
-
+from Feeds.download_image import ImageDownload
 from GlobalConfigs  import news_collection_cric, news_collection_f1rc, news_collection_bask,\
         news_collection_tenn, news_collection_ftbl, news_collection_ftbl
 
@@ -25,6 +25,12 @@ class BasketFeedMongo(object):
         def insert_news(news):
                 news_collection_bask.insert(news)
                 return
+	"""
+	@staticmethod
+	def update_news(all_formats):
+		news_collection_bask.update({"ldpi":all_formats['ldpi']})
+		return 
+	"""
 
 	@staticmethod
 	def show_news():

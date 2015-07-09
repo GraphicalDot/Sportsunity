@@ -8,7 +8,7 @@ being used to scrape the news feeds
 NBA = 'http://www.nba.com/rss/nba_rss.xml'
 Real_gm = 'http://basketball.realgm.com/rss/wiretap/15/0.xml'
 Roto_world = 'http://www.rotoworld.com/rss/feed.aspx?sport=nba&ftype=article&count=12&format=rss'
-#Inside_hoops = 'http://www.insidehoops.com/blog/?feed=rss2'
+Inside_hoops = 'http://www.insidehoops.com/blog/?feed=rss2'
 
 
 NDTV_CRICKET_FEED = "http://feeds.feedburner.com/NDTV-Cricket"  #ndtv sportsnews feed 
@@ -23,7 +23,7 @@ Goal_dot_com = 'http://www.goal.com/en-gb/feeds/news?fmt=rss&ICID=HP'
 Football_Fancast = 'http://www.footballfancast.com/feed'
 
 
-Crash_dot_net = 'http://rss.feedsportal.com/c/350/f/537798/index.rss?'
+Crash_dot_net = 'http://www.motorsport.com/rss/category/f1/news'
 Grandprix_dot_com = 'http://grandprix.com/rss.xml'  
 Auto_sport = 'http://www.autosport.com/rss/f1news.xml'
 

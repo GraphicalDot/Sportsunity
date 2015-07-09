@@ -93,7 +93,7 @@ def run_tennis_rss():
 
 if __name__ == "__main__":
     run_basketball_rss()
-    #run_cricket_rss()
+    run_cricket_rss()
     #run_f1_rss()
     #run_football_rss()
     #run_tennis_rss()
