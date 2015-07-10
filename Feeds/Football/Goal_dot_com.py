@@ -50,23 +50,22 @@ class Football_Goal:
             
             if length_tokenized_data > 2:
                 summary=tokenized_data[0]+tokenized_data[1]+tokenized_data[2]
-            elif length_tokenized_data <2:
-                summary=tokenized_data[0]
             else:
                 summary = article.meta_description
 
-            image = article.top_image.get_src()
-
-            if image.endswith(".jpg") or image.endswith(".png")==True:
-                obj1=ImageDownload(image)
-                all_formats_image=obj1.runn()
-            else:
-                all_formats_image={'ldpi':None,'mdpi':None,'hdpi':None} 
+	    try:
+	    	image = article.top_image.get_src()
+            	if image.endswith(".jpg") or image.endswith(".png")==True:
+               	    obj1=ImageDownload(image)
+                    all_formats_image=obj1.runn()
+            	else:
+               	    all_formats_image={'ldpi':None,'mdpi':None,'hdpi':None}
+	    except:
+		all_formats_image={'ldpi':None,'mdpi':None,'hdpi':None}
 
 	    _dict = {"website":"Goal_dot_com","news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image,'ldpi':all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())}
             FootFeedMongo.insert_news(_dict)
 
-        FootFeedMongo.show_news()
     
     """
     This function checks for duplicate news_ids.

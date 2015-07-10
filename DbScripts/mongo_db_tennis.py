@@ -31,9 +31,15 @@ class TennFeedMongo(object):
 		return list(news_collection_tenn.find(fields={'_id':False}).sort("publish_date",1))
 
 	@staticmethod
-	def recent_news(args):
-		return list(news_collection_tenn.find(fields={'_id':False}).sort("publish_date",1).skip(0).limit(args))
-
+	def recent_news(args,kwargs):
+		if kwargs == "ldpi":
+                    return list(news_collection_cric.find(fields={'mdpi':False,'hdpi':False,'_id':False}).sort("publish_date",1).skip(0).limit(args))
+                elif kwargs == "mdpi":
+                    return list(news_collection_cric.find(fields={'ldpi':False,'hdpi':False,'_id':False}).sort("publish_date",1).skip(0).limit(args))
+                elif kwargs == "hdpi":
+                    return list(news_collection_cric.find(fields={'ldpi':False,'mdpi':False,'_id':False}).sort("publish_date",1).skip(0).limit(args))
+                else:
+                    return "Image format not received"
 	@staticmethod
 	def number_of_news(args):
 		return list(news_collection_tenn.find(fields={'_id':False}).sort("publish_date",1).limit(args))

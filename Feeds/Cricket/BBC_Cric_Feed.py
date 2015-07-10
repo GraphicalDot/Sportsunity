@@ -47,26 +47,21 @@ class Cricket_BBC:
             publish_date=time.mktime(time.strptime(headers['date'], "%a, %d %b %Y %H:%M:%S %Z"))
             article = goose_instance.extract(val)
             full_text = article.cleaned_text.format()
-            title = article.title
             tokenized_data = sent_tokenize(full_text)
-            length_tokenized_data=len(tokenized_data)
-            
+            length_tokenized_data = len(tokenized_data)
             if length_tokenized_data > 2:
                 summary=tokenized_data[0]+tokenized_data[1]+tokenized_data[2]
-            elif length_tokenized_data <2:
-                summary=tokenized_data[0]
             else:
-                summary = article.meta_description 
-
+                summary = article.meta_description
+            title = article.title
             image = article.top_image.get_src()
-
             if image.endswith(".jpg") or image.endswith(".png")==True:
                 obj1=ImageDownload(image)
                 all_formats_image=obj1.runn()
             else:
                 all_formats_image={'ldpi':None,'mdpi':None,'hdpi':None}
 
-            _dict = {"website":"BBC_CRIC_FEED","news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image,'ldpi':all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())}
+            _dict = {"website":"BBC_CRIC_FEED","news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image,"time_of_storing":time.mktime(time.localtime())}
             CricFeedMongo.insert_news(_dict)
 	CricFeedMongo.show_news()
 

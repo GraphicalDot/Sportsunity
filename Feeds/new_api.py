@@ -21,13 +21,13 @@ get_args.add_argument("latest", type=int, location="args")
 get_args.add_argument("limited", type=int, location="args")
 get_args.add_argument("from", type=float, location="args")
 get_args.add_argument("till", type=float, location="args")
-
+get_args.add_argument("image", type=str, location="args")
 class Recent_Cricket_News(restful.Resource):
     def get(self):
         args = get_args.parse_args()
         #return CricFeedMongo.recent_news(args)
-        if args['latest']:
-            return CricFeedMongo.recent_news(args['latest'])
+        if args['latest'] and args['image']:
+            return CricFeedMongo.recent_news(args['latest'],args['image'])
         elif args['limited']:
             return CricFeedMongo.number_of_news(args['limited'])
         elif args['from'] and args['till']:
@@ -38,8 +38,8 @@ class Recent_Cricket_News(restful.Resource):
 class Recent_Basketball_News(restful.Resource):
     def get(self):
         args = get_args.parse_args()
-        if args['latest']:
-            return BasketFeedMongo.recent_news(args['latest'])
+        if args['latest'] and args['image']:
+            return BasketFeedMongo.recent_news(args['latest'],args['image'])
         elif args['limited']:
             return BasketFeedMongo.number_of_news(args['limited'])
         elif args['from'] and args['till']:
@@ -50,9 +50,9 @@ class Recent_Basketball_News(restful.Resource):
 class Recent_F1_News(restful.Resource):
     def get(self):
         args = get_args.parse_args()
-        if args['limited']:
-            return Formula1FeedMongo.recent_news(args['latest'])
-        elif args['latest']:
+        if args['latest'] and args['image']:
+            return Formula1FeedMongo.recent_news(args['latest'],args['image'])
+        elif args['limited']:
             return Formula1FeedMongo.number_of_news(args['limited'])
         elif args['from'] and args['till']:
             return Formula1FeedMongo.news_in_between(args['from'],args['till'])
@@ -61,8 +61,9 @@ class Recent_F1_News(restful.Resource):
 
 class Recent_Football_News(restful.Resource):
     def get(self):
-        if args['latest']:
-            return FootFeedMongo.recent_news(args['latest'])
+        args = get_args.parse_args()
+        if args['latest'] and args['image']:
+            return FootFeedMongo.recent_news(args['latest'],args['image'])
         elif args['limited']:
             return FootFeedMongo.number_of_news(args['limited'])
         elif args['from'] and args['till']:
@@ -72,8 +73,9 @@ class Recent_Football_News(restful.Resource):
 
 class Recent_Tennis_News(restful.Resource):
     def get(self):
-        if args['latest']:
-            return TennFeedMongo.recent_news(args['latest'])
+        args = get_args.parse_args()
+        if args['latest'] and args['image']:
+            return TennFeedMongo.recent_news(args['latest'],args['image'])
         elif args['limited']:
             return TennFeedMongo.number_of_news(args['limited'])
         elif args['from'] and args['till']:
@@ -90,7 +92,7 @@ api.add_resource(Recent_Football_News, "/football")
 api.add_resource(Recent_Tennis_News, "/tennis")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0",port = 8080, debug = True)
+    app.run(host="0.0.0.0",port = 8000, debug = True)
 
 
 

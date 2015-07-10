@@ -51,8 +51,6 @@ class Football_Fifa:
             
             if length_tokenized_data > 2:
                 summary=tokenized_data[0]+tokenized_data[1]+tokenized_data[2]
-            elif length_tokenized_data <2:
-                summary=tokenized_data[0]
             else:
                 summary = article.meta_description
 

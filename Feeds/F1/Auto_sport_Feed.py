@@ -65,7 +65,6 @@ class Formula_one_Auto:
              
             _dict = {"website":"Auto_sport", "news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image,'ldpi':all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':all_formats_image['hdpi'],"time_of_Storing":time.mktime(time.localtime())}
             Formula1FeedMongo.insert_news(_dict)
-        #Formula1FeedMongo.show_news()
     
     """
     This function checks for duplicate news_ids.

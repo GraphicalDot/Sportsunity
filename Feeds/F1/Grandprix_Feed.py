@@ -65,8 +65,6 @@ class Formula_one_Grandprix:
 
 	    _dict = {"website":"Grandprix_dot_com", "news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text, "title":title,"image":image,'ldpi':all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())}
             Formula1FeedMongo.insert_news(_dict)
-	Formula1FeedMongo.show_news()
-
     
     """
     This function checks for duplicate news_ids.
@@ -78,7 +76,7 @@ class Formula_one_Grandprix:
         self.list_of_fresh_links = list_of_fresh_links
         for val in self.list_of_links:
 		if not Formula1FeedMongo.check_f1(val):
-                self.list_of_fresh_links.append(val)
+                    self.list_of_fresh_links.append(val)
         self.full_news()
 
     """

@@ -29,29 +29,32 @@ class ImageDownload(object):
 
 
         def runn(self):
-                self.download_image()
-                self.make_resolutions()
-                self.encode_images()
-                return { "ldpi": self.img_ldpi_encoded, 
-                        "mdpi": self.img_mdpi_encoded, 
-                        "hdpi": self.img_hdpi_encoded, }
+                try:
+                    self.download_image()
+                    self.make_resolutions()
+                    self.encode_images()
+                    return { "ldpi": self.img_ldpi_encoded, 
+                            "mdpi": self.img_mdpi_encoded, 
+                            "hdpi": self.img_hdpi_encoded, }
+                except:
+                    return {"ldpi":None,
+                            "mdpi":None,
+                            "hdpi":None, }
 
         def download_image(self):
                 """
                 Download an image from the link
                 """
-                #hdr = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-                #response = urllib.request.urlopen(self.image_link)
                 #response = urllib.urlopen(self.image_link)
-                response = requests.get(self.image_link)
-                if response.status_code == 200:
-                    f = open('/home/shivam/Documents/sample.jpg', 'wb')
-                    f.write(response.content)
-                    f.close()
-                    f = open('/home/shivam/Documents/sample.jpg', 'rb')
-                else:
-                    f = urllib.urlopen(self.image_link)
-                self.img = Image.open(StringIO(f.read()))
+                #response = requests.get(self.image_link)
+                try:
+
+                    response = urllib.urlopen(self.image_link)
+                    self.img = Image.open(StringIO(response.read()))
+                except Exception as e:
+                    request.get(self.image_link)
+                    self.img = Image.open(StringIO(e.text))
+                
                 img_ratio = self.img.size[0] / float(self.img.size[1])
                 return
 

@@ -43,15 +43,13 @@ class Football_UK:
 	    headers = response.info()
 	    publish_date=time.mktime(time.strptime(headers['date'], "%a, %d %b %Y %H:%M:%S %Z"))
             article = goose_instance.extract(val)
-            full_text = article.cleaned_text.format()
+            full_text = article.cleaned_text
             title = article.title
 	    tokenized_data = sent_tokenize(full_text)
             length_tokenized_data=len(tokenized_data)
             
             if length_tokenized_data > 2:
                 summary=tokenized_data[0]+tokenized_data[1]+tokenized_data[2]
-            elif length_tokenized_data <2:
-                summary=tokenized_data[0]
             else:
                 summary = article.meta_description
 
@@ -65,9 +63,6 @@ class Football_UK:
  
 	    _dict = {"website":"Football_uk","news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image,'ldpi':all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())}
             FootFeedMongo.insert_news(_dict)
-
-        FootFeedMongo.show_news()
-    
     """
     This function checks for duplicate news_ids.
     If a duplicate is found function full_news doesn't run

@@ -67,7 +67,6 @@ class Tennis_X:
  
 	    _dict = {"website":"TENNIS_X","news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image,'ldpi':all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())}
             TennFeedMongo.insert_news(_dict)
-        TennFeedMongo.show_news()
     
     """
     This function checks for duplicate news_ids.

@@ -52,8 +52,6 @@ class Cricket_ESPN:
 	    length_tokenized_data = len(tokenized_data)
 	    if length_tokenized_data > 1:
                 summary=tokenized_data[0]+tokenized_data[1]
-            elif length_tokenized_data <2:
-                summary=tokenized_data[0]
             else:
                 summary = article.meta_description
 	    image = article.top_image.get_src()
