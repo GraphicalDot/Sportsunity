@@ -4,11 +4,12 @@
 #!/usr/bin/env python
 
 from __future__ import with_statement
-from fabric.api import show, local, settings, prefix, abort, run, cd, env, require, hide, execute, put
+from fabric.api import show, local, settings, prefix, abort, run, cd, env, require, hide, execute, put, task, lcd
 from fabric.contrib.console import confirm
 from fabric.network import disconnect_all
 from fabric.colors import green as _green, yellow as _yellow, red as _red
 from fabric.contrib.files import exists
+from fabric.operations import local as lrun, run
 from fabric.utils import error
 import os
 import time
@@ -32,33 +33,46 @@ print PATH
 
 TAGGERS_PATH = "{0}/Text_Processing/PosTaggers/hunpos-1.0-linux".format(PATH)
 
+#@task
+def localhost():
+    # env.use_ssh_config = True
+    env.run = lrun
+    env.hosts = ['localhost']
 
+@task
+def remote():
+    env.use_ssh_config = True
+    env.hosts = ["52.24.208.205"] ##For t2 medium
+    env.key_filename = "/home/shivam/Music/Downloads/SportsUnityfeeds.pem"
+    env.warn_only = True
+
+@task
 def basic_setup():
 	""""
 	This method should be run before installing virtual environment as it will install python pip
 	required to install virtual environment
 	"""
-	#run("sudo apt-get update")
-	#run("sudo apt-get upgrade")
-	run("sudo apt-get install -y python-pip")
-        run("sudo apt-get install -y libevent-dev")
-	run("sudo apt-get install -y python-all-dev")
-	run("sudo apt-get install -y ipython")
-	run("sudo apt-get install -y libxml2-dev")
-	run("sudo apt-get install -y libxslt1-dev") 
-	run("sudo apt-get install -y python-setuptools python-dev build-essential")
-	run("sudo apt-get install -y libxml2-dev libxslt1-dev lib32z1-dev")
-	run("sudo apt-get install -y python-lxml")
+	run("sudo apt-get update")
+	run("sudo apt-get upgrade")
+	env.run("sudo apt-get install -y python-pip")
+        env.run("sudo apt-get install -y libevent-dev")
+	env.run("sudo apt-get install -y python-all-dev")
+	env.run("sudo apt-get install -y ipython")
+	env.run("sudo apt-get install -y libxml2-dev")
+	env.run("sudo apt-get install -y libxslt1-dev") 
+	env.run("sudo apt-get install -y python-setuptools python-dev build-essential")
+	env.run("sudo apt-get install -y libxml2-dev libxslt1-dev lib32z1-dev")
+	env.run("sudo apt-get install -y python-lxml")
 	#Dependencies for installating sklearn
-	run("sudo apt-get install -y build-essential python-dev python-setuptools libatlas-dev libatlas3gf-base")
+	#run("sudo apt-get install -y build-essential python-dev python-setuptools libatlas-dev libatlas3gf-base")
 	#Dependencies for installating scipy
-	run("sudo apt-get install -y liblapack-dev libatlas-dev gfortran")
-	run("sudo apt-get install -y libatlas-base-dev gfortran build-essential g++ libblas-dev")
+	#run("sudo apt-get install -y liblapack-dev libatlas-dev gfortran")
+	#run("sudo apt-get install -y libatlas-base-dev gfortran build-essential g++ libblas-dev")
 	#Dependicies to install hunpostagger
-	run("sudo apt-get install -y ocaml-nox")
-	run("sudo apt-get install -y mercurial")
-	run("sudo apt-get install -y libpq-dev")
-        run("sudo apt-get install build-essential libssl-dev libffi-dev python-dev")
+	#run("sudo apt-get install -y ocaml-nox")
+	#run("sudo apt-get install -y mercurial")
+	#run("sudo apt-get install -y libpq-dev")
+        #run("sudo apt-get install build-essential libssl-dev libffi-dev python-dev")
 
 def installing_riak():
         run("sudo apt-get install curl")
@@ -66,12 +80,13 @@ def installing_riak():
         run("sudo apt-get install riak=2.1.1-1")
         
         
-
+"""
 def increasing_ulimits():
         /etc/security/limits.conf
 
         *     soft    nofile          40000
         *     hard    nofile          40000
+"""
 
 
 def install_phantomjs():
@@ -179,11 +194,63 @@ def mongo():
 
 
 def mongo_restore(dump):
-        """
-        """
+      
         with cd(PATH):
                 run("sudo mongorestore 21-feb")
 
+@task
+def sports_unity():
+        env.run("sudo apt-get install -y openssh-server")
+        env.run("sudo restart ssh")
+        env.run("sudo apt-get install -y python-virtualenv")
+        env.run("sudo apt-get install -y mongodb-server")
+        env.run("sudo apt-get install -y git")
+        if not exists(VIRTUAL_ENVIRONMENT, use_sudo=True):
+                env.run("sudo virtualenv VirtualEnvironment")
+                with lcd(VIRTUAL_ENVIRONMENT):
+                        with prefix(". "+VIRTUAL_ENVIRONMENT+ "/bin/activate"):
+                                env.run("sudo git clone -b shivam https://github.com/kaali-python/Sportsunity.git")
+                                with lcd(VIRTUAL_ENVIRONMENT+'/Sportsunity'):
+                                        env.run("sudo git init")
+                                        env.run("sudo git remote add origin https://github.com/kaali-python/Sportsunity.git")
+                                        env.run("sudo "+VIRTUAL_ENVIRONMENT+"/bin/pip install -r requirements.txt")
+                                        env.run("sudo "+VIRTUAL_ENVIRONMENT+"/bin/pip install feedparser")
+                                        env.run("sudo "+VIRTUAL_ENVIRONMENT+"/bin/pip install pymongo==2.8")
+                                        env.run("sudo "+VIRTUAL_ENVIRONMENT+"/bin/pip install fabric")
+                                        env.run("sudo "+VIRTUAL_ENVIRONMENT+"/bin/pip install Flask")
+                                        env.run("sudo "+VIRTUAL_ENVIRONMENT+"/bin/pip install pymongo==2.8")
+                                        env.run("sudo apt-get install mongodb")
+                                        env.run("sudo apt-get install libjpeg-dev")
+                                        env.run("sudo "+VIRTUAL_ENVIRONMENT+"/bin/pip install -T pillow")
+        else:
+                with lcd(VIRTUAL_ENVIRONMENT):
+                        with prefix(". "+VIRTUAL_ENVIRONMENT+ "/bin/activate"):
+                                env.run("sudo git init")
+                                env.run("sudo git fetch --all")
+
+"""
+def cron_job():
+        with lcd(VIRTUAL_ENVIRONMENT):
+                with prefix(". "+VIRTUAL_ENVIRONMENT+ "/bin/activate"):
+                        with lcd(VIRTUAL_ENVIRONMENT+'/Sportsunity'):
+                                env.run(cp 
+"""
+
+#@task
+def start_running():
+        env.run("sudo chown -R "+env["user"]+":"+env["user"]+" "+VIRTUAL_ENVIRONMENT)
+        env.run("sudo chmod -R a+rX VirtualEnvironment")
+        
+        with lcd(VIRTUAL_ENVIRONMENT):
+                with prefix(". "+VIRTUAL_ENVIRONMENT+ "/bin/activate"):
+                        with lcd(VIRTUAL_ENVIRONMENT+"/Sportsunity"):
+                                env.run('pwd')
+                                env.run('ls')
+                                env.run("sudo apt-get install mongodb")
+                                env.run("python Run_Feeds.py")
+
+
+@task
 def deploy():
 	execute(basic_setup)
         #execute(virtual_env)
@@ -192,4 +259,6 @@ def deploy():
         #execute(change_permission_api)
         #execute(mongodb)
         #execute(mongo_restore)
+        execute(sports_unity)
+        #execute(start_running)
 
