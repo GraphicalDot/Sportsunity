@@ -21,7 +21,7 @@ import random
 
 parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(parent_dir_path)
-
+from DbScripts.mongo_db import CricFeedMongo 
 from Links import GOOG_CRIC_FEED 
 
 
@@ -36,7 +36,9 @@ class GoogCricketRss(object):
                 self.news_entries = self.rss["entries"]
                 self.base_link = self.rss["href"]
                 self.news = list()
-                self.__rss()
+                self.__filter()
+                if self.__filter():
+                    self.__rss()
     
 
 
@@ -49,8 +51,8 @@ class GoogCricketRss(object):
 
                     full_text = self.__full_text(self.goose_instance, news["link"])
                     __dict = {"link": news["link"],
-                            "published": news["published"],
-                            "published_parsed": news["published_parsed"], 
+                            "published": time.mktime(time.strptime(news["published"], "%a, %d %b %Y %H:%M:%S %Z")),
+                            "published_parsed":time.mktime(news["published_parsed"]),
                             "text": text, 
                             "title": news["title"],
                             "news_id": hashlib.md5(news["link"]).hexdigest(),
@@ -60,6 +62,7 @@ class GoogCricketRss(object):
                             "website": "GOOGLE", 
                             }
                     self.news.append(__dict)
+                    CricFeedMongo.insert_news(__dict)
         def __filter(self):
                 """
                 Filter rss on the basis if they are prsent in the mongodb or not
@@ -72,7 +75,7 @@ class GoogCricketRss(object):
                         text = soup.getText()
                         news_id = hashlib.md5(news["id"]).hexdigest(),
                         news_list.append({"link": news["id"],
-                                        "published": news["published"],
+                                        "published": time.mktime(time.strptime(news["published"], "%a, %d %b %Y %H:%M:%S %Z")),
                                         "epoch": time.mktime(time.strptime(news["published"], "%a, %d %b %Y %H:%M:%S %Z")),
                                         "text": text,
                                         "title": news["title"],
@@ -83,7 +86,7 @@ class GoogCricketRss(object):
                                         })
 
                 return filter(lambda x: not x["scraped"], news_list)
-
+                
 
 
         def __full_text(self, goose_instance, link):
@@ -99,4 +102,5 @@ class GoogCricketRss(object):
                 return None
 
 
-        
+if __name__ == '__main__':
+    obj = GoogCricketRss(object)

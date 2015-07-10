@@ -16,7 +16,7 @@ class CricFeedMongo(object):
         @staticmethod
         def check_cric(news_id):
                 if news_collection_cric.find_one({"news_id": news_id}):
-                        return True
+                    return True
                 
                 return False
 
@@ -24,7 +24,36 @@ class CricFeedMongo(object):
         @staticmethod
         def insert_news(news):
                 news_collection_cric.insert(news)
-                return 
+                return
+
+        @staticmethod
+        def show_news():
+                return list(news_collection_cric.find(fields={'_id':False}).sort("publish_date",1))
+        
+        @staticmethod
+        def recent_news(args,kwargs):
+                if kwargs == "ldpi":
+                    return list(news_collection_cric.find(fields={'mdpi':False,'hdpi':False,'_id':False}).sort("publish_date",1).skip(0).limit(args))
+                elif kwargs == "mdpi":
+                    return list(news_collection_cric.find(fields={'ldpi':False,'hdpi':False,'_id':False}).sort("publish_date",1).skip(0).limit(args))
+                elif kwargs == "hdpi":
+                    return list(news_collection_cric.find(fields={'ldpi':False,'mdpi':False,'_id':False}).sort("publish_date",1).skip(0).limit(args))
+                else:
+                    return "Image format not received"
+
+
+        @staticmethod
+        def number_of_news(args):
+                return list(news_collection_cric.find(fields={'_id':False, 'ldpi':False, 'hdpi':False}).sort("publish_date",1).limit(args))
+        
+        @staticmethod
+        def send_image(args):
+                return list(news_collection_cric.find({"all_formats_image":args},{'_id':False}).sort('publish_date',1))
+        
+        @staticmethod
+        def news_in_between(args,kwargs):
+                return list(news_collection_cric.find({'publish_date': {'$gte':args , '$lt':kwargs}},{'_id':False}).sort('publish_date',1))
+
 
 
 
