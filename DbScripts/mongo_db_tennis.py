@@ -33,11 +33,11 @@ class TennFeedMongo(object):
 	@staticmethod
 	def recent_news(args,kwargs):
 		if kwargs == "ldpi":
-                    return list(news_collection_cric.find(fields={'mdpi':False,'hdpi':False,'_id':False}).sort("publish_date",1).skip(0).limit(args))
+                    return list(news_collection_tenn.find(fields={'mdpi':False,'hdpi':False,'_id':False}).sort("publish_date",1).skip(0).limit(args))
                 elif kwargs == "mdpi":
-                    return list(news_collection_cric.find(fields={'ldpi':False,'hdpi':False,'_id':False}).sort("publish_date",1).skip(0).limit(args))
+                    return list(news_collection_tenn.find(fields={'ldpi':False,'hdpi':False,'_id':False}).sort("publish_date",1).skip(0).limit(args))
                 elif kwargs == "hdpi":
-                    return list(news_collection_cric.find(fields={'ldpi':False,'mdpi':False,'_id':False}).sort("publish_date",1).skip(0).limit(args))
+                    return list(news_collection_tenn.find(fields={'ldpi':False,'mdpi':False,'_id':False}).sort("publish_date",1).skip(0).limit(args))
                 else:
                     return "Image format not received"
 	@staticmethod
