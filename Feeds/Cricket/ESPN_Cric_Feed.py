@@ -62,7 +62,6 @@ class Cricket_ESPN:
                 all_formats_image={'ldpi':None,'mdpi':None,'hdpi':None}
 	    _dict = {"website":"ESPN_CRIC_FEED","news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image,'ldpi':all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())}
             CricFeedMongo.insert_news(_dict)
-	CricFeedMongo.show_news()
 
     """
     This function checks for duplicate news_ids.

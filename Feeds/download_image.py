@@ -52,8 +52,8 @@ class ImageDownload(object):
                     response = urllib.urlopen(self.image_link)
                     self.img = Image.open(StringIO(response.read()))
                 except Exception as e:
-                    request.get(self.image_link)
-                    self.img = Image.open(StringIO(e.text))
+                    requests.get(self.image_link)
+                    self.img = Image.open(StringIO(e.url))
                 
                 img_ratio = self.img.size[0] / float(self.img.size[1])
                 return

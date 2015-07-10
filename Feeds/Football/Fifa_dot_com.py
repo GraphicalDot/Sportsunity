@@ -28,8 +28,8 @@ class Football_Fifa:
         for entry in self.details:
             self.list_of_links.append(entry['link'])
             
-        print self.list_of_links
-        print len(self.list_of_links)
+        #print self.list_of_links
+        #print len(self.list_of_links)
     
     """
     This function gets the full text from all 
@@ -54,20 +54,20 @@ class Football_Fifa:
             else:
                 summary = article.meta_description
 
-            image = article.top_image.get_src()
+            image = article.opengraph['image']
+            print image
 
-            if image.endswith(".jpg") or image.endswith(".png")==True:
-                obj1=ImageDownload(image)
-                all_formats_image=obj1.runn()
-            else:
-                all_formats_image={'ldpi':None,'mdpi':None,'hdpi':None}
+            #if image.endswith(".jpg") or image.endswith(".png")==True:
+            obj1=ImageDownload(image)
+            all_formats_image=obj1.runn()
+            #else:
+                #all_formats_image={'ldpi':None,'mdpi':None,'hdpi':None}
 
             
 
             _dict = {"website":"Fifa_dot_com","news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image, 'ldpi':all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())}
             FootFeedMongo.insert_news(_dict)
 
-        FootFeedMongo.show_news()
     
     """
     This function checks for duplicate news_ids.
@@ -78,8 +78,9 @@ class Football_Fifa:
         list_of_fresh_links=list()
         self.list_of_fresh_links = list_of_fresh_links
         for val in self.list_of_links:
-            if not FootFeedMongo.check_foot(val)==True:
+            if not FootFeedMongo.check_foot(val) and val.endswith(".html"):
                 self.list_of_fresh_links.append(val)
+        print self.list_of_fresh_links
         self.full_news()
 
     """

@@ -41,7 +41,7 @@ class Cricket_BBC:
 
     def full_news(self):
         goose_instance = Goose()
-        for val in self.list_of_links:
+        for val in self.list_of_fresh_links:
             response = urllib.urlopen(val)
             headers = response.info()
             publish_date=time.mktime(time.strptime(headers['date'], "%a, %d %b %Y %H:%M:%S %Z"))
@@ -61,9 +61,8 @@ class Cricket_BBC:
             else:
                 all_formats_image={'ldpi':None,'mdpi':None,'hdpi':None}
 
-            _dict = {"website":"BBC_CRIC_FEED","news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image,"time_of_storing":time.mktime(time.localtime())}
+            _dict = {"website":"BBC_CRIC_FEED","news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image,'ldpi':all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())}
             CricFeedMongo.insert_news(_dict)
-	CricFeedMongo.show_news()
 
 
     """
@@ -72,9 +71,12 @@ class Cricket_BBC:
     """
 
     def checking(self):
+        list_of_fresh_links=list() 
+        self.list_of_fresh_links = list_of_fresh_links
         for val in self.list_of_links:
             if not CricFeedMongo.check_cric(val):
-                self.full_news()
+                self.list_of_fresh_links.append(val)
+        self.full_news()
 
     """
     This function is used in the API to 

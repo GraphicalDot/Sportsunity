@@ -33,9 +33,9 @@ Instance_formula1 = Formula_one_Auto()
 Instance_formula2 = Formula_one_Crash()
 Instance_formula3 = Formula_one_Grandprix()
 
-Instance_football1 = Football_Fifa()
+Instance_football1 = Football_UK()
 Instance_football2 = Football_Fancast_1()
-Instance_football3 = Football_UK()
+Instance_football3 = Football_Fifa()
 Instance_football4 = Football_Goal()
 
 Instance_tennis1 = Tennis_BBC()
