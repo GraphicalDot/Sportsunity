@@ -12,6 +12,9 @@ MONGO_SPORTS_UNITY_NEWS_FTBL_COLL = "SPORTS_UNITY_NEWS_FTBL"
 MONGO_SPORTS_UNITY_NEWS_ALL_COLL = "SPORTS_UNITY_NEWS_ALL"
 
 
+AMAZON_ACCESS_KEY = "AKIAJQ4YKSYEDJGYH7ZA"
+AMAZON_SECRET_KEY = "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"
+S3_BUCKET_NAME = "feeds.images"
 
 connection = pymongo.MongoClient(MONGO_HOST, MONGO_PORT)                                                                                                             
 

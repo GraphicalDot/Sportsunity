@@ -9,6 +9,7 @@ from PIL import Image
 import PIL
 import base64
 import requests
+import goose
 file_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(file_path)
 
@@ -22,16 +23,9 @@ from boto.exception import S3ResponseError, S3CreateError
 class AmazonS3(object):
         def __init__(self, image_link, news_id):
                 self.image_link = image_link
-                try:
-                    self.image_format = self.image_link.split(".")[-1]
-                    if not self.image_format in ["png", "gif"]:
-                            raise StandardError("No suitable image format found")
-                except Exception as e:
-                        print e
-                        self.image_format = "png"
+                self.image_format = "png"
+                self.news_id = news_id
 
-
-                print self.image_format
                 self.ldpi_size = (240, 320)
                 self.mdpi_size = (320, 480)
                 self.hdpi_size = (480, 800)
@@ -55,15 +49,14 @@ class AmazonS3(object):
 
                 return bucket
 
-        def runn(self):
-                try:
+        def run(self):
+                    self.bucket = self.amazon_bucket()
                     self.download_image()
                     self.make_resolutions()
                     self.encode_images()
-                    return { "ldpi": self.img_ldpi_encoded, 
-                            "mdpi": self.img_mdpi_encoded, 
-                            "hdpi": self.img_hdpi_encoded, }
-                except:
+                    return { "ldpi": self.ldpi_image_url, 
+                            "mdpi": self.mdpi_image_url, 
+                            "hdpi": self.hdpi_image_url, }
                     return {"ldpi":None,
                             "mdpi":None,
                             "hdpi":None, }
@@ -79,19 +72,30 @@ class AmazonS3(object):
                     response = urllib.urlopen(self.image_link)
                     self.img = Image.open(StringIO(response.read()))
                 except Exception as e:
-                    requests.get(self.image_link)
-                    self.img = Image.open(StringIO(e.url))
-                
-                img_ratio = self.img.size[0] / float(self.img.size[1])
+                    goose_instance = goose.Goose()
+                    g = goose_instance.extract(self.image_link)
+                    self.img  = Image.open(StringIO(g.raw_html))
+
                 return
 
         def make_resolutions(self):
                 """
                 converts the image link to byte 64 encoding
                 """
-                self.img_ldpi = self.img.resize(self.ldpi_size, Image.ANTIALIAS) 
-                self.img_mdpi = self.img.resize(self.mdpi_size, Image.ANTIALIAS) 
-                self.img_hdpi = self.img.resize(self.hdpi_size, Image.ANTIALIAS) 
+
+                wpercent = (self.ldpi_size[0]/float(self.img.size[0]))
+                hsize = int((float(self.img.size[1])*float(wpercent)))
+                self.img_ldpi = self.img.resize((self.ldpi_size[0], hsize), Image.ANTIALIAS) 
+                
+                
+                wpercent = (self.mdpi_size[0]/float(self.img.size[0]))
+                hsize = int((float(self.img.size[1])*float(wpercent)))
+                self.img_mdpi = self.img.resize((self.mdpi_size[0], hsize), Image.ANTIALIAS) 
+                
+                
+                wpercent = (self.hdpi_size[0]/float(self.img.size[0]))
+                hsize = int((float(self.img.size[1])*float(wpercent)))
+                self.img_hdpi = self.img.resize((self.hdpi_size[0], hsize), Image.ANTIALIAS) 
                 return 
 
 
@@ -103,28 +107,39 @@ class AmazonS3(object):
                 output = StringIO()
                 self.img_ldpi.save(output, self.image_format)
                 self.img_ldpi_contents = output.getvalue()
-                key = new_id + "_ldpi"
+                key = self.news_id + "_ldpi.png"
                 ldpi_key = self.bucket.new_key(key)
-                ldpi_key.set_contents_from_string(output.getvalue()
+                ldpi_key.set_metadata('Content-Type', 'image/png')
+                ldpi_key.set_contents_from_string(output.getvalue())
                 ldpi_key.set_canned_acl('public-read')
                 self.ldpi_image_url = ldpi_key.generate_url(0, query_auth=False, force_http=True)
                         
-                self.img_ldpi_encoded = base64.b64encode(self.img_ldpi_contents)
 
 
                 output = StringIO()
                 self.img_mdpi.save(output, self.image_format)
-                self.img_mdpi_contents = output.getvalue()
-                self.img_mdpi_encoded = base64.b64encode(self.img_mdpi_contents)
+                key = self.news_id + "_mdpi.png"
+                mdpi_key = self.bucket.new_key(key)
+                mdpi_key.set_metadata('Content-Type', 'image/png')
+                mdpi_key.set_contents_from_string(output.getvalue())
+                mdpi_key.set_canned_acl('public-read')
+                self.mdpi_image_url = mdpi_key.generate_url(0, query_auth=False, force_http=True)
                 
                 output = StringIO()
                 self.img_hdpi.save(output, self.image_format)
-                self.img_hdpi_contents = output.getvalue()
-                self.img_hdpi_encoded = base64.b64encode(self.img_hdpi_contents)
+                
+                key = self.news_id + "_hdpi.png"
+                hdpi_key = self.bucket.new_key(key)
+                hdpi_key.set_metadata('Content-Type', 'image/png')
+                hdpi_key.set_contents_from_string(output.getvalue())
+                hdpi_key.set_canned_acl('public-read')
+                self.hdpi_image_url = hdpi_key.generate_url(0, query_auth=False, force_http=True)
                 return
+
 
 """
 if __name__ == "__main__":
-        i = ImageDownload(image_link="http://a1.espncdn.com/combiner/i?img=/photo/2015/0304/rn_rashangary_ms_1296x518.jpg")
+        i = AmazonS3(image_link='http://www.hindustantimes.com//images/2015/7/578a1c23-9809-41e4-a3f5-05d57acab824wallpaper1.jpg', news_id= 'd574f3211fb0bab45048ce4778613cc2')
         print i.run()
-"""     
+
+"""
