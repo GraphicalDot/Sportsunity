@@ -16,7 +16,7 @@ from GlobalLinks import *
 from Feeds.amazon_s3 import AmazonS3
 import hashlib
 
-class Football_Fifa:
+class FootballFifa:
         """
         This function gets the links of all the news articles on the Rss Feed and stores them in list_of_links.
         """
@@ -75,8 +75,16 @@ class Football_Fifa:
             
                 goose_instance = Goose()
                 for news_dict in self.links_not_present:
-                        publish_epoch = time.mktime(time.strptime(news_dict['published'], "%a, %d %b %Y %H:%M:%S %Z"))
-            
+           
+
+                        strp_time_object = time.strptime(news_dict['published'], "%a, %d %b %Y %H:%M:%S %Z")
+                        day = strp_time_object.tm_day
+                        month = strp_time_object.tm_mon
+                        year = strp_time_object.tm_year
+                        publish_epoch = time.mktime(strp_time_object)
+                       
+ 
+
                         ##Getting full article with goose
                         article = goose_instance.extract(news_dict["news_link"])
                         full_text = article.cleaned_text.format()
@@ -89,28 +97,31 @@ class Football_Fifa:
                         else:
                                 summary = article.meta_description
 
-            
-                        image_link = article.opengraph['image']
-                        print image_link
-
-                        #if image.endswith(".jpg") or image.endswith(".png")==True:
-                        obj1=AmazonS3(image_link, news_dict["news_id"])
-                        all_formats_image=obj1.run()
+                        try: 
+                                image_link = article.opengraph['image']
+                                obj1=AmazonS3(image_link, news_dict["news_id"])
+                                all_formats_image=obj1.run()
+                        except Exception as e:
+                                print e
+                                image_link = None
+                                all_formats_image = {"mdpi": None,
+                                                    "ldpi": None,
+                                                    "hdpi": None,}
 
             
 
                         news_dict.update({"website": "Fifa_dot_com", "summary": summary, "news": full_text, "image_link":image_link, 
-                                        'publish_epoch': publish_epoch,
+                            'publish_epoch': publish_epoch, "day": day, "month": month, "year": year, 
                                         'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],
                                         "time_of_storing":time.mktime(time.localtime())})
-                        print news_dict["news_link"], news_dict["news_id"]
 
-
-                        FootFeedMongo.insert_news(news_dict)
+                        if not full_text == " ":
+                                FootFeedMongo.insert_news(news_dict)
+                return                 
 
     
 if __name__ == '__main__':
-    obj = Football_Fifa(Fifa_dot_com)
+    obj = FootballFifa(Fifa_dot_com)
     obj.run()
     #obj.rss_feeds(Fifa_dot_com)
     #obj.checking()

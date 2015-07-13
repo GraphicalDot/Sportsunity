@@ -57,9 +57,6 @@ class AmazonS3(object):
                     return { "ldpi": self.ldpi_image_url, 
                             "mdpi": self.mdpi_image_url, 
                             "hdpi": self.hdpi_image_url, }
-                    return {"ldpi":None,
-                            "mdpi":None,
-                            "hdpi":None, }
 
         def download_image(self):
                 """

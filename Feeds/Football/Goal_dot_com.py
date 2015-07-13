@@ -11,95 +11,122 @@ from goose import Goose
 parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(parent_dir_path)
 print parent_dir_path
-from DbScripts.mongo_db_football import FootFeedMongo
+from mongo_db_football import FootFeedMongo
 from GlobalLinks import *
-from Feeds.download_image import ImageDownload
-class Football_Goal:
-    """
-    This function gets the links 
-    of all the news articles on the
-    Rss Feed and stores them in list_of_links.
-    """
-    def rss_feeds(self,Goal_dot_com):
-        list_of_links = list()
-        self.list_of_links = list_of_links
-        self.d = feedparser.parse(Goal_dot_com)
-        self.details = self.d.entries
-        for entry in self.details:
-            self.list_of_links.append(entry['link'])
+from Feeds.amazon_s3 import AmazonS3
+import hashlib
+
+class GoalDotCom:
+        """
+        This function gets the links of all the news articles on the Rss Feed and stores them in list_of_links.
+        """
+        def __init__(self, link):
+                """
+                Args:
+                    link: link of the rss feed link
+                class variables:
+                        self.news_list with each entry like this:
+                             {'link': u'http://www.fifa.com/beachsoccerworldcup/news/y=2015/m=7/news=portuguese-party-as-stars-shine-on-and-off-the-pitch-2662475.html',
+                                'published': u'Thu, 09 Jul 2015 21:36:00 GMT',
+                                'summary': u'<p>A fantastic atmosphere awaited the teams in the Praia da Baia Stadium in Espinho as the FIFA Beach Soccer \
+                                        World Cup Portugal 2015 got underway. Around 3,500 fans packed into the stands and they got what they wanted &ndash; \
+                                        a Portuguese victory over Japan in the Group A opener.</p>',
+                                'tags': [{'label': None, 'scheme': None, 'term': u'Area=Tournament'},
+                                      {'label': None, 'scheme': None, 'term': u'Section=Competition'},
+                                         {'label': None, 'scheme': None, 'term': u'Kind=News'},
+                                        {'label': None,
+                                        'scheme': None,
+                                        'term': u'Tournament=FIFA Beach Soccer World Cup Portugal 2015'}],
+                                    'title': u'Portuguese party as stars shine on and off the pitch'}]
+                """
+                self.link = link
+                self.news_list = []
+                self.links_not_present = list()
+                self.rss = feedparser.parse(self.link)
+                self.news_entries = self.rss.entries
+                [self.news_list.append({"news_link": news_entry["link"], "published": news_entry["published"], "summary": \
+                        news_entry["summary"], "title": news_entry["title"], "news_id": hashlib.md5(news_entry["link"]).hexdigest()}) \
+                        for news_entry in self.news_entries]
+                                
+
+        def run(self):
+                print "Total number of news link in rss %s"%len(self.news_list)
+                self.checking()
+                print "Number of news links not stored in the databse %s"%len(self.links_not_present)
+                self.full_news()
+                return 
+
+        def checking(self):
+                for news_dict in self.news_list:
+                        if not FootFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]):
+                                self.links_not_present.append(news_dict)
+
+                return 
+
+
+        def full_news(self):
+                """
+                makes full new of the new_dict and insert into mongodb with following keys
+                ['website', 'hdpi', 'tags', 'image_link', 'time_of_storing', 'news', 'ldpi', 'publish_epoch', 'mdpi', 'title', 'summary', 'news_id', 
+                'news_link', 'published']
+                
+
+                """
             
-        print self.list_of_links
-    
-    """
-    This function gets the full text from all 
-    the links in the list_of_links, only after checking
-    for redundancy
-    """
+                goose_instance = Goose()
+                for news_dict in self.links_not_present:
+                        print news_dict["news_link"] 
+                        ##Getting full article with goose
+                        article = goose_instance.extract(news_dict["news_link"])
+                        full_text = article.cleaned_text
+                        
 
-    def full_news(self):
-        goose_instance = Goose()
-        for val in self.list_of_fresh_links:
-	    response = urllib.urlopen(val)
-	    headers = response.info()
-	    publish_date=time.mktime(time.strptime(headers['date'], "%a, %d %b %Y %H:%M:%S %Z"))
-            article = goose_instance.extract(val)
-            full_text = article.cleaned_text.format()
-            title = article.title
-	    tokenized_data = sent_tokenize(full_text)
-            length_tokenized_data=len(tokenized_data)
+
+                        strp_time_object = time.strptime(news_dict['published'][:-6], "%a, %d %b %Y %H:%M:%S")
+                        day = strp_time_object.tm_mday
+                        month = strp_time_object.tm_mon
+                        year = strp_time_object.tm_year
+                        
+
+                        publish_epoch = time.mktime(strp_time_object)
+                        tokenized_data = sent_tokenize(full_text)
+                        length_tokenized_data=len(tokenized_data)
             
-            if length_tokenized_data > 2:
-                summary=tokenized_data[0]+tokenized_data[1]+tokenized_data[2]
-            else:
-                summary = article.meta_description
+                        if length_tokenized_data > 2:
+                                summary=tokenized_data[0]+tokenized_data[1]+tokenized_data[2]
+                        else:
+                                summary = article.meta_description
 
-	    try:
-	    	image = article.top_image.get_src()
-            	if image.endswith(".jpg") or image.endswith(".png")==True:
-               	    obj1=ImageDownload(image)
-                    all_formats_image=obj1.runn()
-            	else:
-               	    all_formats_image={'ldpi':None,'mdpi':None,'hdpi':None}
-	    except:
-		all_formats_image={'ldpi':None,'mdpi':None,'hdpi':None}
+            
+                        try:
+                                image_link = article.top_image.get_src() 
+                                print "This is the image link %s"%image_link
+                                
+                                #if image.endswith(".jpg") or image.endswith(".png")==True:
+                                obj1=AmazonS3(image_link, news_dict["news_id"])
+                                all_formats_image=obj1.run()
+                        except Exception as e:
+                                print "exceptin occurred"
+                                image_link = None
+                                all_formats_image = {"mdpi": None, 
+                                                    "ldpi": None, 
+                                                    "hdpi": None,}
+            
 
-	    _dict = {"website":"Goal_dot_com","news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image,'ldpi':all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())}
-            FootFeedMongo.insert_news(_dict)
+                        news_dict.update({"website": "Goal_dot_com", "summary": summary, "news": full_text, "image_link":image_link, 
+                            'publish_epoch': publish_epoch, "day": day, "month": month, "year": year, "full_text": full_text,  
+                                        'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],
+                                        "time_of_storing":time.mktime(time.localtime())})
+                        print news_dict["news_link"], news_dict["news_id"]
+
+                        if not full_text == "":
+                                FootFeedMongo.insert_news(news_dict)
 
     
-    """
-    This function checks for duplicate news_ids.
-    If a duplicate is found function full_news doesn't run
-    """
-    
-    def checking(self):
-    	list_of_fresh_links=list()
-	self.list_of_fresh_links=list_of_fresh_links
-        for val in self.list_of_links:
-            if not FootFeedMongo.check_foot(val):
-	    	self.list_of_fresh_links.append(val)
-	self.full_news()
-
-    """
-    This function is used in the API to
-    reflect the data from the database.
-    """
-
-    def reflect_data(self):
-        return json.dumps(FootFeedMongo.show_news())
-
-
-    def run(self):
-        self.rss_feeds(Goal_dot_com)
-        self.checking()
-	return self.reflect_data()
-
-
-
 if __name__ == '__main__':
-    obj = Football_Goal()
+    obj = GoalDotCom(Goal_dot_com)
     obj.run()
-    #obj.rss_feeds(Goal_dot_com)
+    #obj.rss_feeds(Fifa_dot_com)
     #obj.checking()
     #obj.full_news()
 
