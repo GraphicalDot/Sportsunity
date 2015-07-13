@@ -15,7 +15,6 @@ class FootFeedMongo(object):
 
         @staticmethod
         def if_news_exists(news_id, news_link):
-                print news_link, news_id
                 if news_collection_ftbl.find_one({"news_id": news_id, "news_link": news_link}):
                         return True
                 
@@ -32,30 +31,3 @@ class FootFeedMongo(object):
                 bulk.execute()
                 """
                 return
-
-	@staticmethod
-	def show_news():
-		return list(news_collection_ftbl.find(fields={'_id':False}).sort("publish_date",1))
-
-	@staticmethod
-	def recent_news(args,kwargs):
-		if kwargs == "ldpi":
-                    return list(news_collection_ftbl.find(fields={'mdpi':False,'hdpi':False,'_id':False}).sort("publish_date",1).skip(0).limit(args))
-                elif kwargs == "mdpi":
-                    return list(news_collection_ftbl.find(fields={'ldpi':False,'hdpi':False,'_id':False}).sort("publish_date",1).skip(0).limit(args))
-                elif kwargs == "hdpi":
-                    return list(news_collection_ftbl.find(fields={'ldpi':False,'mdpi':False,'_id':False}).sort("publish_date",1).skip(0).limit(args))
-                else:
-                    return "Image format not received"
-	@staticmethod
-	def number_of_news(args):
-		return list(news_collection_ftbl.find(fields={'_id':False}).sort("publish_date",1).limit(args))
-	
-	@staticmethod
-	def news_in_between():
-		return list(news_collection_ftbl.find({'publish_date': {'$gte':args , '$lt':kwargs}},{'_id':False}).sort('publish_date',1))
-
-
-
-class GenericFeedMongo(object):
-        pass

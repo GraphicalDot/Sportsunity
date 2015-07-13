@@ -10,9 +10,9 @@ from nltk.tokenize import sent_tokenize
 from goose import Goose
 parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(parent_dir_path)
-print parent_dir_path
 from mongo_db_football import FootFeedMongo
 from GlobalLinks import *
+from GlobalMethods import unicode_or_bust
 from Feeds.amazon_s3 import AmazonS3
 import hashlib
 
@@ -78,7 +78,7 @@ class FootballFifa:
            
 
                         strp_time_object = time.strptime(news_dict['published'], "%a, %d %b %Y %H:%M:%S %Z")
-                        day = strp_time_object.tm_day
+                        day = strp_time_object.tm_mday
                         month = strp_time_object.tm_mon
                         year = strp_time_object.tm_year
                         publish_epoch = time.mktime(strp_time_object)
@@ -87,7 +87,7 @@ class FootballFifa:
 
                         ##Getting full article with goose
                         article = goose_instance.extract(news_dict["news_link"])
-                        full_text = article.cleaned_text.format()
+                        full_text = unicode_or_bust(article.cleaned_text.format())
             
                         tokenized_data = sent_tokenize(full_text)
                         length_tokenized_data=len(tokenized_data)
@@ -116,6 +116,7 @@ class FootballFifa:
                                         "time_of_storing":time.mktime(time.localtime())})
 
                         if not full_text == " ":
+                                print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
                                 FootFeedMongo.insert_news(news_dict)
                 return                 
 
