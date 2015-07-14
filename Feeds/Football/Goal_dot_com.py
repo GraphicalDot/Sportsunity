@@ -6,18 +6,17 @@ import time
 import json
 import feedparser
 import urllib
-from nltk.tokenize import sent_tokenize
+from nltk.tokenize import sent_tokenize, word_tokenize
 from goose import Goose
 parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(parent_dir_path)
-print parent_dir_path
 from mongo_db_football import FootFeedMongo
 from GlobalLinks import *
 from GlobalMethods import unicode_or_bust
 from Feeds.amazon_s3 import AmazonS3
 import hashlib
 
-class GoalDotCom:
+class FootballGoal:
         """
         This function gets the links of all the news articles on the Rss Feed and stores them in list_of_links.
         """
@@ -46,7 +45,7 @@ class GoalDotCom:
                 self.rss = feedparser.parse(self.link)
                 self.news_entries = self.rss.entries
                 [self.news_list.append({"news_link": news_entry["link"], "published": news_entry["published"], "summary": \
-                        news_entry["summary"], "title": news_entry["title"], "news_id": hashlib.md5(news_entry["link"]).hexdigest()}) \
+                        news_entry["summary"], "title": news_entry["title"],"news_id": hashlib.md5(news_entry["link"]).hexdigest()}) \
                         for news_entry in self.news_entries]
                                 
 
@@ -73,61 +72,65 @@ class GoalDotCom:
                 
 
                 """
-                print "Starting fulll news" 
+            
                 goose_instance = Goose()
                 for news_dict in self.links_not_present:
-                        print news_dict["news_link"] 
-                        ##Getting full article with goose
-                        article = goose_instance.extract(news_dict["news_link"])
-                        full_text = unicode_or_bust(article.cleaned_text)
-                        
-
-
-                        strp_time_object = time.strptime(news_dict['published'][:-6], "%a, %d %b %Y %H:%M:%S")
+           
+                        if news_dict['published'].endswith("+0000") or news_dict['published'].endswith("+0530"):
+                                strp_time_object = time.strptime(news_dict['published'][:-6], "%a, %d %b %Y %H:%M:%S")
+                        else:
+                                strp_time_object = time.strptime(news_dict['published'], "%a, %d %b %Y %H:%M:%S %Z")
                         day = strp_time_object.tm_mday
                         month = strp_time_object.tm_mon
                         year = strp_time_object.tm_year
-                        
-
                         publish_epoch = time.mktime(strp_time_object)
+                       
+ 
+
+                        ##Getting full article with goose
+                        article = goose_instance.extract(news_dict["news_link"])
+                        full_text = unicode_or_bust(article.cleaned_text.format())
+            
                         tokenized_data = sent_tokenize(full_text)
                         length_tokenized_data=len(tokenized_data)
             
                         if length_tokenized_data > 2:
-                                summary=tokenized_data[0]+tokenized_data[1]+tokenized_data[2]
-                        else:
+                                summary=tokenized_data[0]+tokenized_data[1]+" "+ " ...Read More"
+                        elif length_tokenized_data < 2:
+                                summary = " ".join(word_tokenize(full_text)[:30])+" "+ " ...Read More"
+                        elif article.meta_description:
                                 summary = article.meta_description
+                        else:
+                                summary = None
 
-            
-                        try:
-                                image_link = article.top_image.get_src() 
-                                print "This is the image link %s"%image_link
-                                
-                                #if image.endswith(".jpg") or image.endswith(".png")==True:
+                        try: 
+                                image_link = article.opengraph['image']
                                 obj1=AmazonS3(image_link, news_dict["news_id"])
                                 all_formats_image=obj1.run()
                         except Exception as e:
-                                print "exceptin occurred"
+                                print e
                                 image_link = None
-                                all_formats_image = {"mdpi": None, 
-                                                    "ldpi": None, 
+                                all_formats_image = {"mdpi": None,
+                                                    "ldpi": None,
                                                     "hdpi": None,}
+
             
 
                         news_dict.update({"website": "Goal_dot_com", "summary": summary, "news": full_text, "image_link":image_link, 
-                            'publish_epoch': publish_epoch, "day": day, "month": month, "year": year, "full_text": full_text,  
+                            'publish_epoch': publish_epoch, "day": day, "month": month, "year": year, 
                                         'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],
                                         "time_of_storing":time.mktime(time.localtime())})
 
-                        if not full_text == "":
+                        if not full_text == " ":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
                                 FootFeedMongo.insert_news(news_dict)
+                return                 
 
     
 if __name__ == '__main__':
-    obj = GoalDotCom(Goal_dot_com)
+    obj = FootballGoal(Goal_dot_com)
     obj.run()
-    #obj.rss_feeds(Fifa_dot_com)
+    #obj.rss_feeds(Goal_dot_com)
     #obj.checking()
     #obj.full_news()
 

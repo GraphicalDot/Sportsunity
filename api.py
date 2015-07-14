@@ -2,7 +2,7 @@
 
 
 import sys
-
+import time
 from flask import Flask,app,render_template,jsonify
 from flask.ext import restful
 from flask.ext.restful import Api, Resource, reqparse
@@ -14,15 +14,15 @@ from DbScripts.mongo_db_football import FootFeedMongo
 from DbScripts.mongo_db_tennis import TennFeedMongo
 """
 
-from GlobalConfigs import news_collection_ftbl 
+from GlobalConfigs import * 
 
 app = Flask(__name__)
 api = restful.Api(app)
 
 
 get_args = reqparse.RequestParser()
-get_args.add_argument("skip", type=int, location="args")
-get_args.add_argument("limit", type=int, location="args")
+get_args.add_argument("skip", type=int, location="args", required=False)
+get_args.add_argument("limit", type=int, location="args", required=False)
 get_args.add_argument("start_date", type=str, location="args", required=False)
 get_args.add_argument("end_date", type=str, location="args", required=False)
 get_args.add_argument("image_size", type=str, location="args", required=True)
@@ -76,20 +76,21 @@ class NewsApi(restful.Resource):
                             }
 
 
-                projection = {"summary": True, "title": True, "news_id": True, "published": True, "news_link": True, "_id": False}
+                projection = {"summary": True, "title": True, "news_id": True, "published": True, "news_link": True}
                 projection.update({args["image_size"]: True})
+                projection.update({"_id": False})
                 
-                print self.collection, skip, limit, projection
+                print self.collection, args['skip'], args['limit'], projection
                 ##if front end needs news jsut after news with skip and limit 
                 if not args["start_date"] and not args["end_date"]:
-                        result = self.collection.find(projection=projection).limit(limit).skip(skip).sort("publish_epoch", -1)
+                        result = self.collection.find(projection=projection).limit(args['limit']).skip(args['skip']).sort("publish_epoch", -1)
                         return {"error":  True, 
                                 "success": False, 
                                 "result": list(result), 
                                 }
 
                 try:
-                        start_epoch = int(time.mktime(time.strptime(start_date, pattern)))
+                        start_epoch = int(time.mktime(time.strptime(args['start_date'], pattern)))
                 except ValueError as e:
                         return {"error":  True, 
                                 "success": False, 
@@ -98,8 +99,8 @@ class NewsApi(restful.Resource):
                             }
                 
                 ##This implies that we required news for the present date
-                if not end_date:
-                        result = self.collection.find({"publish_epoch": {"$gt": start_epoch}}, projection=projection).limit(limit).skip(skip).sort("publish_epoch", -1)
+                if not args['end_date']:
+                        result = self.collection.find({"publish_epoch": {"$gt": start_epoch}}, projection=projection).limit(args['limit']).skip(args['skip']).sort("publish_epoch", -1)
                         return {"error":  True, 
                                 "success": False, 
                                 "result": list(result)}
@@ -107,7 +108,7 @@ class NewsApi(restful.Resource):
 
                 ##this implies that we need news for some date range
                 try:
-                        end_epoch = int(time.mktime(time.strptime(start_date, pattern)))
+                        end_epoch = int(time.mktime(time.strptime(args['start_date'], pattern)))
                 except ValueError as e:
                         return {"error":  True, 
                                 "success": False, 
@@ -125,7 +126,7 @@ class NewsApi(restful.Resource):
 
                 ##if the news is required for lets say 11-7-2105 to 12-7-2015, end_date should be 13-7-2015
                 result = self.collection.find({"publish_epoch": {"$gt": start_epoch, "$lt": end_epoch}}, projection=projection)\
-                                                                                    .limit(limit).skip(skip).sort("publish_epoch", -1)
+                                                                                    .limit(args['limit']).skip(args['skip']).sort("publish_epoch", -1)
                 return {"error":  True, 
                         "success": False, 
                         "result": list(result), 
@@ -139,25 +140,25 @@ class GetFootballNews(NewsApi):
 
 
 
-class GetCricketNews(restful.Resource):
+class GetCricketNews(NewsApi):
         def __init__(self):
                 self.collection = news_collection_cric
                 super(NewsApi, self).__init__()
 
 
-class GetBasketballNews(restful.Resource):
+class GetBasketballNews(NewsApi):
         def __init__(self):
                 self.collection = news_collection_bask
                 super(NewsApi, self).__init__()
 
 
-class GetF1News(restful.Resource):
+class GetF1News(NewsApi):
         def __init__(self):
                 self.collection = news_collection_f1rc
                 super(NewsApi, self).__init__()
 
 
-class GetTennisNews(restful.Resource):
+class GetTennisNews(NewsApi):
         def __init__(self):
                 self.collection = news_collection_tenn
                 super(NewsApi, self).__init__()
@@ -167,7 +168,7 @@ class GetTennisNews(restful.Resource):
 api.add_resource(GetFootballNews, "/football")
 api.add_resource(GetCricketNews, "/cricket")
 api.add_resource(GetBasketballNews, "/basketball")
-api.add_resource(GetF1News, "/f1")
+api.add_resource(GetF1News, "/formula1")
 api.add_resource(GetTennisNews, "/tennis")
 
 if __name__ == "__main__":
