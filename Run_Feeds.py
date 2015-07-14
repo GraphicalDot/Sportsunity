@@ -24,29 +24,31 @@ from Feeds.Football.Goal_dot_com import FootballGoal
 from Feeds.Tennis.BBC_Feed import TennisBbc
 from Feeds.Tennis.Tennis_X_Feed import TennisX
 from Feeds.Tennis.WTA_Feed import TennisWta
+from GlobalLinks import *
 
-Instance_bask1 = BasketballNba()
-Instance_bask2 = BasketballHoops()
-Instance_bask3 = BasketballReal()
-Instance_bask4 = Basketball_Roto()
 
-Instance_cric1 = CricketBbc()
-Instance_cric2 = CricketCbuz()
-Instance_cric3 = CricketEspn()
-Instance_cric4 = CricketNdtv()
+Instance_bask1 = BasketballNba(NBA)
+Instance_bask2 = BasketballHoops(Inside_hoops)
+Instance_bask3 = BasketballReal(Real_gm)
+Instance_bask4 = BasketballRoto(Roto_world)
 
-Instance_formula1 = FormulaAuto()
-Instance_formula2 = FormulaCrash()
-Instance_formula3 = FormulaGrandprix()
+Instance_cric1 = CricketBbc(CBUZ_CRIC_FEED)
+Instance_cric2 = CricketCbuz(BBC_CRIC_FEED)
+Instance_cric3 = CricketEspn(ESPN_CRIC_FEED)
+Instance_cric4 = CricketNdtv(NDTV_CRICKET_FEED)
 
-Instance_football1 = FootballUk()
-Instance_football2 = FootballFancast()
-Instance_football3 = FootballFifa()
-Instance_football4 = FootballGoal()
+Instance_formula1 = FormulaAuto(Auto_sport)
+Instance_formula2 = FormulaCrash(Crash_dot_net)
+Instance_formula3 = FormulaGrand(Grandprix_dot_com)
 
-Instance_tennis1 = TennisBbc()
-Instance_tennis2 = TennisX()
-Instance_tennis3 = TennisWta()
+Instance_football1 = FootballUk(Football_uk)
+Instance_football2 = FootballFancast(Football_Fancast)
+Instance_football3 = FootballFifa(Fifa_dot_com)
+Instance_football4 = FootballGoal(Goal_dot_com)
+
+Instance_tennis1 = TennisBbc(BBC_FEED)
+Instance_tennis2 = TennisX(TENNIS_X)
+Instance_tennis3 = TennisWta(WTA)
 
 """
 This function fetches all the basketball

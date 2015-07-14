@@ -94,7 +94,7 @@ class TennisBbc:
                         ##Getting full article with goose
                         article = goose_instance.extract(news_dict["news_link"])
                         full_text = unicode_or_bust(article.cleaned_text.format())
-            
+
                         tokenized_data = sent_tokenize(full_text)
                         length_tokenized_data=len(tokenized_data)
             

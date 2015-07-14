@@ -77,7 +77,12 @@ class FootballFifa:
                 for news_dict in self.links_not_present:
            
 
-                        strp_time_object = time.strptime(news_dict['published'], "%a, %d %b %Y %H:%M:%S %Z")
+                        if news_dict['published'].endswith("EDT") or news_dict['published'].endswith("GMT"):
+                                strp_time_object = time.strptime(news_dict['published'][:-4], "%a, %d %b %Y %H:%M:%S")
+                        elif news_dict['published'].endswith("+0530") or news_dict['published'].endswith("+0000"):
+                                strp_time_object = time.strptime(news_dict['published'][:-6], "%a, %d %b %Y %H:%M:%S")
+                        else:
+                                strp_time_object = time.strptime(news_dict['published'], "%Y-%m-%d %H:%M:%S" )
                         day = strp_time_object.tm_mday
                         month = strp_time_object.tm_mon
                         year = strp_time_object.tm_year

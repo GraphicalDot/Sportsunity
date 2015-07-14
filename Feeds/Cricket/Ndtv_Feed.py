@@ -76,9 +76,12 @@ class CricketNdtv:
             
                 goose_instance = Goose()
                 for news_dict in self.links_not_present:
-           
-                        if news_dict['published'].endswith("GMT"):
+
+           		if news_dict['published'].endswith("EDT") or news_dict['published'].endswith("GMT"):
                                 strp_time_object = time.strptime(news_dict['published'][:-4], "%a, %d %b %Y %H:%M:%S")
+
+			elif news_dict['published'].endswith("+0530") or news_dict['published'].endswith("+0000"):
+				strp_time_object = time.strptime(news_dict['published'][:-6], "%a, %d %b %Y %H:%M:%S") 
 
                         else:
                                 strp_time_object = time.strptime(news_dict['published'], "%Y-%m-%d %H:%M:%S" )
