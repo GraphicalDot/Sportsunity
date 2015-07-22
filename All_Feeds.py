@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+__metaclass__ = type
 
 import sys
 import os
@@ -26,103 +27,153 @@ from Feeds.Tennis.Tennis_X_Feed import TennisX
 from Feeds.Tennis.WTA_Feed import TennisWta
 from GlobalLinks import *
 
-class AllInstance(object):
+class AllInstance:
         def __init__(self):
-                super(self).__init__()
+                #super(self).__init__()
+                pass
 
         def basketball_instances(self):
                 
-                Instance_bask1 = BasketballNba(NBA)
-                Instance_bask2 = BasketballHoops(Inside_hoops)
-                Instance_bask3 = BasketballReal(Real_gm)
-                Instance_bask4 = BasketballRoto(Roto_world)
+                self.Instance_bask1 = BasketballNba(NBA)
+                self.Instance_bask1.run()
+                self.Instance_bask2 = BasketballHoops(Inside_hoops)
+                self.Instance_bask2.run()
+                self.Instance_bask3 = BasketballReal(Real_gm)
+                self.Instance_bask3.run()
+                self.Instance_bask4 = BasketballRoto(Roto_world)
+                self.Instance_bask4.run()
 
         def cricket_instances(self):
 
-                Instance_cric1 = CricketBbc(CBUZ_CRIC_FEED)
-                Instance_cric2 = CricketCbuz(BBC_CRIC_FEED)
-                Instance_cric3 = CricketEspn(ESPN_CRIC_FEED)
-                Instance_cric4 = CricketNdtv(NDTV_CRICKET_FEED)
+                self.Instance_cric1 = CricketBbc(CBUZ_CRIC_FEED)
+                self.Instance_cric1.run()
+                self.Instance_cric2 = CricketCbuz(BBC_CRIC_FEED)
+                self.Instance_cric2.run()
+                self.Instance_cric3 = CricketEspn(ESPN_CRIC_FEED)
+                self.Instance_cric3.run()
+                self.Instance_cric4 = CricketNdtv(NDTV_CRICKET_FEED)
+                self.Instance_cric4.run()
         
         def f1_instances(self):
 
-                Instance_formula1 = FormulaAuto(Auto_sport)
-                Instance_formula2 = FormulaCrash(Crash_dot_net)
-                Instance_formula3 = FormulaGrand(Grandprix_dot_com)
+                self.Instance_formula1 = FormulaAuto(Auto_sport)
+                self.Instance_formula1.run()
+                self.Instance_formula2 = FormulaCrash(Crash_dot_net)
+                self.Instance_formula2.run()
+                self.Instance_formula3 = FormulaGrand(Grandprix_dot_com)
+                self.Instance_formula3.run()
 
         def football_instances(self):
 
-                Instance_football1 = FootballUk(Football_uk)
-                Instance_football2 = FootballFancast(Football_Fancast)
-                Instance_football3 = FootballFifa(Fifa_dot_com)
-                Instance_football4 = FootballGoal(Goal_dot_com)
+                self.Instance_football1 = FootballUk(Football_uk)
+                self.Instance_football1.run()
+                self.Instance_football2 = FootballFancast(Football_Fancast)
+                self.Instance_football2.run()
+                self.Instance_football3 = FootballFifa(Fifa_dot_com)
+                self.Instance_football3.run()
+                self.Instance_football4 = FootballGoal(Goal_dot_com)
+                self.Instance_football4.run()
 
         def tennis_instances(self):
 
-                Instance_tennis1 = TennisBbc(BBC_FEED)
-                Instance_tennis2 = TennisX(TENNIS_X)
-                Instance_tennis3 = TennisWta(WTA)
+                self.Instance_tennis1 = TennisBbc(BBC_FEED)
+                self.Instance_tennis1.run()
+                self.Instance_tennis2 = TennisX(TENNIS_X)
+                self.Instance_tennis2.run()
+                self.Instance_tennis3 = TennisWta(WTA)
+                self.Instance_tennis3.run()
+
 
 """
 This function fetches all the basketball
 news and stores it in the database.
 """
+
 class RunBasketball(AllInstance):
         def __init__(self):
-                super(AllInstance,self).__init__()
-                Instance_bask1.run()
-                Instance_bask2.run()
-                Instance_bask3.run()
-                Instance_bask4.run()
+                super(RunBasketball,self).__init__()
+
+        def get_basknews(self):
+
+                print "Hey there!"
+                AllInstance.basketball_instances(self)
+
 
 """
 This function fetches all the cricket
 news and stores it in the database.
 """
 
-def run_cricket_rss():
-    Instance_cric1.run()
-    Instance_cric2.run()
-    Instance_cric3.run()
-    Instance_cric4.run()
+class RunCricket(AllInstance):
+        def __init__(self):
+                super(RunCricket,self).__init__()
+
+        def get_cricnews(self):
+                
+                print "Cricket"
+                AllInstance.cricket_instances(self)
+
 
 """
 This function fetches all the formula1
 news and stores it in the database.
 """
 
-def run_f1_rss():
-    Instance_formula1.run()
-    Instance_formula2.run()
-    Instance_formula3.run()
+class RunF1(AllInstance):
+        def __init__(self):
+                super(RunF1,self).__init__()
+
+        def get_f1news(self):
+                print "F1"
+                AllInstance.f1_instances(self)
+
 
 """
 This function fetches all the football
 news and stores it in the database.
 """
 
-def run_football_rss():
-    Instance_football1.run()
-    Instance_football2.run()
-    Instance_football3.run()
-    Instance_football4.run()
+class RunFootball(AllInstance):
+        def __init__(self):
+                super(RunFootball,self)
+                
+        def get_footnews(self):
+                print "Football"
+                AllInstance.football_instances(self)
+
 
 """
 This function fetches all the tennis
 news and stores it in the database.
 """
 
-def run_tennis_rss():
-    Instance_tennis1.run()
-    Instance_tennis2.run()
-    Instance_tennis3.run()
+class RunTennis(AllInstance):
+        def __init__(self):
+                super(RunTennis,self)
+                
+        def get_tennnews(self):
+                print "Tennis"
+                AllInstance.tennis_instances(self)
 
 
-if __name__ == "__main__":
-    obj = AllInstance()
-    obj.__init__()
-    #run_basketball_rss()
-    #run_cricket_rss()
-    #run_f1_rss()
-    #run_football_rss()
-    #run_tennis_rss()
+def main():
+        obj = RunBasketball()
+        obj.get_basknews()
+
+        obj1 = RunCricket()
+        obj1.get_cricnews()
+
+        obj2 = RunF1()
+        obj2.get_f1news()
+
+        obj3 = RunFootball()
+        obj3.get_footnews()
+
+        obj4 = RunTennis()
+        obj4.get_tennnews()
+
+
+
+
+
+if __name__ == "__main__":main()

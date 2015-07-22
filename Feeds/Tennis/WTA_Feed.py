@@ -96,6 +96,7 @@ class TennisWta:
             
                         tokenized_data = sent_tokenize(full_text)
                         length_tokenized_data=len(tokenized_data)
+                        print tokenized_data
             
                         if length_tokenized_data > 1:
 				summary = " ".join(word_tokenize(full_text)[:100])+" "+ " ...Read More"
