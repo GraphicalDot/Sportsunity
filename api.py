@@ -76,7 +76,7 @@ class NewsApi(restful.Resource):
                             }
 
 
-                projection = {"summary": True, "title": True, "news_id": True, "published": True, "news_link": True}
+                projection = {"summary": True, "title": True, "news_id": True, "published": True, "publish_epoch":True, "news_link": True}
                 projection.update({args["image_size"]: True})
                 projection.update({"_id": False})
                 
@@ -108,7 +108,7 @@ class NewsApi(restful.Resource):
 
                 ##this implies that we need news for some date range
                 try:
-                        end_epoch = int(time.mktime(time.strptime(args['start_date'], pattern)))
+                        end_epoch = int(time.mktime(time.strptime(args['end_date'], pattern)))
                 except ValueError as e:
                         return {"error":  True, 
                                 "success": False, 

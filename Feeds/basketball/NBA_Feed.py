@@ -6,7 +6,7 @@ import time
 import json
 import feedparser
 import urllib
-from nltk.tokenize import sent_tokenize
+from nltk.tokenize import sent_tokenize, word_tokenize
 from goose import Goose
 parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(parent_dir_path)
@@ -98,8 +98,9 @@ class BasketballNba:
                         tokenized_data = sent_tokenize(full_text)
                         length_tokenized_data=len(tokenized_data)
             
-                        if length_tokenized_data > 2:
-                                summary=tokenized_data[0]+tokenized_data[1]+" "+" ...Read More"
+                        if length_tokenized_data > 1:
+				summary = " ".join(word_tokenize(full_text)[:100])+" "+ " ...Read More"
+
                         elif article.meta_description:
                                 summary = article.meta_description+ " "+ " ...Read More"
                         else:
@@ -126,6 +127,8 @@ class BasketballNba:
                         if not full_text == " ":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
                                 BaskFeedMongo.insert_news(news_dict)
+			else:
+				pass
                 return                 
 
     

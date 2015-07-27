@@ -50,63 +50,71 @@ Instance_tennis1 = TennisBbc(BBC_FEED)
 Instance_tennis2 = TennisX(TENNIS_X)
 Instance_tennis3 = TennisWta(WTA)
 
-"""
-This function fetches all the basketball
-news and stores it in the database.
-"""
 
-def run_basketball_rss():
-    Instance_bask1.run()
-    Instance_bask2.run()
-    Instance_bask3.run()
-    Instance_bask4.run()
+class GetNewsFeeds():
+        
+        """
+        This function fetches all the basketball
+        news and stores it in the database.
+        """
+        def run_basketball_rss(self):
+                print "Inside basketball_rss"
+                Instance_bask1.run()
+                Instance_bask2.run()
+                Instance_bask3.run()
+                Instance_bask4.run()
 
-"""
-This function fetches all the cricket
-news and stores it in the database.
-"""
+        """
+        This function fetches all the cricket
+        news and stores it in the database.
+        """
+        
+        def run_cricket_rss(self):
+                print "Inside cricket_rss"
+                Instance_cric1.run()
+                Instance_cric2.run()
+                Instance_cric3.run()
+                Instance_cric4.run()
 
-def run_cricket_rss():
-    Instance_cric1.run()
-    Instance_cric2.run()
-    Instance_cric3.run()
-    Instance_cric4.run()
+        """
+        This function fetches all the formula1
+        news and stores it in the database.
+        """
 
-"""
-This function fetches all the formula1
-news and stores it in the database.
-"""
+        def run_f1_rss(self):
+                print "Inside F1_rss"
+                Instance_formula1.run()
+                Instance_formula2.run()
+                Instance_formula3.run()
 
-def run_f1_rss():
-    Instance_formula1.run()
-    Instance_formula2.run()
-    Instance_formula3.run()
+        """
+        This function fetches all the football
+        news and stores it in the database.
+        """
 
-"""
-This function fetches all the football
-news and stores it in the database.
-"""
+        def run_football_rss(self):
+                print "Inside Football_rss"
+                Instance_football1.run()
+                Instance_football2.run()
+                Instance_football3.run()
+                Instance_football4.run()
 
-def run_football_rss():
-    Instance_football1.run()
-    Instance_football2.run()
-    Instance_football3.run()
-    Instance_football4.run()
+        """
+        This function fetches all the tennis
+        news and stores it in the database.
+        """
 
-"""
-This function fetches all the tennis
-news and stores it in the database.
-"""
-
-def run_tennis_rss():
-    Instance_tennis1.run()
-    Instance_tennis2.run()
-    Instance_tennis3.run()
+        def run_tennis_rss(self):
+                print "Inside Tennis_rss"
+                Instance_tennis1.run()
+                Instance_tennis2.run()
+                Instance_tennis3.run()
 
 
 if __name__ == "__main__":
-    run_basketball_rss()
-    run_cricket_rss()
-    run_f1_rss()
-    run_football_rss()
-    run_tennis_rss()
+        obj = GetNewsFeeds()
+        obj.run_basketball_rss()
+        obj.run_cricket_rss()
+        obj.run_f1_rss()
+        obj.run_football_rss()
+        obj.run_tennis_rss()

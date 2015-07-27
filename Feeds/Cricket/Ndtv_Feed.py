@@ -99,10 +99,10 @@ class CricketNdtv:
                         tokenized_data = sent_tokenize(full_text)
                         length_tokenized_data=len(tokenized_data)
 
+                        #if length_tokenized_data > 1:
+                                #summary=tokenized_data[0]+tokenized_data[1]+" "+" ...Read More"
                         if length_tokenized_data > 1:
-                                summary=tokenized_data[0]+tokenized_data[1]+" "+" ...Read More"
-                        elif length_tokenized_data < 1:
-                                summary = " ".join(word_tokenize(full_text)[:30])+" "+ " ...Read More"
+                                summary = " ".join(word_tokenize(full_text)[:100])+" "+ " ...Read More"
 			elif article.meta_description:
                                 summary = article.meta_description
 			else:
@@ -129,6 +129,8 @@ class CricketNdtv:
                         if not full_text == " ":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
                                 CricFeedMongo.insert_news(news_dict)
+			else:
+				pass
                 return                 
 
     
