@@ -89,19 +89,25 @@ class FootballGoal:
 
                         ##Getting full article with goose
                         article = goose_instance.extract(news_dict["news_link"])
-                        full_text = unicode_or_bust(article.cleaned_text.format())
+
+			try:
+
+                        	full_text = unicode_or_bust(article.cleaned_text.format())
             
-                        tokenized_data = sent_tokenize(full_text)
-                        length_tokenized_data=len(tokenized_data)
+                        	tokenized_data = sent_tokenize(full_text)
+                        	length_tokenized_data=len(tokenized_data)
             
-                        #if length_tokenized_data > 2:
-                                #summary=tokenized_data[0]+tokenized_data[1]+" "+ " ...Read More"
-                        if length_tokenized_data > 1:
-                                summary = " ".join(word_tokenize(full_text)[:100])+" "+ " ...Read More"
-                        elif article.meta_description:
-                                summary = article.meta_description
-                        else:
-                                summary = None
+                        	#if length_tokenized_data > 2:
+                                	#summary=tokenized_data[0]+tokenized_data[1]+" "+ " ...Read More"
+                        	if length_tokenized_data > 1:
+                                	summary = " ".join(word_tokenize(full_text)[:100])+" "+ " ...Read More"
+                        	elif article.meta_description:
+                                	summary = article.meta_description
+                        	else:
+                                	summary = None
+			except:
+				full_text = None
+				summary = None
 
                         try: 
                                 image_link = article.opengraph['image']
