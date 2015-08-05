@@ -107,7 +107,7 @@ class BasketballReal:
                                 summary = None
 
                         try: 
-                                image_link = article.opengraph['image']
+                                image_link = article.infos['image']['url']
                                 obj1=AmazonS3(image_link, news_dict["news_id"])
                                 all_formats_image=obj1.run()
                         except Exception as e:

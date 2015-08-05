@@ -6,6 +6,7 @@ parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspat
 from urllib2 import urlopen
 from bs4 import BeautifulSoup
 import pymongo
+import time
 
 class CricketScores:
         def __init__(self,url):
@@ -22,20 +23,24 @@ class CricketScores:
                         inning= match.find_all('inngs')
                         batting= match.find_all('bttm')
                         bowling= match.find_all('blgtm')
+                        date_time= match.find_all('tme')
                         #if inning and batting and bowling:
                         try:
                                 self.testing.update({'match_desc':match.get('mchdesc')},{'$set':{'match_desc':match.get('mchdesc'),'mch_num':\
-                                        match.get('mnum'),'status':state[0].get('status'),"bttng":batting[0].get('sname'),"blng":\
-                                        bowling[0].get('sname')}},upsert = True)
+                                        match.get('mnum'),'status':state[0].get('status'),'additional':state[0].get('addnstatus'),"bttng":\
+                                        batting[0].get('sname'),"blng":bowling[0].get('sname'),'runs':inning[0].get('r'),'wkts':\
+                                        inning[0].get('wkts'),'overs':inning[0].get('ovrs')}},upsert = True)
                         except:
                                 self.testing.update({'match_desc':match.get('mchdesc')},{'$set':{'match_desc':match.get('mchdesc'),'mch_num':\
-                                        match.get('mnum'),'status':state[0].get('status')}},upsert = True)
+                                        match.get('mnum'),'status':state[0].get('status'), 'date_time':date_time[0].get('dt')}},upsert = True)
 
         def show_scores(self):
                 for score in self.testing.find(projection={'_id':False}):
                         print score
 
+
 class CricketFixtures:
+
         def __init__(self,url):
                 
                 content = urlopen(url).read()
@@ -48,8 +53,19 @@ class CricketFixtures:
                 
                 for fixture in self.soup.find_all('mch'):
                         self.cric_fixtures.update({'match_desc':fixture.get('desc')},{'$set':{'match_desc':fixture.get('desc'), 'tournament':\
-                                fixture.get('srs')[5:], 'Venue':fixture.get('vnu'), 'Date':fixture.get('ddt')+ " "+fixture.get('mnth_yr'),\
-                                'time':fixture.get('tm')}},upsert = True)
+                                fixture.get('srs')[5:], 'Venue':fixture.get('vnu'), 'Date':fixture.get('ddt')+" "+fixture.get('mnth_yr'),'time':\
+                                fixture.get('tm')}},upsert = True)
+
+        def update_fixtures(self):
+                for fix in self.cric_fixtures.find(projection={'_id':False}):
+                        if len(fix['Date'])>17:
+                                epoch= time.mktime(time.strptime(fix['Date'].split('- ')[1],"%a %d %b,%Y "))
+                        else:
+                                epoch= time.mktime(time.strptime(fix['Date'],"%a %d %b,%Y "))
+                        if epoch<time.time():
+                                self.cric_fixtures.remove(fix)
+                        else:
+                                pass
 
         def show_fixtures(self):
                 for fix in self.cric_fixtures.find(projection={'_id':False}):
@@ -65,6 +81,7 @@ def main():
         print '\n'
         obj1 = CricketFixtures('http://synd.cricbuzz.com/j2me/1.0/sch_calender.xml')
         obj1.get_fixtures()
+        obj1.update_fixtures()
         obj1.show_fixtures()
 
                                     
