@@ -7,6 +7,8 @@ from urllib2 import urlopen
 from bs4 import BeautifulSoup
 import pymongo
 import time
+import feedparser
+from goose import Goose
 
 class CricketScores:
         def __init__(self,url):
@@ -73,6 +75,21 @@ class CricketFixtures:
                 print self.cric_fixtures.count()
 
 
+class CricketCommentary:
+
+        def __init__(self,url):
+
+                self.goose_instance = Goose()
+                self.feeds = feedparser.parse(url)
+
+        def get_commentary(self):
+
+                for rss in self.feeds.entries:
+                        if "Partnership" in rss.summary or "MoM" in rss.summary:
+                                text = self.goose_instance.extract(rss['link'])
+                                return text.cleaned_text
+
+                        
 
 def main():
         obj = CricketScores('http://synd.cricbuzz.com/j2me/1.0/livematches.xml')
@@ -83,6 +100,9 @@ def main():
         obj1.get_fixtures()
         obj1.update_fixtures()
         obj1.show_fixtures()
+        print '\n'
+        obj2 = CricketCommentary('http://live-feeds.cricbuzz.com/CricbuzzFeed?format=xml')
+        obj2.get_commentary()
 
                                     
 if __name__=='__main__':main()

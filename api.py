@@ -14,6 +14,7 @@ from DbScripts.mongo_db_football import FootFeedMongo
 from DbScripts.mongo_db_tennis import TennFeedMongo
 """
 
+from live_cric_scores import CricketCommentary
 from GlobalConfigs import * 
 
 app = Flask(__name__)
@@ -163,6 +164,12 @@ class GetTennisNews(NewsApi):
                 self.collection = news_collection_tenn
                 super(NewsApi, self).__init__()
 
+
+class GetCricketCommentary(restful.Resource):
+        def get(self):
+                obj = CricketCommentary('http://live-feeds.cricbuzz.com/CricbuzzFeed?format=xml')
+                print "Getting Commentary"
+                return obj.get_commentary()
             
 
 api.add_resource(GetFootballNews, "/football")
@@ -170,6 +177,7 @@ api.add_resource(GetCricketNews, "/cricket")
 api.add_resource(GetBasketballNews, "/basketball")
 api.add_resource(GetF1News, "/formula1")
 api.add_resource(GetTennisNews, "/tennis")
+api.add_resource(GetCricketCommentary, "/commentary")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0",port = 8000, debug = True)
