@@ -22,11 +22,13 @@ api = restful.Api(app)
 
 
 get_args = reqparse.RequestParser()
+show_args = reqparse.RequestParser()
 get_args.add_argument("skip", type=int, location="args", required=False)
 get_args.add_argument("limit", type=int, location="args", required=False)
 get_args.add_argument("start_date", type=str, location="args", required=False)
 get_args.add_argument("end_date", type=str, location="args", required=False)
 get_args.add_argument("image_size", type=str, location="args", required=True)
+show_args.add_argument("match_name",type=str, location="args", required=True)
 
 class NewsApi(restful.Resource):
         
@@ -167,9 +169,15 @@ class GetTennisNews(NewsApi):
 
 class GetCricketCommentary(restful.Resource):
         def get(self):
+                args = show_args.parse_args()
                 obj = CricketCommentary('http://live-feeds.cricbuzz.com/CricbuzzFeed?format=xml')
-                print "Getting Commentary"
-                return obj.get_commentary()
+                try:
+                    print "Getting Commentary"
+                    print args["match_name"]
+                    return obj.show_commentary(args['match_name'])
+                except:
+                    print args["match_name"]
+                    raise ValueError("No commentary for this match")
             
 
 api.add_resource(GetFootballNews, "/football")

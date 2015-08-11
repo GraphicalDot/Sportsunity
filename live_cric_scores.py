@@ -20,6 +20,8 @@ class CricketScores:
                 self.testing = db.testing
 
         def get_scores(self):
+		"""Gets live scores and updates in the database"""
+
                 for match in self.soup.find_all('match'):
                         state= match.find_all('state')
                         inning= match.find_all('inngs')
@@ -52,13 +54,16 @@ class CricketFixtures:
                 self.cric_fixtures = db.cric_fixtures
 
         def get_fixtures(self):
-                
+                """Gets all the fixtures"""
+
                 for fixture in self.soup.find_all('mch'):
                         self.cric_fixtures.update({'match_desc':fixture.get('desc')},{'$set':{'match_desc':fixture.get('desc'), 'tournament':\
                                 fixture.get('srs')[5:], 'Venue':fixture.get('vnu'), 'Date':fixture.get('ddt')+" "+fixture.get('mnth_yr'),'time':\
                                 fixture.get('tm')}},upsert = True)
 
         def update_fixtures(self):
+		"""Removes fixtures that are completed"""
+
                 for fix in self.cric_fixtures.find(projection={'_id':False}):
                         if len(fix['Date'])>17:
                                 epoch= time.mktime(time.strptime(fix['Date'].split('- ')[1],"%a %d %b,%Y "))
@@ -79,15 +84,44 @@ class CricketCommentary:
 
         def __init__(self,url):
 
+		conn = pymongo.MongoClient()
+		db = conn.drake
+		self.testing = db.testing
                 self.goose_instance = Goose()
                 self.feeds = feedparser.parse(url)
 
+	def check_match(self):
+		"""Makes sure that we fetch the commentary for\
+				the match that is going on"""
+
+		for match in self.testing.find():
+			for rss in self.feeds.entries:
+				if match['match_desc'].replace('vs','v').lower() in rss['title'].lower():
+					self.testing.update({'match_desc':match['match_desc']},\
+							{'$set':{'commentary':self.get_commentary()}})
+				else:
+					pass
+
+
         def get_commentary(self):
+		"""Gets the commentary of live match\
+				from rss feeds"""
 
                 for rss in self.feeds.entries:
                         if "Partnership" in rss.summary or "MoM" in rss.summary:
                                 text = self.goose_instance.extract(rss['link'])
                                 return text.cleaned_text
+
+	def show_commentary(self,match):
+		"""Returns the commentary.Used for API, if query entered is any one of the following\
+				aus vs eng, eng vs aus, aus_vs_eng or eng_vs_aus."""
+
+		print match
+
+		for comm in self.testing.find():
+			if match.replace('_',' ').lower()==comm['match_desc'].lower() or match.replace('_',' ').lower()==\
+					" ".join(reversed(comm['match_desc'].split(' '))).lower():
+				return comm['commentary']
 
                         
 
@@ -102,7 +136,7 @@ def main():
         obj1.show_fixtures()
         print '\n'
         obj2 = CricketCommentary('http://live-feeds.cricbuzz.com/CricbuzzFeed?format=xml')
-        obj2.get_commentary()
+        obj2.check_match()
 
                                     
 if __name__=='__main__':main()
