@@ -1,6 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
+import sys
+#file_path = os.path.dirname(os.path.abspath(__file__))
+#print file_path
+#sys.path.append(file_path)
 from nltk.tokenize import sent_tokenize,word_tokenize
 from nltk.corpus import stopwords
 from collections import defaultdict
