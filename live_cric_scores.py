@@ -97,8 +97,7 @@ class CricketCommentary:
 		for match in self.testing.find():
 			for rss in self.feeds.entries:
 				if match['match_desc'].replace('vs','v').lower() in rss['title'].lower():
-					self.testing.update({'match_desc':match['match_desc']},\
-							{'$set':{'commentary':self.get_commentary()}})
+                                        return "There is a match on" 
 				else:
 					pass
 
@@ -106,11 +105,48 @@ class CricketCommentary:
         def get_commentary(self):
 		"""Gets the commentary of live match\
 				from rss feeds"""
+            
+                if self.check_match():
+                        print 'inside get_comm'
+                        self._dict = dict()
+                        _dict1 = dict()
+                        commentary = []
+                        teams = []
+                        #for match in self.testing.find():
 
-                for rss in self.feeds.entries:
-                        if "Partnership" in rss.summary or "MoM" in rss.summary:
-                                text = self.goose_instance.extract(rss['link'])
-                                return text.cleaned_text
+                        for rss in self.feeds.entries:
+                                if "Partnership" in rss.summary or "MoM" in rss.summary:
+                                                text = self.goose_instance.extract(rss['link'])
+                                                teams.append(rss['title'])
+                                                commentary.append(text.cleaned_text.split('\n'))
+                                                for index in range(len(teams)):
+                                                        for comm in commentary[index]:
+                                                                if comm == " ":
+                                                                        pass
+                                                                else:
+                                                                        try:
+                                                                                if int(comm[:1]) in xrange(1,10):
+                                                                                        _dict1.update({comm[:4].replace('.','period'):comm[5:]})
+                                                                                self._dict.update({teams[index]:_dict1})
+                                                                        except:
+                                                                                pass
+
+                                                                                                                          
+
+                        print self._dict
+
+
+        def store_commentary(self):
+                for match in self.testing.find():
+                        for key in self._dict.viewkeys():
+                                if match['match_desc'].replace('vs','v').lower() in key.lower():
+                                        self.testing.update({'match_desc':match['match_desc']},{'$set':{'commentary':self._dict}})
+                                        print 'stored'
+                                else:
+                                        pass
+
+
+
 
 	def show_commentary(self,match):
 		"""Returns the commentary.Used for API, if query entered is any one of the following\
@@ -136,7 +172,10 @@ def main():
         obj1.show_fixtures()
         print '\n'
         obj2 = CricketCommentary('http://live-feeds.cricbuzz.com/CricbuzzFeed?format=xml')
-        obj2.check_match()
+        #obj2.check_match()
+        obj2.get_commentary()
+        obj2.store_commentary()
+        #obj2.store_commentary()
 
                                     
 if __name__=='__main__':main()

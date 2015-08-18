@@ -62,7 +62,7 @@ class BasketballHoops:
                 for news_dict in self.news_list:
                         if not BaskFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]):
                                 self.links_not_present.append(news_dict)
-                                print self.links_not_present
+                                #print self.links_not_present
 
                 return 
 
@@ -125,6 +125,8 @@ class BasketballHoops:
                                 full_text, "image_link":image_link,'publish_epoch': publish_epoch, "day": day, "month":\
                                 month, "year": year,'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi':\
                                 all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())})
+
+                        print news_dict['summary']
 
                         if not full_text == " ":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
