@@ -112,30 +112,32 @@ class CricketCommentary:
                         _dict1 = dict()
                         commentary = []
                         teams = []
-                        #for match in self.testing.find():
 
                         for rss in self.feeds.entries:
-                                if "Partnership" in rss.summary or "MoM" in rss.summary:
-                                                text = self.goose_instance.extract(rss['link'])
-                                                teams.append(rss['title'])
-                                                commentary.append(text.cleaned_text.split('\n'))
-                                                for index in range(len(teams)):
-                                                        for comm in commentary[index]:
-                                                                if comm == " ":
-                                                                        pass
-                                                                else:
-                                                                        try:
-                                                                                if int(comm[:1]) in xrange(1,10):
-                                                                                        _dict1.update({comm[:4].replace('.','period'):comm[5:]})
-                                                                                self._dict.update({teams[index]:_dict1})
-                                                                        except:
-                                                                                pass
+                                if "Partnership" in rss['summary'] or "MoM" in rss['summary']:
+                                        text = self.goose_instance.extract(rss['link'])
+                                        print text
+                                        teams.append(rss['title'])
+                                        commentary.append(text.cleaned_text.split('\n'))
+                                        for index in range(len(teams)):
+                                                for comm in commentary[index]:
+                                                        if comm == " ":
+                                                                pass
+                                                        else:
+                                                                try:
+                                                                        if int(comm[:1]) in xrange(1,10):
+                                                                                self.testing.update({'match_desc':teams[index]},{'$set':{'commentary':\
+                                                                                        {teams[index]:{comm[:4].replace('.','period'):comm[5:]}}}})
+                                                                                #_dict1.update({comm[:4].replace('.','period'):comm[5:]})
+                                                                        #self._dict.update({teams[index]:_dict1})
+                                                                except:
+                                                                        print 'Not stored'
 
                                                                                                                           
 
-                        print self._dict
+                        #print self._dict
 
-
+        """
         def store_commentary(self):
                 for match in self.testing.find():
                         for key in self._dict.viewkeys():
@@ -145,7 +147,7 @@ class CricketCommentary:
                                 else:
                                         pass
 
-
+        """
 
 
 	def show_commentary(self,match):
@@ -162,19 +164,19 @@ class CricketCommentary:
                         
 
 def main():
-        obj = CricketScores('http://synd.cricbuzz.com/j2me/1.0/livematches.xml')
-        obj.get_scores()
-        obj.show_scores()
+        #obj = CricketScores('http://synd.cricbuzz.com/j2me/1.0/livematches.xml')
+        #obj.get_scores()
+        #obj.show_scores()
         print '\n'
-        obj1 = CricketFixtures('http://synd.cricbuzz.com/j2me/1.0/sch_calender.xml')
-        obj1.get_fixtures()
-        obj1.update_fixtures()
-        obj1.show_fixtures()
+        #obj1 = CricketFixtures('http://synd.cricbuzz.com/j2me/1.0/sch_calender.xml')
+        #obj1.get_fixtures()
+        #obj1.update_fixtures()
+        #obj1.show_fixtures()
         print '\n'
         obj2 = CricketCommentary('http://live-feeds.cricbuzz.com/CricbuzzFeed?format=xml')
         #obj2.check_match()
         obj2.get_commentary()
-        obj2.store_commentary()
+        #obj2.store_commentary()
         #obj2.store_commentary()
 
                                     
