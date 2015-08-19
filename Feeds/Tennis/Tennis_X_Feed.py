@@ -15,6 +15,7 @@ from GlobalLinks import *
 from GlobalMethods import unicode_or_bust
 from Feeds.amazon_s3 import AmazonS3
 import hashlib
+from summarize_news import ShortNews
 
 class TennisX:
         """
@@ -117,12 +118,13 @@ class TennisX:
                                                     "ldpi": None,
                                                     "hdpi": None,}
 
-            
-
-                        news_dict.update({"website": "TENNIS_X", "summary": summary, "news": full_text, "image_link":image_link, 
-                            'publish_epoch': publish_epoch, "day": day, "month": month, "year": year, 
-                                        'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],
-                                        "time_of_storing":time.mktime(time.localtime())})
+                                summarization_instance = ShortNews()
+                                
+				news_dict.update({"website": "TENNIS_X", "summary": summarization_instance.summarization(full_text),'custom_summary':\
+						summary, "news": full_text, "image_link":image_link, 'publish_epoch': publish_epoch, "day":\
+						day, "month": month, "year": year, 'ldpi': all_formats_image['ldpi'],'mdpi':\
+						all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":\
+						time.mktime(time.localtime())})
 
                         if not full_text == " ":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
