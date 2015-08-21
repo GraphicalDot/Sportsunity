@@ -26,25 +26,28 @@ class NotifyingRssChanges:
 
         def check_rss(self):
                 for entry in self.rss.entries:
-                        if entry.has_key('link') or entry.has_key('id') and entry.has_key('published')==True:
+                        response = entry.has_key('link') or entry.has_key('id') and entry.has_key('published') and entry.has_key('summary')\
+                                and entry.has_key('title')
+                        if response == False:
                                 self.message = list(entry.viewkeys())
-                                print self.message
                                 return self.message
+                        else:
+                                pass
 
 
 
         
         def send_notification(self):
-                self.mail.login(self.__username,self.__password)
-                self.mail.sendmail(self.sender,self.receiver,str(self.message))
-                self.mail.close()
-                print "Mail has been sent"
+                if self.check_rss():
+                        self.mail.login(self.__username,self.__password)
+                        self.mail.sendmail(self.sender,self.receiver,str(self.message))
+                        self.mail.close()
+                        print "Mail has been sent"
 
 
 def main():
         obj = NotifyingRssChanges(Goal_dot_com)
-        if obj.check_rss():
-                obj.send_notification()
+        obj.send_notification()
 
 
 if __name__=='__main__':main()

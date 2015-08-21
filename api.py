@@ -79,7 +79,7 @@ class NewsApi(restful.Resource):
                             }
 
 
-                projection = {"summary": True, "title": True, "news_id": True, "published": True, "publish_epoch":True, "news_link": True}
+                projection = {"summary": True,"custom_summary":True,"title": True, "news_id": True, "published": True, "publish_epoch":True, "news_link": True}
                 projection.update({args["image_size"]: True})
                 projection.update({"_id": False})
                 

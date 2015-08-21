@@ -15,10 +15,10 @@ class ShortNews:
 
         def summarization(self,full_news):
                 try:
-                        short_news=''.join(self.object1.summarize(full_news,4))
+                        short_news=''.join(self.object1.summarize(full_news,4)).replace('\n','')
                         return short_news+' ...Read More'
                 except:
-                        short_news=''.join(self.object1.summarize(full_news,1))
+                        short_news=''.join(self.object1.summarize(full_news,1)).replace('\n','')
                         return short_news+' ...Read More'
 
 
