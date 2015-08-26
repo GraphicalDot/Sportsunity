@@ -97,11 +97,11 @@ class FootballFancast:
             
                         if length_tokenized_data > 1:
                                 summary = " ".join(word_tokenize(full_text)[:80])+" "+ " ...Read More"
-			elif article.meta_description:
+                        elif article.meta_description:
                                 summary = article.meta_description
-			else:
-				summary = None
-
+                        else:
+                                summary = None
+                                
                         try: 
                                 image_link = article.opengraph['image']
                                 obj1=AmazonS3(image_link, news_dict["news_id"])
@@ -113,19 +113,26 @@ class FootballFancast:
                                                     "ldpi": None,
                                                     "hdpi": None,}
 
-            
-
-				news_dict.update({"website": "Football_fancast", "summary": summarization_instance.summarization(full_text),\
+           
+                        summarization_instance = ShortNews()
+                        
+                        try:
+                                news_dict.update({"website": "Football_fancast", "summary": summarization_instance.summarization(full_text),\
 						"custom_summary":summary, "news": full_text, "image_link":image_link,'publish_epoch':\
 						publish_epoch, "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],\
 						'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing": \
 						time.mktime(time.localtime())})
+                        except:
+                                news_dict.update({"website": "Football_fancast", "summary": summary, "custom_summary":summary, "news": full_text,\
+                                        "image_link":image_link,'publish_epoch': publish_epoch, "day": day, "month": month, "year": year,\
+                                        'ldpi': all_formats_image['ldpi'], 'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],\
+                                        "time_of_storing": time.mktime(time.localtime())})
 
                         if not full_text == " ":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
                                 FootFeedMongo.insert_news(news_dict)
-			else:
-				pass
+                        else:
+                                pass
                 return                 
 
     

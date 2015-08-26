@@ -12,6 +12,11 @@ from GlobalLinks import *
 
 class NotifyingRssChanges:
 
+        '''
+        smtplib is being used to send an email there is any change in
+        the keys. Emailing service used is gmail.
+        '''
+
         def __init__(self,url):
                 self.mail = smtplib.SMTP('smtp.gmail.com',587)
                 self.mail.ehlo()
@@ -23,6 +28,11 @@ class NotifyingRssChanges:
                 self.rss = feedparser.parse(url)
 
 
+        '''
+        This method checks whether all the keys being used to scrape news
+        are present or not. The __init__ method should be provided with 
+        the link of the website from where rss entries are being retrieved.
+        '''
 
         def check_rss(self):
                 for entry in self.rss.entries:
@@ -35,7 +45,10 @@ class NotifyingRssChanges:
                                 pass
 
 
-
+        '''
+        This method sends an email if check_rss() returns the list of keys
+        of a specific rss website, if there is any change in the keys.
+        '''
         
         def send_notification(self):
                 if self.check_rss():
@@ -51,6 +64,5 @@ def main():
 
 
 if __name__=='__main__':main()
-
 
 
