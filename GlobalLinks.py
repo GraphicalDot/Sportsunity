@@ -33,6 +33,12 @@ TENNIS_X = "http://feeds.feedburner.com/tennisx?format=xml"
 WTA = "http://www.wtatennis.com/feed.rss/category/12009823,12010172/limit/20/page/news/request/article"
 
 
+Arsenal_Feed = "http://talksport.com/rss/football/arsenal/feed"
+Aston_Feed = "http://talksport.com/rss/football/aston-villa/feed"
+Cardiff_Feed = "http://talksport.com/rss/football/cardiff-city/feed"
+Chelsea_Feed = "http://talksport.com/rss/football/chelsea/feed"
+Crystal_Feed = "http://talksport.com/rss/football/crystal-palace/feed"
+Everton_Feed = "http://talksport.com/rss/football/everton/feed"
 
 """
 Naming Convention : 

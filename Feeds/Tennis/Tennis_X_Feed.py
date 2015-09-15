@@ -100,10 +100,10 @@ class TennisX:
                         length_tokenized_data=len(tokenized_data)
             
                         if length_tokenized_data > 1:
-				summary = " ".join(word_tokenize(full_text)[:100])+" "+ " ...Read More"
+                                summary = " ".join(word_tokenize(full_text)[:100])+" ...Read More"
 
                         elif article.meta_description:
-                                summary = article.meta_description+ " "+ " ...Read More"
+                                summary = article.meta_description+" ...Read More"
                         else:
                                 summary = None
 
@@ -116,21 +116,28 @@ class TennisX:
                                 image_link = None
                                 all_formats_image = {"mdpi": None,
                                                     "ldpi": None,
-                                                    "hdpi": None,}
-
-                                summarization_instance = ShortNews()
+                                                    "hdpi": None}
                                 
-				news_dict.update({"website": "TENNIS_X", "summary": summarization_instance.summarization(full_text),'custom_summary':\
+                        summarization_instance = ShortNews()
+                        
+                        try:
+                                news_dict.update({"website": "http://www.tennis-x.com","summary": summarization_instance.summarization(full_text),'custom_summary':\
 						summary, "news": full_text, "image_link":image_link, 'publish_epoch': publish_epoch, "day":\
 						day, "month": month, "year": year, 'ldpi': all_formats_image['ldpi'],'mdpi':\
 						all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":\
 						time.mktime(time.localtime())})
+                        except:
+                                news_dict.update({"website": "http://www.tennis-x.com", "summary": summary, "custom_summary": summary, "news":\
+						full_text, "image_link":image_link, 'publish_epoch': publish_epoch, "day":day, "month":\
+						month, "year": year, 'ldpi': all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':\
+						all_formats_image['hdpi'],"time_of_storing": time.mktime(time.localtime())})
 
-                        if not full_text == " ":
+                        if not full_text == " " and not news_dict['summary'] == " ...Read More":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
                                 TennFeedMongo.insert_news(news_dict)
-			else:
-				pass
+                            
+                        else:
+                                pass
                 return                 
 
     

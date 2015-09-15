@@ -8,17 +8,17 @@ import feedparser
 import urllib
 from nltk.tokenize import sent_tokenize, word_tokenize
 from goose import Goose
-parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 print parent_dir_path
 sys.path.append(parent_dir_path)
-from mongo_db_basketball import BaskFeedMongo
+from mongo_db_premier import PremierLeagueFeedMongo
 from GlobalLinks import *
 from GlobalMethods import unicode_or_bust
 from Feeds.amazon_s3 import AmazonS3
 import hashlib
 from summarize_news import ShortNews
 
-class BasketballHoops:
+class PremCrystal:
         """
         This function gets the links of all the news articles on the Rss Feed and stores them in list_of_links.
         """
@@ -60,9 +60,8 @@ class BasketballHoops:
 
         def checking(self):
                 for news_dict in self.news_list:
-                        if not BaskFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]):
+                        if not PremierLeagueFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]):
                                 self.links_not_present.append(news_dict)
-                                #print self.links_not_present
 
                 return 
 
@@ -79,10 +78,11 @@ class BasketballHoops:
                 goose_instance = Goose()
                 for news_dict in self.links_not_present:
            
-                        if news_dict['published'].endswith("+0530") or news_dict['published'].endswith("+0000"):
+
+                        if news_dict['published'].endswith("EDT") or news_dict['published'].endswith("GMT"):
+                                strp_time_object = time.strptime(news_dict['published'][:-4], "%a, %d %b %Y %H:%M:%S")
+                        elif news_dict['published'].endswith("+0530") or news_dict['published'].endswith("+0000"):
                                 strp_time_object = time.strptime(news_dict['published'][:-6], "%a, %d %b %Y %H:%M:%S")
-			elif news_dict['published'].endswith("GMT") or news_dict['published'].endswith("EDT"):
-				strp_time_object = time.strptime(news_dict['published'][:-6], "%a, %d %b %Y %H:%M:%S")
                         else:
                                 strp_time_object = time.strptime(news_dict['published'], "%Y-%m-%d %H:%M:%S" )
                         day = strp_time_object.tm_mday
@@ -95,17 +95,17 @@ class BasketballHoops:
                         ##Getting full article with goose
                         article = goose_instance.extract(news_dict["news_link"])
                         full_text = unicode_or_bust(article.cleaned_text.format())
-            
                         tokenized_data = sent_tokenize(full_text)
                         length_tokenized_data=len(tokenized_data)
             
+                        #if length_tokenized_data > 2:
+                                #summary=tokenized_data[0]+tokenized_data[1]+" "+ " ...Read More"
                         if length_tokenized_data > 1:
                                 summary = " ".join(word_tokenize(full_text)[:100])+" "+ " ...Read More"
-
-                        elif article.meta_description:
-                                summary = article.meta_description+ " "+ " ...Read More"
-                        else:
-                                summary = None
+			elif article.meta_description:
+                                summary = article.meta_description
+			else:
+				summary = None
 
                         try: 
                                 image_link = article.opengraph['image']
@@ -118,32 +118,32 @@ class BasketballHoops:
                                                     "ldpi": None,
                                                     "hdpi": None,}
 
+                        
                         summarization_instance = ShortNews()
-            
 
-                        news_dict.update({"website": "www.insidehoops.com","summary":summarization_instance.summarization(full_text), "custom_summary": summary, "news":\
-                                full_text, "image_link":image_link,'publish_epoch': publish_epoch, "day": day, "month":\
-                                month, "year": year,'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi':\
-                                all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())})
-
-                        print news_dict['summary']
+                        try:
+                                news_dict.update({"website": "http://talksport.com","team":'Crystal Palace' ,"summary": summarization_instance.summarization(full_text),\
+                                        "custom_summary":summary, "news": full_text, "image_link":image_link, 'publish_epoch': publish_epoch,\
+                                        "day": day, "month": month, "year": year, 'ldpi': all_formats_image['ldpi'],'mdpi': \
+                                        all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())})
+                        except:
+                                news_dict.update({"website": "http://talksport.com","team":'Crystal Palace', "summary": summary, "custom_summary":summary, "news": full_text,\
+                                        "image_link":image_link, 'publish_epoch': publish_epoch, "day": day, "month": month, "year": year,\
+                                        'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],\
+                                        "time_of_storing":time.mktime(time.localtime())})
 
                         if not full_text == " " and not news_dict['summary'] == " ...Read More":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
-                                BaskFeedMongo.insert_news(news_dict)
+                                PremierLeagueFeedMongo.insert_news(news_dict)
                         else:
                                 pass
                 return                 
 
     
 if __name__ == '__main__':
-    obj = BasketballHoops(Inside_hoops)
+    obj = PremCrystal(Crystal_Feed)
     obj.run()
-    #obj.rss_feeds(Inside_hoops)
-    #obj.checking()
-    #obj.full_news()
-
-
+    #obj.rss_feeds(Fifa_dot_com)
 
 
 

@@ -87,16 +87,16 @@ class NewsApi(restful.Resource):
                 ##if front end needs news jsut after news with skip and limit 
                 if not args["start_date"] and not args["end_date"]:
                         result = self.collection.find(projection=projection).limit(args['limit']).skip(args['skip']).sort("publish_epoch", -1)
-                        return {"error":  True, 
-                                "success": False, 
+                        return {"error":  False, 
+                                "success": True, 
                                 "result": list(result), 
                                 }
 
                 try:
                         start_epoch = int(time.mktime(time.strptime(args['start_date'], pattern)))
                 except ValueError as e:
-                        return {"error":  True, 
-                                "success": False, 
+                        return {"error":  False, 
+                                "success": True, 
                                 "error_code": 102, 
                                 "messege": "Please send a valid start date format for the start date in the argument"
                             }
@@ -104,8 +104,8 @@ class NewsApi(restful.Resource):
                 ##This implies that we required news for the present date
                 if not args['end_date']:
                         result = self.collection.find({"publish_epoch": {"$gt": start_epoch}}, projection=projection).limit(args['limit']).skip(args['skip']).sort("publish_epoch", -1)
-                        return {"error":  True, 
-                                "success": False, 
+                        return {"error":  False, 
+                                "success": True, 
                                 "result": list(result)}
 
 
@@ -130,8 +130,8 @@ class NewsApi(restful.Resource):
                 ##if the news is required for lets say 11-7-2105 to 12-7-2015, end_date should be 13-7-2015
                 result = self.collection.find({"publish_epoch": {"$gt": start_epoch, "$lt": end_epoch}}, projection=projection)\
                                                                                     .limit(args['limit']).skip(args['skip']).sort("publish_epoch", -1)
-                return {"error":  True, 
-                        "success": False, 
+                return {"error":  False, 
+                        "success": True, 
                         "result": list(result), 
                         }
                     
