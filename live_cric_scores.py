@@ -42,17 +42,17 @@ class CricketScores:
                                 self.testing.update({'match_desc':match.get('mchdesc')},{'$set':{"match_day_epoch":match_day_epoch}})
                         except:
                                 self.testing.update({'match_desc':match.get('mchdesc')},{'$set':{'match_desc':match.get('mchdesc'),'mch_num':\
-                                        match.get('mnum'),'status':state[0].get('status'), 'date_time':date_time[0].get('dt')}},upsert = True)
+                                        match.get('mnum'),'status':state[0].get('status')}},upsert = True)
                                 
-                                match_day_epoch = int(time.mktime(time.strptime(date_time[0].get('dt'), self.pattern)))
-
-                                self.testing.update({'match_desc':match.get('mchdesc')},{'$set':{"match_day_epoch":match_day_epoch}})
 
         def show_scores(self):
                 for score in self.testing.find(projection={'_id':False}):
                         print score
 
         def send_scores(self, match_date):
+                "Checks whether the date matches the date entered\
+                        and sends the scores of ongoing match"
+
                 all_scores = []
                 for score in self.testing.find(projection={'_id':False, 'live_commentary':False}):
                         try:
@@ -86,19 +86,53 @@ class CricketFixtures:
                 """Removes fixtures that are completed"""
 
                 for fix in self.cric_fixtures.find(projection={'_id':False}):
+
                         if len(fix['Date'])>17:
                                 epoch= time.mktime(time.strptime(fix['Date'].split('- ')[1],"%a %d %b,%Y "))
+                                self.cric_fixtures.update({'match_desc':fix['match_desc']},{'$set':{'fixture_day_epoch':epoch}})
+
                         else:
                                 epoch= time.mktime(time.strptime(fix['Date'],"%a %d %b,%Y "))
+                                self.cric_fixtures.update({'match_desc':fix['match_desc']},{'$set':{'fixture_day_epoch':epoch}})
+
                         if epoch<time.time():
                                 self.cric_fixtures.remove(fix)
                         else:
                                 pass
 
         def show_fixtures(self):
+                
+                "Shows all the fixtures and the count"
+                
                 for fix in self.cric_fixtures.find(projection={'_id':False}):
                         print fix
                 print self.cric_fixtures.count()
+
+        def send_fixtures_if_no_date(self):
+                upcoming_ten_fixtures = []
+                for fixture in self.cric_fixtures.find(projection={'_id':False}).sort('fixture_day_epoch',1).limit(10):
+                        try:
+                            upcoming_ten_fixtures.append(fixture)
+                        except:
+                            pass
+
+                return upcoming_ten_fixtures
+                        
+
+
+        def send_fixtures(self, fixture_date):
+
+                "Checks whether the date entered matches todays date\
+                        and sends the fixtures for the current date"    
+
+                fixtures_for_today = []
+                for fixture in self.cric_fixtures.find(projection={'_id':False}):
+                        try:
+                            if fixture_date == fixture['fixture_day_epoch']:
+                                    fixtures_for_today.append(fixture)
+                        except:
+                            pass
+                return fixtures_for_today
 
 
 class CricketCommentary:

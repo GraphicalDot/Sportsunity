@@ -1,19 +1,19 @@
 PhantomJS is launching GhostDriver...
-[INFO  - 2015-08-10T11:43:07.130Z] GhostDriver - Main - running on port 36361
-[INFO  - 2015-08-10T11:43:07.936Z] Session [f83e66b0-3f54-11e5-b3cf-df1f7d3e2eb8] - page.settings - {"XSSAuditingEnabled":false,"javascriptCanCloseWindows":true,"javascriptCanOpenWindows":true,"javascriptEnabled":true,"loadImages":true,"localToRemoteUrlAccessEnabled":false,"userAgent":"Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko) PhantomJS/1.9.8 Safari/534.34","webSecurityEnabled":true}
-[INFO  - 2015-08-10T11:43:07.936Z] Session [f83e66b0-3f54-11e5-b3cf-df1f7d3e2eb8] - page.customHeaders:  - {}
-[INFO  - 2015-08-10T11:43:07.936Z] Session [f83e66b0-3f54-11e5-b3cf-df1f7d3e2eb8] - Session.negotiatedCapabilities - {"browserName":"phantomjs","version":"1.9.8","driverName":"ghostdriver","driverVersion":"1.1.0","platform":"linux-unknown-64bit","javascriptEnabled":true,"takesScreenshot":true,"handlesAlerts":false,"databaseEnabled":false,"locationContextEnabled":false,"applicationCacheEnabled":false,"browserConnectionEnabled":false,"cssSelectorsEnabled":true,"webStorageEnabled":false,"rotatable":false,"acceptSslCerts":false,"nativeEvents":true,"proxy":{"proxyType":"direct"}}
-[INFO  - 2015-08-10T11:43:07.936Z] SessionManagerReqHand - _postNewSessionCommand - New Session Created: f83e66b0-3f54-11e5-b3cf-df1f7d3e2eb8
-[ERROR - 2015-08-10T11:43:39.283Z] Session [f83e66b0-3f54-11e5-b3cf-df1f7d3e2eb8] - page.onError - msg: TypeError: 'null' is not an object (evaluating 'e.split')
-[ERROR - 2015-08-10T11:43:39.284Z] Session [f83e66b0-3f54-11e5-b3cf-df1f7d3e2eb8] - page.onError - stack:
-  (anonymous function) (http://d3avqv6zaxegeu.cloudfront.net/sentinel.js:1)
-  (anonymous function) (http://d3avqv6zaxegeu.cloudfront.net/sentinel.js:2)
-[ERROR - 2015-08-10T11:44:16.198Z] Session [f83e66b0-3f54-11e5-b3cf-df1f7d3e2eb8] - page.onError - msg: SyntaxError: Parse error
-[ERROR - 2015-08-10T11:44:16.198Z] Session [f83e66b0-3f54-11e5-b3cf-df1f7d3e2eb8] - page.onError - stack:
-
-[INFO  - 2015-08-10T12:37:56.539Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
-[INFO  - 2015-08-10T12:42:56.515Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
-[INFO  - 2015-08-10T12:47:56.515Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
-[INFO  - 2015-08-10T12:52:56.515Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
-[INFO  - 2015-08-10T12:57:56.515Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
-[INFO  - 2015-08-10T13:02:56.515Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
+[INFO  - 2015-09-17T10:09:54.542Z] GhostDriver - Main - running on port 44747
+[INFO  - 2015-09-17T10:09:55.143Z] Session [3e5fa6d0-5d24-11e5-90ef-43cbdc919a14] - page.settings - {"XSSAuditingEnabled":false,"javascriptCanCloseWindows":true,"javascriptCanOpenWindows":true,"javascriptEnabled":true,"loadImages":true,"localToRemoteUrlAccessEnabled":false,"userAgent":"Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/534.34 (KHTML, like Gecko) PhantomJS/1.9.8 Safari/534.34","webSecurityEnabled":true}
+[INFO  - 2015-09-17T10:09:55.143Z] Session [3e5fa6d0-5d24-11e5-90ef-43cbdc919a14] - page.customHeaders:  - {}
+[INFO  - 2015-09-17T10:09:55.143Z] Session [3e5fa6d0-5d24-11e5-90ef-43cbdc919a14] - Session.negotiatedCapabilities - {"browserName":"phantomjs","version":"1.9.8","driverName":"ghostdriver","driverVersion":"1.1.0","platform":"linux-unknown-64bit","javascriptEnabled":true,"takesScreenshot":true,"handlesAlerts":false,"databaseEnabled":false,"locationContextEnabled":false,"applicationCacheEnabled":false,"browserConnectionEnabled":false,"cssSelectorsEnabled":true,"webStorageEnabled":false,"rotatable":false,"acceptSslCerts":false,"nativeEvents":true,"proxy":{"proxyType":"direct"}}
+[INFO  - 2015-09-17T10:09:55.143Z] SessionManagerReqHand - _postNewSessionCommand - New Session Created: 3e5fa6d0-5d24-11e5-90ef-43cbdc919a14
+[INFO  - 2015-09-17T10:14:54.539Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
+[INFO  - 2015-09-17T10:19:54.538Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
+[INFO  - 2015-09-17T10:24:54.538Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
+[INFO  - 2015-09-17T10:29:54.538Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
+[INFO  - 2015-09-17T10:34:54.538Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
+[INFO  - 2015-09-17T10:39:54.538Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
+[INFO  - 2015-09-17T10:44:54.538Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
+[INFO  - 2015-09-17T10:49:54.538Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
+[INFO  - 2015-09-17T10:54:54.538Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
+[INFO  - 2015-09-17T10:59:54.538Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
+[INFO  - 2015-09-17T11:04:54.538Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
+[INFO  - 2015-09-17T11:09:54.538Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
+[INFO  - 2015-09-17T11:14:54.538Z] SessionManagerReqHand - _cleanupWindowlessSessions - Asynchronous Sessions clean-up phase starting NOW
