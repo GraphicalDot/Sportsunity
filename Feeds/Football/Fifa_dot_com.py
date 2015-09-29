@@ -93,7 +93,11 @@ class FootballFifa:
 
                         ##Getting full article with goose
                         article = goose_instance.extract(news_dict["news_link"])
-                        full_text = unicode_or_bust(article.cleaned_text.format())
+                        for text in article.cleaned_text.split('\n'):
+                            if text=='':
+                                    pass
+                            else:
+                                    full_text = unicode_or_bust(text.format())
             
                         tokenized_data = sent_tokenize(full_text)
                         length_tokenized_data=len(tokenized_data)
@@ -132,7 +136,7 @@ class FootballFifa:
                                         'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],\
                                         "time_of_storing":time.mktime(time.localtime())})
 
-                        if not full_text == " " and not news_dict['summary'] == " ...Read More":
+                        if not full_text == "" and not news_dict['summary'] == " ...Read More":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
                                 FootFeedMongo.insert_news(news_dict)
                         else:

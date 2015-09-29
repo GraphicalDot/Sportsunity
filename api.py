@@ -28,6 +28,7 @@ get_args.add_argument("limit", type=int, location="args", required=False)
 get_args.add_argument("start_date", type=str, location="args", required=False)
 get_args.add_argument("end_date", type=str, location="args", required=False)
 get_args.add_argument("image_size", type=str, location="args", required=True)
+get_args.add_argument("news_id", type=str, location="args", required=False)
 show_args.add_argument("match_name",type=str, location="args", required=True)
 
 class NewsApi(restful.Resource):
@@ -78,10 +79,27 @@ class NewsApi(restful.Resource):
                                 "messege": "Please send a valid image aize in the argument"
                             }
 
-
-                projection = {"summary": True,"custom_summary":True,"title": True, "news_id": True, "published": True, "publish_epoch":True, "news_link": True}
+                projection = {"summary": True,"custom_summary":True,"title":True, "news_id":True, "published": True, "publish_epoch":\
+                        True, "news_link": True}
                 projection.update({args["image_size"]: True})
                 projection.update({"_id": False})
+
+                if not args['news_id']:
+                        pass
+                else:
+                        projection.update({"news": True})
+                        try:
+                                for news in self.collection.find({"news_id":args["news_id"]}, projection=projection).sort("publish_epoch",-1):
+                                        result = news
+                                        
+                                return {"error": False,
+                                        "success": True,
+                                        "result": result,
+                                        }
+                        except Exception, e:
+                                print e
+                                return "news_id entered isn't correct"
+
                 
                 print self.collection, args['skip'], args['limit'], projection
                 ##if front end needs news jsut after news with skip and limit 

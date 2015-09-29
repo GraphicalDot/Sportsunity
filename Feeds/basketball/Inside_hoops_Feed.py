@@ -95,6 +95,7 @@ class BasketballHoops:
                         ##Getting full article with goose
                         article = goose_instance.extract(news_dict["news_link"])
                         full_text = unicode_or_bust(article.cleaned_text.format())
+                        favicon = article.infos['meta']['favicon']
             
                         tokenized_data = sent_tokenize(full_text)
                         length_tokenized_data=len(tokenized_data)
@@ -124,7 +125,7 @@ class BasketballHoops:
                         news_dict.update({"website": "www.insidehoops.com","summary":summarization_instance.summarization(full_text), "custom_summary": summary, "news":\
                                 full_text, "image_link":image_link,'publish_epoch': publish_epoch, "day": day, "month":\
                                 month, "year": year,'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi':\
-                                all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())})
+                                all_formats_image['hdpi'],"favicon":favicon,"time_of_storing":time.mktime(time.localtime())})
 
                         print news_dict['summary']
 
