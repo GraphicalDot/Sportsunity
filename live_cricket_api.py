@@ -28,14 +28,23 @@ class LiveCricketScore(restful.Resource):
 
         def get(self):
                 pattern = "%d-%b-%Y"
-                args = get_args.parse_args() 
-                match_date = int(time.mktime(time.strptime(args['date'],pattern)))
-                obj = CricketScores('http://synd.cricbuzz.com/j2me/1.0/livematches.xml')
-                result = obj.send_scores(match_date)
-                print result
-                return {"error":False,
-                        "success":True,
-                        "result":result}
+                args = get_args.parse_args()
+                if args['date']:
+                        match_date = int(time.mktime(time.strptime(args['date'],pattern)))
+                        obj = CricketScores('http://synd.cricbuzz.com/j2me/1.0/livematches.xml')
+                        result = obj.send_scores(match_date)
+                        print result
+                        return {"error":False,
+                                "success":True,
+                                "result":result}
+                else:
+                        match_date = int(time.mktime(time.strptime(time.strftime("%d-%b-%Y"),pattern)))
+                        obj = CricketScores('http://synd.cricbuzz.com/j2me/1.0/livematches.xml')
+                        result = obj.send_scores(match_date)
+                        return {"error":False,
+                                "success":True,
+                                "result":result}
+
 
 
 class UpcomingFixtures(restful.Resource):

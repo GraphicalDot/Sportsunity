@@ -79,9 +79,11 @@ class NewsApi(restful.Resource):
                                 "messege": "Please send a valid image aize in the argument"
                             }
 
-                projection = {"summary": True,"custom_summary":True,"title":True, "news_id":True, "published": True, "publish_epoch":\
-                        True, "news_link": True}
+                projection = {"summary": True,"custom_summary":True,"title":True,"website":True, "news_id":\
+                        True, "published": True, "publish_epoch": True, "news_link": True}
+
                 projection.update({args["image_size"]: True})
+
                 projection.update({"_id": False})
 
                 if not args['news_id']:

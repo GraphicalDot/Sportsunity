@@ -35,18 +35,24 @@ class CricketScores:
                                 self.testing.update({'match_desc':match.get('mchdesc')},{'$set':{'match_desc':match.get('mchdesc'),'mch_num':\
                                         match.get('mnum'),'status':state[0].get('status'),'additional':state[0].get('addnstatus'),"bttng":\
                                         batting[0].get('sname'),"blng":bowling[0].get('sname'),'runs':inning[0].get('r'),'wkts':\
-                                        inning[0].get('wkts'),'overs':inning[0].get('ovrs')}},upsert = True)
+                                        inning[0].get('wkts'),'overs':inning[0].get('ovrs'),'date_time':date_time[0].get('dt')}},upsert = True)
 
-                                match_day_epoch = int(time.mktime(time.strptime(date_time[0].get('dt'), self.pattern)))
 
-                                self.testing.update({'match_desc':match.get('mchdesc')},{'$set':{"match_day_epoch":match_day_epoch}})
+                                #self.testing.update({'match_desc':match.get('mchdesc')},{'$set':{"match_day_epoch":match_day_epoch}})
                         except:
                                 self.testing.update({'match_desc':match.get('mchdesc')},{'$set':{'match_desc':match.get('mchdesc'),'mch_num':\
-                                        match.get('mnum'),'status':state[0].get('status')}},upsert = True)
+                                        match.get('mnum'),'status':state[0].get('status'),'date_time':date_time[0].get('dt')}},upsert = True)
                                 
 
         def show_scores(self):
                 for score in self.testing.find(projection={'_id':False}):
+                        try:
+                                match_day_epoch = int(time.mktime(time.strptime(score['match_day_epoch'], self.pattern)))
+                                self.testing.update({'mch_num':score['mch_num'],'match_desc':score['match_desc']},{'$set':{"match_day_epoch":\
+                                        match_day_epoch}})
+                        except:
+                                pass
+
                         print score
 
         def send_scores(self, match_date):
