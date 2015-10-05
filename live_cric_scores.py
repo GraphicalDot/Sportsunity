@@ -32,22 +32,24 @@ class CricketScores:
                         date_time= match.find_all('tme')
                         #if inning and batting and bowling:
                         try:
-                                self.testing.update({'match_desc':match.get('mchdesc')},{'$set':{'match_desc':match.get('mchdesc'),'mch_num':\
-                                        match.get('mnum'),'status':state[0].get('status'),'additional':state[0].get('addnstatus'),"bttng":\
+                                self.testing.update({'mch_num':match.get('mnum'),'match_desc':match.get('mchdesc')},{'$set':\
+                                        {'match_desc':match.get('mchdesc'),'mch_num':match.get('mnum'),'status':\
+                                        state[0].get('status'),'additional':state[0].get('addnstatus'),"bttng":\
                                         batting[0].get('sname'),"blng":bowling[0].get('sname'),'runs':inning[0].get('r'),'wkts':\
                                         inning[0].get('wkts'),'overs':inning[0].get('ovrs'),'date_time':date_time[0].get('dt')}},upsert = True)
 
 
-                                #self.testing.update({'match_desc':match.get('mchdesc')},{'$set':{"match_day_epoch":match_day_epoch}})
                         except:
-                                self.testing.update({'match_desc':match.get('mchdesc')},{'$set':{'match_desc':match.get('mchdesc'),'mch_num':\
-                                        match.get('mnum'),'status':state[0].get('status'),'date_time':date_time[0].get('dt')}},upsert = True)
+                                self.testing.update({'mch_num':match.get('mnum'),'match_desc':match.get('mchdesc')},{'$set':\
+                                        {'match_desc':match.get('mchdesc'),'mch_num':\
+                                        match.get('mnum'),'status':state[0].get('status')}},upsert = True)
                                 
 
         def show_scores(self):
                 for score in self.testing.find(projection={'_id':False}):
                         try:
-                                match_day_epoch = int(time.mktime(time.strptime(score['match_day_epoch'], self.pattern)))
+                                match_day_epoch = int(time.mktime(time.strptime(score['date_time'], self.pattern)))
+                                print match_day_epoch
                                 self.testing.update({'mch_num':score['mch_num'],'match_desc':score['match_desc']},{'$set':{"match_day_epoch":\
                                         match_day_epoch}})
                         except:
@@ -251,7 +253,7 @@ def main():
         obj1.show_fixtures()
         print '\n'
         obj2 = CricketCommentary('http://live-feeds.cricbuzz.com/CricbuzzFeed?format=xml')
-        obj2.check_match()
+        #obj2.check_match()
         #obj2.get_commentary()
         #obj2.store_commentary()
         #obj2.store_commentary()
