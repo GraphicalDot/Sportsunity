@@ -10,6 +10,8 @@ import time
 import feedparser
 from operator import itemgetter
 from goose import Goose
+from scorecard import Scorecard
+
 
 class CricketScores:
         def __init__(self,url):
@@ -33,17 +35,21 @@ class CricketScores:
                         #if inning and batting and bowling:
                         try:
                                 self.testing.update({'mch_num':match.get('mnum'),'match_desc':match.get('mchdesc')},{'$set':\
-                                        {'match_desc':match.get('mchdesc'),'mch_num':match.get('mnum'),'status':\
+                                        {'match_desc':match.get('mchdesc'),'mch_num':match.get('mnum'),'venue_city':\
+                                        match.get('vcity'),'venue_country':match.get('vcountry'),'venue_ground':\
+                                        match.get('grnd'),'team_winning':state[0].get('tw'),'decision':state[0].get('decisn'),'status':\
                                         state[0].get('status'),'additional':state[0].get('addnstatus'),"bttng":\
                                         batting[0].get('sname'),"blng":bowling[0].get('sname'),'runs':inning[0].get('r'),'wkts':\
-                                        inning[0].get('wkts'),'overs':inning[0].get('ovrs'),'date_time':date_time[0].get('dt')}},upsert = True)
+                                        inning[0].get('wkts'),'overs':inning[0].get('ovrs'),'date_time':\
+                                        date_time[0].get('dt'),'start_time':date_time[0].get('sttme'),'live':'True'}},upsert = True)
 
 
                         except:
                                 self.testing.update({'mch_num':match.get('mnum'),'match_desc':match.get('mchdesc')},{'$set':\
                                         {'match_desc':match.get('mchdesc'),'mch_num':\
-                                        match.get('mnum'),'status':state[0].get('status')}},upsert = True)
-                                
+                                        match.get('mnum'),'status':state[0].get('status'),'live':'False'}},upsert = True)
+
+
 
         def show_scores(self):
                 for score in self.testing.find(projection={'_id':False}):
@@ -69,6 +75,30 @@ class CricketScores:
                         except:
                                 pass
                 return all_scores
+
+
+class CricketScorecard:
+
+        def __init__(self):
+                
+                conn = pymongo.MongoClient()
+                db = conn.drake
+                self.cric_scorecard = db.cric_scorecard
+
+        def get_scorecard(self,url):
+        
+                self.feeds = feedparser.parse(url)
+                for feed in self.feeds.entries:
+                    if 'Partnership' in feed['summary'] or 'MoM' in feed['summary']:
+                        match_description = feed['title']
+                        link_to_match = feed['link']
+                        _obj = Scorecard(link_to_match,match_description)
+                        _obj.cric_scorecard()
+                    else:
+                        pass
+
+
+
 
 
 class CricketFixtures:
@@ -143,7 +173,10 @@ class CricketFixtures:
                 return fixtures_for_today
 
 
+
 class CricketCommentary:
+
+        #not working perfectly yet
 
         def __init__(self,url):
                 conn = pymongo.MongoClient()
@@ -257,6 +290,8 @@ def main():
         #obj2.get_commentary()
         #obj2.store_commentary()
         #obj2.store_commentary()
+        obj3 = CricketScorecard()
+        obj3.get_scorecard('http://live-feeds.cricbuzz.com/CricbuzzFeed?format=xml')
 
                                     
 if __name__=='__main__':main()

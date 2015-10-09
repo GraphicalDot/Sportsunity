@@ -73,6 +73,12 @@ class UpcomingFixtures(restful.Resource):
 
 
 
+'''
+class Cricket_Scorecard(restful.Resource):
+                                            #todo
+        def get()
+'''
+
 
 
 api.add_resource(LiveCricketScore, "/live_score")
