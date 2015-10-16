@@ -14,7 +14,7 @@ from DbScripts.mongo_db_football import FootFeedMongo
 from DbScripts.mongo_db_tennis import TennFeedMongo
 """
 
-from live_cric_scores import CricketCommentary
+#from live_cric_scores import CricketCommentary
 from GlobalConfigs import * 
 
 app = Flask(__name__)
@@ -23,13 +23,14 @@ api = restful.Api(app)
 
 get_args = reqparse.RequestParser()
 show_args = reqparse.RequestParser()
+get_args.add_argument("type", type=str, location="args", required=False)
 get_args.add_argument("skip", type=int, location="args", required=False)
 get_args.add_argument("limit", type=int, location="args", required=False)
 get_args.add_argument("start_date", type=str, location="args", required=False)
 get_args.add_argument("end_date", type=str, location="args", required=False)
 get_args.add_argument("image_size", type=str, location="args", required=True)
 get_args.add_argument("news_id", type=str, location="args", required=False)
-show_args.add_argument("match_name",type=str, location="args", required=True)
+#show_args.add_argument("match_name",type=str, location="args", required=True)
 
 class NewsApi(restful.Resource):
         
@@ -80,11 +81,47 @@ class NewsApi(restful.Resource):
                             }
 
                 projection = {"summary": True,"custom_summary":True,"title":True,"website":True, "news_id":\
-                        True, "published": True, "publish_epoch": True, "news_link": True}
+                        True, "published": True, "publish_epoch": True, "news_link": True, "type": True}
 
                 projection.update({args["image_size"]: True})
 
-                projection.update({"_id": False})
+                projection.update({"_id": False, "favicon":True})
+
+
+                if not args['type']:
+                        try:
+                                result = self.collection.find(projection=projection).sort('publish_epoch',-1).skip(args['skip']).\
+                                        limit(args['limit'])
+                                        #result = news
+
+                                return {"error": False,
+                                        "success": True,
+                                        "result": list(result),
+                                        }
+
+                        except Exception, e:
+                            return {"error": True,
+                                    "success": False,
+                                    "message": "Please send correct sport type",
+                                    }
+                else:
+                        try:
+                                result = self.collection.find({'type':args['type']},projection=projection).sort('publish_epoch',-1)\
+                                        .limit(args['limit']).skip(args['skip'])
+                                        #result = news
+
+                                return {"error": False,
+                                        "success": True,
+                                        "result": list(result),
+                                        }
+
+                        except Exception, e:
+                                return {"error": True,
+                                        "success": False,
+                                        "result": result,
+                                        }
+
+
 
                 if not args['news_id']:
                         pass
@@ -186,7 +223,13 @@ class GetTennisNews(NewsApi):
                 self.collection = news_collection_tenn
                 super(NewsApi, self).__init__()
 
+class GetMixedNews(NewsApi):
+        def __init__(self):
+                self.collection = news_collection_all
+                super(NewsApi, self).__init__()
 
+
+"""
 class GetCricketCommentary(restful.Resource):
         def get(self):
                 args = show_args.parse_args()
@@ -198,14 +241,15 @@ class GetCricketCommentary(restful.Resource):
                 except:
                     print args["match_name"]
                     raise ValueError("No commentary for this match")
-            
+"""         
 
 api.add_resource(GetFootballNews, "/football")
 api.add_resource(GetCricketNews, "/cricket")
 api.add_resource(GetBasketballNews, "/basketball")
 api.add_resource(GetF1News, "/formula1")
 api.add_resource(GetTennisNews, "/tennis")
-api.add_resource(GetCricketCommentary, "/commentary")
+api.add_resource(GetMixedNews, "/mixed")
+#api.add_resource(GetCricketCommentary, "/commentary")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0",port = 8000, debug = True)

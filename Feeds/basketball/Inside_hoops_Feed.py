@@ -12,6 +12,7 @@ parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspat
 print parent_dir_path
 sys.path.append(parent_dir_path)
 from mongo_db_basketball import BaskFeedMongo
+from Feeds.All.mongo_db_all import AllFeedMongo
 from GlobalLinks import *
 from GlobalMethods import unicode_or_bust
 from Feeds.amazon_s3 import AmazonS3
@@ -60,7 +61,8 @@ class BasketballHoops:
 
         def checking(self):
                 for news_dict in self.news_list:
-                        if not BaskFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]):
+                        if not BaskFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]) and not \
+                                AllFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]):
                                 self.links_not_present.append(news_dict)
                                 #print self.links_not_present
 
@@ -120,18 +122,29 @@ class BasketballHoops:
                                                     "hdpi": None,}
 
                         summarization_instance = ShortNews()
-            
 
-                        news_dict.update({"website": "www.insidehoops.com","summary":summarization_instance.summarization(full_text), "custom_summary": summary, "news":\
-                                full_text, "image_link":image_link,'publish_epoch': publish_epoch, "day": day, "month":\
-                                month, "year": year,'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi':\
-                                all_formats_image['hdpi'],"favicon":favicon,"time_of_storing":time.mktime(time.localtime())})
+                        try:
+                                news_dict.update({"website": "www.insidehoops.com","summary":summarization_instance.summarization(full_text),\
+                                        "custom_summary": summary, "news":full_text, "image_link":image_link,'publish_epoch':\
+                                        publish_epoch, "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],'mdpi':\
+                                        all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"favicon":favicon,"time_of_storing":\
+                                        time.mktime(time.localtime()),'type':'basketball'})
+                        except:
+                                news_dict.update({"website":"www.insidehoops.com","summary":summary,"custom_summary":summary,"news":\
+                                        full_text, "image_link":image_link,'publish_epoch':publish_epoch, "day": day, "month":\
+                                        month, "year": year,'ldpi': all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':\
+                                        all_formats_image['hdpi'],"favicon":favicon,"time_of_storing":time.mktime(time.localtime()),'type':\
+                                        'basketball'})
+
 
                         print news_dict['summary']
 
                         if not full_text == " " and not news_dict['summary'] == " ...Read More":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
                                 BaskFeedMongo.insert_news(news_dict)
+                                print 'here'
+                                AllFeedMongo.insert_news(news_dict)
+
                         else:
                                 pass
                 return                 

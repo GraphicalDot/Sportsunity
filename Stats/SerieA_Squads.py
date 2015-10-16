@@ -29,6 +29,7 @@ class Squads:
                         except:
                             pass
 
+
 def main():
         list_of_teams = ['atalanta','bologna','carpi','chievo','empoli','fiorentina','frosinone','genoa','hellas-verona','internazionale',\
                 'juventus','lazio','milan','napoli','palermo','roma','sampdoria','sassuolo','torino','udinese']

@@ -86,16 +86,19 @@ class CricketScorecard:
                 self.cric_scorecard = db.cric_scorecard
 
         def get_scorecard(self,url):
-        
+                 
                 self.feeds = feedparser.parse(url)
                 for feed in self.feeds.entries:
                     if 'Partnership' in feed['summary'] or 'MoM' in feed['summary']:
                         match_description = feed['title']
                         link_to_match = feed['link']
+			print 'sending args to Scorecard'
                         _obj = Scorecard(link_to_match,match_description)
                         _obj.cric_scorecard()
+                        _obj.store_scorecard()
                     else:
-                        pass
+                        print 'No live match '
+
 
 
 

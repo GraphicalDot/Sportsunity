@@ -11,6 +11,7 @@ from goose import Goose
 parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(parent_dir_path)
 from mongo_db_tennis import TennFeedMongo
+from Feeds.All.mongo_db_all import AllFeedMongo
 from GlobalLinks import *
 from GlobalMethods import unicode_or_bust
 from Feeds.amazon_s3 import AmazonS3
@@ -59,7 +60,8 @@ class TennisX:
 
         def checking(self):
                 for news_dict in self.news_list:
-                        if not TennFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]):
+                        if not TennFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]) and not \
+				AllFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]):
                                 self.links_not_present.append(news_dict)
                                 print self.links_not_present
 
@@ -125,16 +127,18 @@ class TennisX:
 						summary, "news": full_text, "image_link":image_link, 'publish_epoch': publish_epoch, "day":\
 						day, "month": month, "year": year, 'ldpi': all_formats_image['ldpi'],'mdpi':\
 						all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":\
-						time.mktime(time.localtime())})
+						time.mktime(time.localtime()),"type":"tennis"})
                         except:
                                 news_dict.update({"website": "http://www.tennis-x.com", "summary": summary, "custom_summary": summary, "news":\
 						full_text, "image_link":image_link, 'publish_epoch': publish_epoch, "day":day, "month":\
 						month, "year": year, 'ldpi': all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':\
-						all_formats_image['hdpi'],"time_of_storing": time.mktime(time.localtime())})
+						all_formats_image['hdpi'],"time_of_storing": time.mktime(time.localtime()),"type":"tennis"})
 
                         if not full_text == " " and not news_dict['summary'] == " ...Read More":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
                                 TennFeedMongo.insert_news(news_dict)
+				print "here"
+				AllFeedMongo.insert_news(news_dict)
                             
                         else:
                                 pass

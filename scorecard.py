@@ -2,6 +2,7 @@
 
 import requests
 from bs4 import BeautifulSoup
+import pymongo
 
 class Scorecard:
 
@@ -12,13 +13,18 @@ class Scorecard:
                 print scorecard_url
                 response = requests.get(scorecard_url)
 		self.soup = BeautifulSoup(response.content,'lxml')
+                conn = pymongo.MongoClient()
+                db = conn.drake
+                self.testing = db.testing
+
 		
 	def cric_scorecard(self):
 		for x in self.soup.find_all('div',{'id':'innings_1'}):
 			table=x.find_all('table')
 		row=table[0].find_all('tr')
 		row_1=table[1].find_all('tr')
-                print self.match_description
+                print self.match_description.split(',')[1].strip()
+                print "1st inning"
 		for stat in row:
 			columns=stat.find_all('td')
 			if not columns[1].string:
@@ -42,7 +48,7 @@ class Scorecard:
                 if self.soup.find_all('div',{'id':'innings_2'}):
                         print 
                         print "2nd inning"
-                        for x in self.soup.find_all('div',{'id':'innings_1'}):
+                        for x in self.soup.find_all('div',{'id':'innings_2'}):
                             table=x.find_all('table')
                         row=table[0].find_all('tr')
                         row_1=table[1].find_all('tr')
@@ -71,10 +77,15 @@ class Scorecard:
                         print "2nd inning yet to start"
 
 
-
-
-
-
+        def store_scorecard(self):
+                print "inside store_scorecard"
+                for match in self.testing.find():
+                        match_number = self.match_description.split(',')[1].strip() 
+                        match_name = self.match_description.split(',')[0]
+                        if match['match_desc'].replace('vs','v').lower() == match_name.lower() and match['mch_num'] == \
+                                match_number:
+                                print match
+                    
 
 
 
