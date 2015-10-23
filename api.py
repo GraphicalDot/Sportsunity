@@ -94,9 +94,23 @@ class NewsApi(restful.Resource):
                                         limit(args['limit'])
                                         #result = news
 
+                                result = list(result)
+                                new_result = []
+
+                                for val in result:
+                                    if 'hdpi' in val.keys():
+                                        val['image_link']=val.pop('hdpi')
+                                        new_result.append(val)
+                                    elif 'mdpi' in val.keys():
+                                        val['image_link']=val.pop('mdpi')
+                                        new_result.append(val)
+                                    elif 'ldpi' in val.keys():
+                                        val['image_link']=val.pop('ldpi')
+                                        new_result.append(val)
+
                                 return {"error": False,
                                         "success": True,
-                                        "result": list(result),
+                                        "result": list(new_result),
                                         }
 
                         except Exception, e:

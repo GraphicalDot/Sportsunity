@@ -20,7 +20,6 @@ from GlobalConfigs import S3_BUCKET_NAME, AMAZON_SECRET_KEY, AMAZON_ACCESS_KEY
 from boto.s3.connection import S3Connection
 from boto.exception import S3ResponseError, S3CreateError
 
-import tinify
 
 class AmazonS3(object):
         def __init__(self, image_link, news_id):
@@ -33,7 +32,6 @@ class AmazonS3(object):
                 self.hdpi_size = (480, 800)
                 self.xhdpi_size = (640, 960)
 
-                tinify.key = "2dlWoPbVdVhWTeXFPrbcCqLy0X8JGC_y"
 
         def amazon_bucket(self):
                 """
