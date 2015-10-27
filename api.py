@@ -73,7 +73,7 @@ class NewsApi(restful.Resource):
                 if not args["skip"]:
                         skip = 0
 
-                if not args["image_size"] in ["ldpi", "mdpi", "hdpi"]:
+                if not args["image_size"] in ["ldpi", "mdpi", "hdpi", "xhdpi"]:
                         return {"error":  True, 
                                 "success": False, 
                                 "error_code": 101, 
@@ -98,7 +98,10 @@ class NewsApi(restful.Resource):
                                 new_result = []
 
                                 for val in result:
-                                    if 'hdpi' in val.keys():
+                                    if 'xhdpi' in val.keys():
+                                        val['image_link']=val.pop('xhdpi')
+                                        new_result.append(val)
+                                    elif 'hdpi' in val.keys():
                                         val['image_link']=val.pop('hdpi')
                                         new_result.append(val)
                                     elif 'mdpi' in val.keys():
@@ -124,9 +127,27 @@ class NewsApi(restful.Resource):
                                         .limit(args['limit']).skip(args['skip'])
                                         #result = news
 
+                                result = list(result)
+                                new_result = []
+
+                                for val in result:
+                                    if 'xhdpi' in val.keys():
+                                        val['image_link']=val.pop('xhdpi')
+                                        new_result.append(val)
+                                    elif 'hdpi' in val.keys():
+                                        val['image_link']=val.pop('hdpi')
+                                        new_result.append(val)
+                                    elif 'mdpi' in val.keys():
+                                        val['image_link']=val.pop('mdpi')
+                                        new_result.append(val)
+                                    elif 'ldpi' in val.keys():
+                                        val['image_link']=val.pop('ldpi')
+                                        new_result.append(val)
+
+
                                 return {"error": False,
                                         "success": True,
-                                        "result": list(result),
+                                        "result": list(new_result),
                                         }
 
                         except Exception, e:
