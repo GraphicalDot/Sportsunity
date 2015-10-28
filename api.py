@@ -23,13 +23,16 @@ api = restful.Api(app)
 
 get_args = reqparse.RequestParser()
 show_args = reqparse.RequestParser()
-get_args.add_argument("type", type=str, location="args", required=False)
+get_args.add_argument("type", location="args", required=False, action='append')
 get_args.add_argument("skip", type=int, location="args", required=False)
 get_args.add_argument("limit", type=int, location="args", required=False)
 get_args.add_argument("start_date", type=str, location="args", required=False)
 get_args.add_argument("end_date", type=str, location="args", required=False)
 get_args.add_argument("image_size", type=str, location="args", required=True)
 get_args.add_argument("news_id", type=str, location="args", required=False)
+get_args.add_argument("timestamp", type=int, location="args", required=False)
+get_args.add_argument("direction", type=str, location="args", required=False)
+
 #show_args.add_argument("match_name",type=str, location="args", required=True)
 
 class NewsApi(restful.Resource):
@@ -87,7 +90,6 @@ class NewsApi(restful.Resource):
 
                 projection.update({"_id": False, "favicon":True})
 
-
                 if not args['type']:
                         try:
                                 result = self.collection.find(projection=projection).sort('publish_epoch',-1).skip(args['skip']).\
@@ -123,7 +125,8 @@ class NewsApi(restful.Resource):
                                     }
                 else:
                         try:
-                                result = self.collection.find({'type':args['type']},projection=projection).sort('publish_epoch',-1)\
+                                print args['type']
+                                result = self.collection.find({'type':{'$in':args['type']}},projection=projection).sort('publish_epoch',-1)\
                                         .limit(args['limit']).skip(args['skip'])
                                         #result = news
 
@@ -144,7 +147,6 @@ class NewsApi(restful.Resource):
                                         val['image_link']=val.pop('ldpi')
                                         new_result.append(val)
 
-
                                 return {"error": False,
                                         "success": True,
                                         "result": list(new_result),
@@ -157,6 +159,85 @@ class NewsApi(restful.Resource):
                                         }
 
 
+                if not args['timestamp'] and not args['direction']:
+                        pass
+
+                elif args['timestamp'] and args['direction']:
+                        print args['timestamp']
+                        print args['direction']
+                        if args['direction']=='up':
+                                print "latest"
+                                try:
+                                        result = self.collection.find({"publish_epoch": {"$gt": args['timestamp']}},projection=projection).\
+                                                sort('publish_epoch',-1).skip(args['skip']).limit(args['limit'])
+                                        
+                                        result = list(result)
+                                        new_result = []
+
+                                        for val in result:
+                                                if 'xhdpi' in val.keys():
+                                                        val['image_link']=val.pop('xhdpi')
+                                                        new_result.append(val)
+                                                elif 'hdpi' in val.keys():
+                                                        val['image_link']=val.pop('hdpi')
+                                                        new_result.append(val)
+                                                elif 'mdpi' in val.keys():
+                                                        val['image_link']=val.pop('mdpi')
+                                                        new_result.append(val)
+                                                elif 'ldpi' in val.keys():
+                                                        val['image_link']=val.pop('ldpi')
+                                                        new_result.append(val)
+
+                                        return {"error": False,
+                                                "success":True,
+                                                "result":new_result,
+                                                }
+
+                                except Exception,e:
+
+                                        return {"error":False,
+                                                "success":True,
+                                                "result":"No latest news yet",
+                                                }
+
+                        elif args['direction']=='down':
+                                print "older"
+                                try:
+                                        result = self.collection.find({"publish_epoch": {"$lt": args['timestamp']}},projection=projection).\
+                                                sort('publish_epoch',-1).skip(args['skip']).limit(args['limit'])
+
+                                        
+                                        result = list(result)
+                                        new_result = []
+                                
+                                        for val in result:
+                                                if 'xhdpi' in val.keys():
+                                                        val['image_link']=val.pop('xhdpi')
+                                                        new_result.append(val)
+                                                elif 'hdpi' in val.keys():
+                                                        val['image_link']=val.pop('hdpi')
+                                                        new_result.append(val)
+                                                elif 'mdpi' in val.keys():
+                                                        val['image_link']=val.pop('mdpi')
+                                                        new_result.append(val)
+                                                elif 'ldpi' in val.keys():
+                                                        val['image_link']=val.pop('ldpi')
+                                                        new_result.append(val)
+
+                                        return {"error": False,
+                                                "success": True,
+                                                "result": new_result,
+                                                }
+
+                                except Exception,e:
+
+                                        return {"error": False,
+                                                "success": True,
+                                                "result" : "This is probably the oldest news we have",
+                                                }
+
+                        else:
+                                pass
 
                 if not args['news_id']:
                         pass
@@ -195,7 +276,8 @@ class NewsApi(restful.Resource):
                 
                 ##This implies that we required news for the present date
                 if not args['end_date']:
-                        result = self.collection.find({"publish_epoch": {"$gt": start_epoch}}, projection=projection).limit(args['limit']).skip(args['skip']).sort("publish_epoch", -1)
+                        result = self.collection.find({"publish_epoch": {"$gt": start_epoch}}, projection=projection).\
+                                limit(args['limit']).skip(args['skip']).sort("publish_epoch", -1)
                         return {"error":  False, 
                                 "success": True, 
                                 "result": list(result)}
