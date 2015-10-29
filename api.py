@@ -23,7 +23,7 @@ api = restful.Api(app)
 
 get_args = reqparse.RequestParser()
 show_args = reqparse.RequestParser()
-get_args.add_argument("type", location="args", required=False, action='append')
+get_args.add_argument("type_1", location="args", required=False, action='append')
 get_args.add_argument("skip", type=int, location="args", required=False)
 get_args.add_argument("limit", type=int, location="args", required=False)
 get_args.add_argument("start_date", type=str, location="args", required=False)
@@ -90,7 +90,8 @@ class NewsApi(restful.Resource):
 
                 projection.update({"_id": False, "favicon":True})
 
-                if not args['type']:
+                
+                if not args['type_1'] and not args['timestamp'] and not args['direction']:
                         try:
                                 result = self.collection.find(projection=projection).sort('publish_epoch',-1).skip(args['skip']).\
                                         limit(args['limit'])
@@ -123,10 +124,10 @@ class NewsApi(restful.Resource):
                                     "success": False,
                                     "message": "Please send correct sport type",
                                     }
-                else:
+                elif args['type_1'] and not args['timestamp'] and not args['direction']:
                         try:
-                                print args['type']
-                                result = self.collection.find({'type':{'$in':args['type']}},projection=projection).sort('publish_epoch',-1)\
+                                print args['type_1']
+                                result = self.collection.find({'type':{'$in':args['type_1']}},projection=projection).sort('publish_epoch',-1)\
                                         .limit(args['limit']).skip(args['skip'])
                                         #result = news
 
@@ -157,20 +158,20 @@ class NewsApi(restful.Resource):
                                         "success": False,
                                         "result": result,
                                         }
+                
 
 
-                if not args['timestamp'] and not args['direction']:
-                        pass
+                #if not args['timestamp'] and not args['direction']:
+                 #       pass
 
-                elif args['timestamp'] and args['direction']:
+                elif not args['type_1'] and args['timestamp'] and args['direction']:
+                        print args['type_1']
                         print args['timestamp']
                         print args['direction']
                         if args['direction']=='up':
                                 print "latest"
                                 try:
-                                        result = self.collection.find({"publish_epoch": {"$gt": args['timestamp']}},projection=projection).\
-                                                sort('publish_epoch',-1).skip(args['skip']).limit(args['limit'])
-                                        
+                                        result = self.collection.find({'publish_epoch':{"$gt":args['timestamp']}},projection=projection).sort('publish_epoch',-1).limit(args['limit'])
                                         result = list(result)
                                         new_result = []
 
@@ -190,7 +191,7 @@ class NewsApi(restful.Resource):
 
                                         return {"error": False,
                                                 "success":True,
-                                                "result":new_result,
+                                                "result":list(new_result),
                                                 }
 
                                 except Exception,e:
@@ -236,9 +237,84 @@ class NewsApi(restful.Resource):
                                                 "result" : "This is probably the oldest news we have",
                                                 }
 
+                elif args['type_1'] and args['timestamp'] and args['direction']:
+                        print args['type_1']
+                        print args['direction']
+                        if args['direction']=='up':
+                                print 'latest'
+
+                                try:
+                                        result = self.collection.find({'type':{'$in':args['type_1']},'publish_epoch':\
+                                                {"$gt":args['timestamp']}},projection=projection).sort('publish_epoch',-1).\
+                                                skip(args['skip']).limit(args['limit'])
+
+                                        result = list(result)
+                                        new_result = []
+
+                                        for val in result:
+                                                if 'xhdpi' in val.keys():
+                                                        val['image_link']=val.pop('xhdpi')
+                                                        new_result.append(val)
+                                                elif 'hdpi' in val.keys():
+                                                        val['image_link']=val.pop('hdpi')
+                                                        new_result.append(val)
+                                                elif 'mdpi' in val.keys():
+                                                        val['image_link']=val.pop('mdpi')
+                                                        new_result.append(val)
+                                                elif 'ldpi' in val.keys():
+                                                        val['image_link']=val.pop('ldpi')
+                                                        new_result.append(val)
+
+                                        return {"error": False,
+                                                "success": True,
+                                                "result": new_result,
+                                                }
+
+
+                                except Exception,e:
+                                        
+                                        return {"error": False,
+                                                "success": True,
+                                                "result": "No latest news yet"
+                                                }
+                        elif args['direction']=='down':
+                                print "older"
+                                try:
+                                        result = self.collection.find({'type':{'$in':args['type_1']},"publish_epoch": {"$lt": args['timestamp']}},\
+                                                projection=projection).sort('publish_epoch',-1).skip(args['skip']).limit(args['limit'])
+                                        result = list(result)
+                                        new_result = []
+
+                                        for val in result:
+                                                if 'xhdpi' in val.keys():
+                                                        val['image_link']=val.pop('xhdpi')
+                                                        new_result.append(val)
+                                                elif 'hdpi' in val.keys():
+                                                        val['image_link']=val.pop('hdpi')
+                                                        new_result.append(val)
+                                                elif 'mdpi' in val.keys():
+                                                        val['image_link']=val.pop('mdpi')
+                                                        new_result.append(val)
+                                                elif 'ldpi' in val.keys():
+                                                        val['image_link']=val.pop('ldpi')
+                                                        new_result.append(val)
+
+                                        return {"error": False,
+                                                "success": True,
+                                                "result": new_result,
+                                                }
+
+                                except Exception,e:
+                                        
+                                        return {"error": False,
+                                                "success": True,
+                                                "result": "This is probably the oldest news",
+                                                }
+
                         else:
                                 pass
-
+                
+                """
                 if not args['news_id']:
                         pass
                 else:
@@ -255,7 +331,8 @@ class NewsApi(restful.Resource):
                                 print e
                                 return "news_id entered isn't correct"
 
-                
+                """
+
                 print self.collection, args['skip'], args['limit'], projection
                 ##if front end needs news jsut after news with skip and limit 
                 if not args["start_date"] and not args["end_date"]:
