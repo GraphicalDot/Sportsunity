@@ -3,6 +3,7 @@
 import sys
 import os
 import time
+import calendar
 import json
 import feedparser
 import urllib
@@ -80,7 +81,7 @@ class BasketballNba:
                 goose_instance = Goose()
                 for news_dict in self.links_not_present:
            
-                        if news_dict['published'].endswith("EDT") or news_dict['published'].endswith("GMT"):
+                        if news_dict['published'].endswith("EDT") or news_dict['published'].endswith("GMT") or news_dict['published'].endswith("EST"):
                                 strp_time_object = time.strptime(news_dict['published'][:-4], "%a, %d %b %Y %H:%M:%S")
                         elif news_dict['published'].endswith("+0530") or news_dict['published'].endswith("+0000"):
                                 strp_time_object = time.strptime(news_dict['published'][:-6], "%a, %d %b %Y %H:%M:%S")
@@ -91,7 +92,7 @@ class BasketballNba:
                         month = strp_time_object.tm_mon
                         year = strp_time_object.tm_year
                         publish_epoch = time.mktime(strp_time_object)
-                       
+                       	gmt_epoch = calendar.timegm(time.gmtime(publish_epoch))
  
 
                         ##Getting full article with goose
@@ -124,13 +125,13 @@ class BasketballNba:
 
 			try:
 				news_dict.update({"website":"www.nba.com","summary":summarization_instance.summarization(full_text),"custom_summary":\
-						summary, "news":full_text, "image_link":image_link,'publish_epoch': publish_epoch, "day":\
+						summary, "news":full_text, "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch': publish_epoch, "day":\
 						day, "month": month, "year": year,"ldpi": all_formats_image['ldpi'],'mdpi':\
 						all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":\
 						time.mktime(time.localtime()),"type":"basketball"})
 			except:
 				news_dict.update({"website":"www.nba.com","summary":summary,"custom_summary":summary,"news":\
-						full_text, "image_link":image_link,'publish_epoch': publish_epoch, "day":day, "month":\
+						full_text, "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch': publish_epoch, "day":day, "month":\
 						month, "year": year,"ldpi":all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':\
 						all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime()),"type":"basketball"})
 

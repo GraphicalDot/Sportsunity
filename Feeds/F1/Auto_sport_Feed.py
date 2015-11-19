@@ -3,6 +3,7 @@
 import sys
 import os
 import time
+import calendar
 import json
 import feedparser
 import urllib
@@ -90,7 +91,7 @@ class FormulaAuto:
                         month = strp_time_object.tm_mon
                         year = strp_time_object.tm_year
                         publish_epoch = time.mktime(strp_time_object)
-                       
+			gmt_epoch = calendar.timegm(time.gmtime(publish_epoch))                       
  
 
                         ##Getting full article with goose
@@ -107,6 +108,8 @@ class FormulaAuto:
                                 summary = article.meta_description+ " "+ " ...Read More"
                         else:
                                 summary = None
+			
+			print summary
 
                         try: 
                                 image_link = article.opengraph['image']
@@ -122,19 +125,18 @@ class FormulaAuto:
                         summarization_instance = ShortNews()
 
                         try:
+				print 'inside try'
                                 news_dict.update({"website": "www.autosport.com", "summary": summarization_instance.summarization(full_text),\
-                                        "custom_summary":summary, "news": full_text, "image_link":image_link, 'publish_epoch': publish_epoch,\
+                                        "custom_summary":summary, "news": full_text, "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch': publish_epoch,\
                                         "day": day, "month": month, "year": year, 'ldpi': all_formats_image['ldpi'],'mdpi':\
-                                        all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],'xhdpi':\
-                                        all_formats_image['xhdpi'],"time_of_storing":time.mktime(time.localtime()),'type':'f1'})
+                                        all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime()),'type':'f1'})
 
-                        except:
-                                news_dict.update({"website": "www.autosport.com", "summary": summary,\
-                                        "custom_summary":summary, "news": full_text, "image_link":image_link, 'publish_epoch': publish_epoch,\
+                        except Exception as e:
+				print 'inside except'
+                                news_dict.update({"website": "www.autosport.com", "custom_summary": summary,\
+                                        "summary":summary, "news": full_text, "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch': publish_epoch,\
                                         "day": day, "month": month, "year": year, 'ldpi': all_formats_image['ldpi'],'mdpi':\
-                                        all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],'xhdpi':\
-                                        all_formats_image['xhdpi'],"time_of_storing":time.mktime(time.localtime()),'type':'f1'})
-
+                                        all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime()),'type':'f1'})
 
                         if not full_text == " " and not news_dict['summary'] == " ...Read More":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
@@ -142,7 +144,8 @@ class FormulaAuto:
                                 print "here"
                                 AllFeedMongo.insert_news(news_dict)
                         else:
-                                pass
+                                print 'not inserted in db'
+
                 return                 
 
     

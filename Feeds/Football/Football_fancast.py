@@ -3,6 +3,7 @@
 import sys
 import os
 import time
+import calendar
 import json
 import feedparser
 import urllib
@@ -47,7 +48,7 @@ class FootballFancast:
                 self.rss = feedparser.parse(self.link)
                 self.news_entries = self.rss.entries
                 [self.news_list.append({"news_link": news_entry["link"], "published": news_entry["published"], "summary": \
-                        news_entry["summary"], "title": news_entry["title"], "tags": news_entry["tags"], "news_id": hashlib.md5(news_entry["link"]).hexdigest()}) \
+                        news_entry["summary"], "title": news_entry["title"], "news_id": hashlib.md5(news_entry["link"]).hexdigest()}) \
                         for news_entry in self.news_entries]
                                 
 
@@ -87,7 +88,7 @@ class FootballFancast:
                         month = strp_time_object.tm_mon
                         year = strp_time_object.tm_year
                         publish_epoch = time.mktime(strp_time_object)
-                       
+                       	gmt_epoch = calendar.timegm(time.gmtime(publish_epoch))
  
 
                         ##Getting full article with goose
@@ -120,13 +121,13 @@ class FootballFancast:
                         
                         try:
                                 news_dict.update({"website": "www.footballfancast.com", "summary": summarization_instance.summarization(full_text),\
-						"custom_summary":summary, "news": full_text, "image_link":image_link,'publish_epoch':\
+						"custom_summary":summary, "news": full_text, "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch':\
 						publish_epoch, "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],\
 						'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing": \
 						time.mktime(time.localtime()),'type':'football'})
                         except:
                                 news_dict.update({"website": "www.footballfancast.com", "summary": summary, "custom_summary":summary, "news": full_text,\
-                                        "image_link":image_link,'publish_epoch': publish_epoch, "day": day, "month": month, "year": year,\
+                                        "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch': publish_epoch, "day": day, "month": month, "year": year,\
                                         'ldpi': all_formats_image['ldpi'], 'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],\
 					"time_of_storing": time.mktime(time.localtime()),'type':'football'})
 

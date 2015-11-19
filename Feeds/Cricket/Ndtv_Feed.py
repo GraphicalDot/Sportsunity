@@ -3,6 +3,7 @@
 import sys
 import os
 import time
+import calendar
 import json
 import feedparser
 import urllib
@@ -46,9 +47,8 @@ class CricketNdtv:
                 self.links_not_present = list()
                 self.rss = feedparser.parse(self.link)
                 self.news_entries = self.rss.entries
-                [self.news_list.append({"news_link": news_entry["link"], "published": news_entry["published"],"image":\
-                        news_entry['summary'].split('src="')[1].split(" style")[0] ,"summary": news_entry["summary"], "title":\
-                        news_entry["title"], "news_id": hashlib.md5(news_entry["link"]).hexdigest()}) \
+                [self.news_list.append({"news_link": news_entry["link"], "published": news_entry["published"],"summary":\
+			news_entry["summary"], "title":news_entry["title"], "news_id": hashlib.md5(news_entry["link"]).hexdigest()}) \
                         for news_entry in self.news_entries]
                                 
 
@@ -93,7 +93,7 @@ class CricketNdtv:
                         month = strp_time_object.tm_mon
                         year = strp_time_object.tm_year
                         publish_epoch = time.mktime(strp_time_object)
-                       
+			gmt_epoch = calendar.timegm(time.gmtime(publish_epoch))                       
  
 
                         ##Getting full article with goose
@@ -115,7 +115,7 @@ class CricketNdtv:
                         try: 
                                 image_link = news_dict['image']
                                 print image_link
-                                #image_link = article.infos['image']['url']
+                                image_link = article.infos['image']['url']
                                 obj1=AmazonS3(image_link, news_dict["news_id"])
                                 all_formats_image=obj1.run()
                         except Exception as e:
@@ -130,13 +130,13 @@ class CricketNdtv:
 
                         try:
 				news_dict.update({"website": "www.sports.ndtv.com", "summary": summarization_instance.summarization(full_text),\
-						"custom_summary":summary, "news": full_text, "image_link":image_link,'publish_epoch':\
+						"custom_summary":summary, "news": full_text, "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch':\
 						publish_epoch, "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],\
 						'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":\
 						time.mktime(time.localtime()),'type':'cricket'})
                         except:
 				news_dict.update({"website": "www.sports.ndtv.com", "summary":summary, "custom_summary":summary, "news": full_text,\
-                                        "image_link":image_link,'publish_epoch':publish_epoch, "day": day, "month": month, "year":year,\
+                                        "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch':publish_epoch, "day": day, "month": month, "year":year,\
                                         'ldpi': all_formats_image['ldpi'], 'mdpi': all_formats_image['mdpi'],'hdpi':all_formats_image['hdpi'],\
 					"time_of_storing": time.mktime(time.localtime()),'type':'cricket'})
 
