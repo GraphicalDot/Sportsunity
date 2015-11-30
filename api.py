@@ -16,7 +16,8 @@ from DbScripts.mongo_db_tennis import TennFeedMongo
 
 #from live_cric_scores import CricketCommentary
 from GlobalConfigs import * 
-
+from Elasticsearch_1 import elasticsearch_db
+from operator import itemgetter
 app = Flask(__name__)
 api = restful.Api(app)
 
@@ -32,6 +33,7 @@ get_args.add_argument("image_size", type=str, location="args", required=True)
 get_args.add_argument("news_id", type=str, location="args", required=False)
 get_args.add_argument("timestamp", type=int, location="args", required=False)
 get_args.add_argument("direction", type=str, location="args", required=False)
+get_args.add_argument("search", type=str, location="args", required=False)
 
 #show_args.add_argument("match_name",type=str, location="args", required=True)
 
@@ -72,9 +74,9 @@ class NewsApi(restful.Resource):
                 pattern = '%d-%m-%Y'
                 args = get_args.parse_args()
                 if not args["limit"]:
-                        limit = 10
+                        args['limit'] = 10
                 if not args["skip"]:
-                        skip = 0
+                        args['skip'] = 0
 
                 if not args["image_size"] in ["ldpi", "mdpi", "hdpi", "xhdpi"]:
                         return {"error":  True, 
@@ -91,228 +93,236 @@ class NewsApi(restful.Resource):
                 projection.update({"_id": False, "favicon":True})
 
                 
-                if not args['type_1'] and not args['timestamp'] and not args['direction']:
-                        try:
-                                result = self.collection.find(projection=projection).sort('publish_epoch',-1).skip(args['skip']).\
-                                        limit(args['limit'])
+                if not args['search']:
+                        print 'gfgf'
+                    
+                        if not args['type_1'] and not args['timestamp'] and not args['direction']:
+                                try:
+                                        result = self.collection.find(projection=projection).sort('publish_epoch',-1).skip(args['skip']).\
+                                                limit(args['limit'])
                                         #result = news
 
-                                result = list(result)
-                                new_result = []
+                                        result = list(result)
+                                        new_result = []
 
-                                for val in result:
-                                    if 'xhdpi' in val.keys():
-                                        val['image_link']=val.pop('xhdpi')
-                                        new_result.append(val)
-                                    elif 'hdpi' in val.keys():
-                                        val['image_link']=val.pop('hdpi')
-                                        new_result.append(val)
-                                    elif 'mdpi' in val.keys():
-                                        val['image_link']=val.pop('mdpi')
-                                        new_result.append(val)
-                                    elif 'ldpi' in val.keys():
-                                        val['image_link']=val.pop('ldpi')
-                                        new_result.append(val)
+                                        for val in result:
+                                            if 'xhdpi' in val.keys():
+                                                val['image_link']=val.pop('xhdpi')
+                                                new_result.append(val)
+                                            elif 'hdpi' in val.keys():
+                                                val['image_link']=val.pop('hdpi')
+                                                new_result.append(val)
+                                            elif 'mdpi' in val.keys():
+                                                val['image_link']=val.pop('mdpi')
+                                                new_result.append(val)
+                                            elif 'ldpi' in val.keys():
+                                                val['image_link']=val.pop('ldpi')
+                                                new_result.append(val)
 
-                                return {"error": False,
-                                        "success": True,
-                                        "result": list(new_result),
-                                        }
+                                        return {"error": False,
+                                                "success": True,
+                                                "result": list(new_result),
+                                                }
 
-                        except Exception, e:
-                            return {"error": True,
-                                    "success": False,
-                                    "message": "Please send correct sport type",
-                                    }
-                elif args['type_1'] and not args['timestamp'] and not args['direction']:
-                        try:
-                                print args['type_1']
-                                result = self.collection.find({'type':{'$in':args['type_1']}},projection=projection).sort('publish_epoch',-1)\
-                                        .limit(args['limit']).skip(args['skip'])
+                                except Exception, e:
+                                    return {"error": True,
+                                            "success": False,
+                                            "message": "Please send correct sport type",
+                                            }
+                        elif args['type_1'] and not args['timestamp'] and not args['direction']:
+                                try:
+                                        print args['type_1']
+                                        result = self.collection.find({'type':{'$in':args['type_1']}},projection=projection).sort('publish_epoch',-1)\
+                                                .limit(args['limit']).skip(args['skip'])
                                         #result = news
 
-                                result = list(result)
-                                new_result = []
+                                        result = list(result)
+                                        new_result = []
 
-                                for val in result:
-                                    if 'xhdpi' in val.keys():
-                                        val['image_link']=val.pop('xhdpi')
-                                        new_result.append(val)
-                                    elif 'hdpi' in val.keys():
-                                        val['image_link']=val.pop('hdpi')
-                                        new_result.append(val)
-                                    elif 'mdpi' in val.keys():
-                                        val['image_link']=val.pop('mdpi')
-                                        new_result.append(val)
-                                    elif 'ldpi' in val.keys():
-                                        val['image_link']=val.pop('ldpi')
-                                        new_result.append(val)
+                                        for val in result:
+                                            if 'xhdpi' in val.keys():
+                                                val['image_link']=val.pop('xhdpi')
+                                                new_result.append(val)
+                                            elif 'hdpi' in val.keys():
+                                                val['image_link']=val.pop('hdpi')
+                                                new_result.append(val)
+                                            elif 'mdpi' in val.keys():
+                                                val['image_link']=val.pop('mdpi')
+                                                new_result.append(val)
+                                            elif 'ldpi' in val.keys():
+                                                val['image_link']=val.pop('ldpi')
+                                                new_result.append(val)
 
-                                return {"error": False,
-                                        "success": True,
-                                        "result": list(new_result),
-                                        }
+                                        return {"error": False,
+                                                "success": True,
+                                                "result": list(new_result),
+                                                }
 
-                        except Exception, e:
-                                return {"error": True,
-                                        "success": False,
-                                        "result": result,
-                                        }
+                                except Exception, e:
+                                        return {"error": True,
+                                                "success": False,
+                                                "result": result,
+                                                }
                 
 
 
-                #if not args['timestamp'] and not args['direction']:
-                 #       pass
+                        #if not args['timestamp'] and not args['direction']:
+                        #       pass
 
-                elif not args['type_1'] and args['timestamp'] and args['direction']:
-                        print args['type_1']
-                        print args['timestamp']
-                        print args['direction']
-                        if args['direction']=='up':
-                                print "latest"
-                                try:
-                                        result = self.collection.find({'publish_epoch':{"$gt":args['timestamp']}},projection=projection).sort('publish_epoch',-1).limit(args['limit'])
-                                        result = list(result)
-                                        new_result = []
+                        elif not args['type_1'] and args['timestamp'] and args['direction']:
+                                print args['type_1']
+                                print args['timestamp']
+                                print args['direction']
+                                if args['direction']=='up':
+                                        print "latest"
+                                        try:
+                                                result = self.collection.find({'publish_epoch':{"$gt":args['timestamp']}},projection=projection).sort('publish_epoch',-1).limit(args['limit'])
+                                                result = list(result)
+                                                new_result = []
 
-                                        for val in result:
-                                                if 'xhdpi' in val.keys():
-                                                        val['image_link']=val.pop('xhdpi')
-                                                        new_result.append(val)
-                                                elif 'hdpi' in val.keys():
-                                                        val['image_link']=val.pop('hdpi')
-                                                        new_result.append(val)
-                                                elif 'mdpi' in val.keys():
-                                                        val['image_link']=val.pop('mdpi')
-                                                        new_result.append(val)
-                                                elif 'ldpi' in val.keys():
-                                                        val['image_link']=val.pop('ldpi')
-                                                        new_result.append(val)
+                                                for val in result:
+                                                        if 'xhdpi' in val.keys():
+                                                                val['image_link']=val.pop('xhdpi')
+                                                                new_result.append(val)
+                                                        elif 'hdpi' in val.keys():
+                                                                val['image_link']=val.pop('hdpi')
+                                                                new_result.append(val)
+                                                        elif 'mdpi' in val.keys():
+                                                                val['image_link']=val.pop('mdpi')
+                                                                new_result.append(val)
+                                                        elif 'ldpi' in val.keys():
+                                                                val['image_link']=val.pop('ldpi')
+                                                                new_result.append(val)
 
-                                        return {"error": False,
-                                                "success":True,
-                                                "result":list(new_result),
-                                                }
+                                                return {"error": False,
+                                                        "success":True,
+                                                        "result":list(new_result),
+                                                        }
 
-                                except Exception,e:
+                                        except Exception,e:
 
-                                        return {"error":False,
-                                                "success":True,
-                                                "result":"No latest news yet",
-                                                }
+                                                return {"error":False,
+                                                        "success":True,
+                                                        "result":"No latest news yet",
+                                                        }
 
-                        elif args['direction']=='down':
-                                print "older"
-                                try:
-                                        result = self.collection.find({"publish_epoch": {"$lt": args['timestamp']}},projection=projection).\
-                                                sort('publish_epoch',-1).skip(args['skip']).limit(args['limit'])
+                                elif args['direction']=='down':
+                                        print "older"
+                                        try:
+                                                result = self.collection.find({"publish_epoch": {"$lt": args['timestamp']}},projection=projection).\
+                                                        sort('publish_epoch',-1).skip(args['skip']).limit(args['limit'])
 
                                         
-                                        result = list(result)
-                                        new_result = []
+                                                result = list(result)
+                                                new_result = []
                                 
-                                        for val in result:
-                                                if 'xhdpi' in val.keys():
-                                                        val['image_link']=val.pop('xhdpi')
-                                                        new_result.append(val)
-                                                elif 'hdpi' in val.keys():
-                                                        val['image_link']=val.pop('hdpi')
-                                                        new_result.append(val)
-                                                elif 'mdpi' in val.keys():
-                                                        val['image_link']=val.pop('mdpi')
-                                                        new_result.append(val)
-                                                elif 'ldpi' in val.keys():
-                                                        val['image_link']=val.pop('ldpi')
-                                                        new_result.append(val)
+                                                for val in result:
+                                                        if 'xhdpi' in val.keys():
+                                                                val['image_link']=val.pop('xhdpi')
+                                                                new_result.append(val)
+                                                        elif 'hdpi' in val.keys():
+                                                                val['image_link']=val.pop('hdpi')
+                                                                new_result.append(val)
+                                                        elif 'mdpi' in val.keys():
+                                                                val['image_link']=val.pop('mdpi')
+                                                                new_result.append(val)
+                                                        elif 'ldpi' in val.keys():
+                                                                val['image_link']=val.pop('ldpi')
+                                                                new_result.append(val)
 
-                                        return {"error": False,
-                                                "success": True,
-                                                "result": new_result,
-                                                }
+                                                return {"error": False,
+                                                        "success": True,
+                                                        "result": new_result,
+                                                        }
 
-                                except Exception,e:
+                                        except Exception,e:
 
-                                        return {"error": False,
-                                                "success": True,
-                                                "result" : "This is probably the oldest news we have",
-                                                }
+                                                return {"error": False,
+                                                        "success": True,
+                                                        "result" : "This is probably the oldest news we have",
+                                                        }
 
-                elif args['type_1'] and args['timestamp'] and args['direction']:
-                        print args['type_1']
-                        print args['direction']
-                        if args['direction']=='up':
-                                print 'latest'
+                        elif args['type_1'] and args['timestamp'] and args['direction']:
+                                print args['type_1']
+                                print args['direction']
+                                if args['direction']=='up':
+                                        print 'latest'
 
-                                try:
-                                        result = self.collection.find({'type':{'$in':args['type_1']},'publish_epoch':\
-                                                {"$gt":args['timestamp']}},projection=projection).sort('publish_epoch',-1).\
-                                                skip(args['skip']).limit(args['limit'])
+                                        try:
+                                                result = self.collection.find({'type':{'$in':args['type_1']},'publish_epoch':\
+                                                        {"$gt":args['timestamp']}},projection=projection).sort('publish_epoch',-1).\
+                                                        skip(args['skip']).limit(args['limit'])
 
-                                        result = list(result)
-                                        new_result = []
+                                                result = list(result)
+                                                new_result = []
 
-                                        for val in result:
-                                                if 'xhdpi' in val.keys():
-                                                        val['image_link']=val.pop('xhdpi')
-                                                        new_result.append(val)
-                                                elif 'hdpi' in val.keys():
-                                                        val['image_link']=val.pop('hdpi')
-                                                        new_result.append(val)
-                                                elif 'mdpi' in val.keys():
-                                                        val['image_link']=val.pop('mdpi')
-                                                        new_result.append(val)
-                                                elif 'ldpi' in val.keys():
-                                                        val['image_link']=val.pop('ldpi')
-                                                        new_result.append(val)
+                                                for val in result:
+                                                        if 'xhdpi' in val.keys():
+                                                                val['image_link']=val.pop('xhdpi')
+                                                                new_result.append(val)
+                                                        elif 'hdpi' in val.keys():
+                                                                val['image_link']=val.pop('hdpi')
+                                                                new_result.append(val)
+                                                        elif 'mdpi' in val.keys():
+                                                                val['image_link']=val.pop('mdpi')
+                                                                new_result.append(val)
+                                                        elif 'ldpi' in val.keys():
+                                                                val['image_link']=val.pop('ldpi')
+                                                                new_result.append(val)
 
-                                        return {"error": False,
-                                                "success": True,
-                                                "result": new_result,
-                                                }
+                                                return {"error": False,
+                                                        "success": True,
+                                                        "result": new_result,
+                                                        }
 
 
-                                except Exception,e:
+                                        except Exception,e:
                                         
-                                        return {"error": False,
-                                                "success": True,
-                                                "result": "No latest news yet"
-                                                }
-                        elif args['direction']=='down':
-                                print "older"
-                                try:
-                                        result = self.collection.find({'type':{'$in':args['type_1']},"publish_epoch": {"$lt": args['timestamp']}},\
-                                                projection=projection).sort('publish_epoch',-1).skip(args['skip']).limit(args['limit'])
-                                        result = list(result)
-                                        new_result = []
+                                                return {"error": False,
+                                                        "success": True,
+                                                        "result": "No latest news yet"
+                                                        }
+                                elif args['direction']=='down':
+                                        print "older"
+                                        try:
+                                                result = self.collection.find({'type':{'$in':args['type_1']},"publish_epoch": {"$lt": args['timestamp']}},\
+                                                        projection=projection).sort('publish_epoch',-1).skip(args['skip']).limit(args['limit'])
+                                                result = list(result)
+                                                new_result = []
 
-                                        for val in result:
-                                                if 'xhdpi' in val.keys():
-                                                        val['image_link']=val.pop('xhdpi')
-                                                        new_result.append(val)
-                                                elif 'hdpi' in val.keys():
-                                                        val['image_link']=val.pop('hdpi')
-                                                        new_result.append(val)
-                                                elif 'mdpi' in val.keys():
-                                                        val['image_link']=val.pop('mdpi')
-                                                        new_result.append(val)
-                                                elif 'ldpi' in val.keys():
-                                                        val['image_link']=val.pop('ldpi')
-                                                        new_result.append(val)
+                                                for val in result:
+                                                        if 'xhdpi' in val.keys():
+                                                                val['image_link']=val.pop('xhdpi')
+                                                                new_result.append(val)
+                                                        elif 'hdpi' in val.keys():
+                                                                val['image_link']=val.pop('hdpi')
+                                                                new_result.append(val)
+                                                        elif 'mdpi' in val.keys():
+                                                                val['image_link']=val.pop('mdpi')
+                                                                new_result.append(val)
+                                                        elif 'ldpi' in val.keys():
+                                                                val['image_link']=val.pop('ldpi')
+                                                                new_result.append(val)
 
-                                        return {"error": False,
-                                                "success": True,
-                                                "result": new_result,
-                                                }
+                                                return {"error": False,
+                                                        "success": True,
+                                                        "result": new_result,
+                                                        }
 
-                                except Exception,e:
+                                        except Exception,e:
                                         
-                                        return {"error": False,
-                                                "success": True,
-                                                "result": "This is probably the oldest news",
-                                                }
+                                                return {"error": False,
+                                                        "success": True,
+                                                        "result": "This is probably the oldest news",
+                                                        }
 
-                        else:
-                                pass
+                                else:
+                                        pass
+                else:
+                        print 'eeeee'
+                        result = elasticsearch_db.ElasticSearchApis.do_query(text_to_search=args['search'])
+                        result = sorted(result,key=itemgetter('publish_epoch'),reverse=True)
+                        return result
                 
                 """
                 if not args['news_id']:
