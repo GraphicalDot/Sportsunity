@@ -127,13 +127,13 @@ class TennisBbc:
                                 news_dict.update({"website": "www.bbci.co.uk", "summary": summarization_instance.summarization(full_text),'custom_summary':\
                                         summary, "news": full_text, "image_link":image_link,'gmt_epoch':gmt_epoch ,'publish_epoch': publish_epoch, "day": day, "month":\
                                         month, "year": year, 'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi':\
-                                        all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime()),"type":"tennis"})
+                                        all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime()),"type":"tennis",'favicon':'http://www.bbc.com/favicon.ico'})
 
                         except:
                                 news_dict.update({"website": "www.bbci.co.uk", "summary": summary,'custom_summary':summary, "news":\
                                         full_text, "image_link":image_link,'gmt_epoch':gmt_epoch ,'publish_epoch': publish_epoch, "day": day, "month":\
                                         month, "year": year, 'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi':\
-                                        all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime()),"type":"tennis"})
+                                        all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime()),"type":"tennis",'favicon':'http://www.bbc.com/favicon.ico'})
                                 
 
                         if not full_text == " " and not news_dict['summary'] == " ...Read More":

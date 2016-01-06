@@ -99,7 +99,7 @@ class CricketBbc:
                         month = strp_time_object.tm_mon
                         year = strp_time_object.tm_year
                         publish_epoch = time.mktime(strp_time_object)
-			gmt_epoch = calendar.timegm(time.gmtime(publish_epoch))
+			gmt_epoch = time.mktime(time.gmtime(publish_epoch))
                        
  
 
@@ -134,10 +134,10 @@ class CricketBbc:
                                 news_dict.update({"website": "www.bbci.co.uk", "summary":summarization_instance.summarization(full_text),\
                                         "custom_summary":summary, "news": full_text, "image_link":image_link, 'gmt_epoch':gmt_epoch,'publish_epoch': publish_epoch,\
                                         "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],'type':'cricket','mdpi':\
-                                        all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())})
+                                        all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime()),'favicon':'http://www.bbc.co.uk/favicon.ico'}})
 
                         except:
-                                news_dict.update({"website": "www.bbci.co.uk", "summary":summary,\
+                                news_dict.update({"website": "www.bbci.co.uk", "summary":summary,'favicon':'http://www.bbc.co.uk/favicon.ico',\
                                         "custom_summary":summary, "news": full_text, "image_link":image_link, 'gmt_epoch':gmt_epoch,'publish_epoch': publish_epoch,\
                                         "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],'type':'cricket','mdpi':\
                                         all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())})

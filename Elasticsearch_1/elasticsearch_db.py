@@ -128,6 +128,11 @@ class ElasticSearchSetup(object):
                                                          "index":    "not_analyzed",
                                                         },
 
+                                                "favicon": {
+                                                        "type": "string",
+                                                        "index": "not_analyzed",
+                                                        },
+
                                                 "year" : {
                                                         "type" : "long",
                                                          "index":    "not_analyzed",
@@ -224,7 +229,7 @@ class ElasticSearchApis(object):
                 return wrapper
 
         @staticmethod
-        def do_query(text_to_search, skip=0, limit=10):
+        def do_query(argument,text_to_search, skip,limit,timestamp, direction):
 		"""
                 This method of this class first tries to match the exact query searched by the user
                 If the original query doesnt returns any results then it tries to call another method 
@@ -256,16 +261,21 @@ class ElasticSearchApis(object):
                 
                 
                 """
-                result = ElasticSearchApis.exact_match(text_to_search, skip, limit)          
+
+
+
+                result = ElasticSearchApis.exact_match(argument, text_to_search, skip, limit, timestamp, direction)          
                 if not result:
-                        result = ElasticSearchApis.proximity_search(text_to_search, skip, limit)          
-                        
+                        try:
+                                result = ElasticSearchApis.proximity_search(argument,text_to_search, skip, limit, timestamp, direction)
+                        except Exception,e:
+                                print e
                 
                 if not result:
-                        result = ElasticSearchApis.fuzzy_match(text_to_search, skip, limit)          
+                        result = ElasticSearchApis.fuzzy_match(argument,text_to_search, skip, limit, timestamp, direction)          
                 
                 if not result:
-                        result = ElasticSearchApis.token_search(text_to_search, skip, limit)          
+                        result = ElasticSearchApis.token_search(argument,text_to_search, skip, limit, timestamp, direction)          
                 return result
 
 
@@ -273,39 +283,184 @@ class ElasticSearchApis(object):
 
         @staticmethod
         @process_result
-        def exact_match(text_to_search, skip=0, limit=10):
-                """
-                Searches fr the exact result in the data 
-                """
-	        exact_phrase_search_body = {
-                            "_source": SOURCE,
-                            "query": {
-                                    "match_phrase": {
-                                            "news_autocomplete": {
-                                                    "query":    text_to_search,
+        def exact_match(argument,text_to_search, skip, limit, timestamp, direction):
+                        print "exact match"
+                        """
+                        Searches fr the exact result in the data 
+                        """
+
+                        print timestamp
+                        print direction
+                        
+                        if direction == "up":
+
+                                refresh = "gt"
+
+                                """
+
+	                        exact_phrase_search_body = {
+                                            "_source": SOURCE+[argument],
+                                            "query": {
+                                                "bool": {
+                                                    "must": [
+                                                      {
+                                                        "match_phrase": {
+                                                            "news_autocomplete": {
+                                                                    "query":    text_to_search,
+                                                                            }
                                                             }
-                                                }
-                                        },
-                            "from": skip, 
-                            "size": limit, 
-                             }
+                                                        },
+                                                      {
+                                                        "range": {
+                                                            "publish_epoch": {
+                                                                    "gt": timestamp
+                                                            }
+                                                        }
+                                                    }]}},
+                                            "from": skip, 
+                                            "size": limit, 
+                                            }
+                                   """
 
-                result = ES_CLIENT.search(index="news", doc_type="news", body=exact_phrase_search_body)
-                return result
 
+                        elif direction == "down":
+
+                                refresh = "lt"
+
+                        try:
+
+                                
+                                exact_phrase_search_body = {
+                                            "_source": SOURCE+[argument],
+                                            "min_score": 0.3,
+                                            "query": {
+                                                #"bool": {
+                                                    #"must": [
+                                                    "and": [
+                                                      {
+                                                    "match_phrase": {
+                                                            "news_autocomplete": {
+                                                                    "query":    text_to_search,
+                                                                            }
+                                                            }
+                                                    },
+                                                  {
+                                                    "range": {
+                                                        "publish_epoch": {
+                                                             refresh: timestamp
+                                                             }
+                                                        }
+                                                    }]},
+                                            "from": skip, 
+                                            "size": limit, 
+                                            }
+
+                        except Exception as e:
+                                pass
+
+
+                        if not direction and not timestamp:
+                                exact_phrase_search_body = {
+                                        "_source": SOURCE+[argument],
+                                        "query": {
+                                                "match_phrase": {
+                                                        "news_autocomplete": {
+                                                                "query":    text_to_search,
+                                                                        }
+                                                        }
+                                                },
+                                        "from": skip,
+                                        "size": limit,
+                                        }
+
+                        print exact_phrase_search_body
+                        result = ES_CLIENT.search(index="news", doc_type="news", body=exact_phrase_search_body)
+		        return result
+                        
         
         @staticmethod
         @process_result
-        def token_search(text_to_search, skip=0, limit=10):
+        def token_search(argument,text_to_search, skip, limit, timestamp, direction):
+                print "token"
                 """
                 It will work as follows
                     if text_to_search = "chelsea midfield"
 				matches for articles that have both chelsea and midfield
 
                 """
-        
-                token_search_body = {                                                 
-                                "_source": SOURCE,
+                
+                if not timestamp:
+                        timestamp = None
+                
+                if direction == "up":
+
+                        refresh = "gt"
+
+                        """
+                        token_search_body = {
+                                "_source": SOURCE+[argument],
+                                "query": {
+                                    "bool": {
+                                        "must": [
+                                        {
+                                           "match": {
+                                                "news_autocomplete": {
+                                                        "query":    text_to_search,
+                                                        "operator": "and"
+                                                                    }
+                                                }
+                                        },
+                                        {
+                                           "range": {
+                                                "publish_epoch": {
+                                                        "gt": timestamp
+                                                        }
+                                                }
+                                        }]}},
+                                "from" : skip,
+                                "size" : limit,
+                                }
+                            """
+
+                elif direction == "down":
+
+                        refresh = "lt"
+
+                try:
+
+
+                        token_search_body = { 
+                                "_source": SOURCE+[argument],
+                                "min_score":0.3,
+                                "query": {
+                                    #"bool": {
+                                        #"must": [
+                                        "and": [
+                                        {
+                                            "match": {
+                                                 "news_autocomplete": {
+                                                         "query":    text_to_search,
+                                                         "operator": "and"
+                                                                     }
+                                                   }
+                                         },
+                                         {
+                                             "range": {
+                                                  "publish_epoch": {
+                                                           refresh: timestamp
+                                                           }
+                                                  }
+                                          }]},
+                                "from": skip, 
+                                "size": limit, 
+                                }
+
+                except Exception as e:
+                        pass
+                                
+                if not direction and not timestamp:
+                        token_search_body = {                                                 
+                                "_source": SOURCE+[argument],
                                 "query": {
                                         "match": {
                                                 "news_autocomplete": {
@@ -318,18 +473,20 @@ class ElasticSearchApis(object):
                                 "from": skip,
                                 "size": limit,
                                 }
+                
 
 
 
                 result = ES_CLIENT.search(index="news", doc_type="news", body=token_search_body)
-                return result
+		return result
 
 
 
 
         @staticmethod
         @process_result
-        def proximity_search(text_to_search, skip=0, limit=10):
+        def proximity_search(argument,text_to_search, skip, limit, timestamp, direction):
+                print "proxy"
                 """
                 Sometimes a phrase match can be too restrictive. What if we’re not really interested in a precise match, but we’d rather 
                 retrieve documents where the query terms occur somehow close to each other. This is an example of proximity search: the 
@@ -342,29 +499,103 @@ class ElasticSearchApis(object):
                     it will search all the three terms in the whole article whether all the three terms in same sentence or in different sentence
                 """
 
-                proximity_search_body = {
-                        "_source": SOURCE,         
-                        "query": {
-                                "match_phrase": {
-                                        "news_autocomplete": {
+                if direction == "up":
+
+                        refresh = "gt"
+
+                        """
+                        proximity_search_body = {
+                                "_source": SOURCE+[argument],
+                                "query": {
+                                    "bool": {
+                                        "must": [
+                                            {
+                                                "match_phrase": {
+                                                        "news_autocomplete": {
+                                                        "query": text_to_search,
+                                                        "slop": 10000
+                                                                }
+                                                        }
+                                             },
+                                             {
+                                                "range": {
+                                                     "publish_epoch": {
+                                                              "gt": timestamp
+                                                                }
+                                                        }
+                                             }]}
+                                    },
+                                                                
+                                "from": skip,
+                                "size": limit,
+                                    }
+        
+                            """
+
+                elif direction == "down":
+
+                        refresh = "lt"
+
+                try:    
+
+                        proximity_search_body = {
+                               "_source": SOURCE+[argument],
+                               "min_score": 0.3,
+                                "query": {
+                                    #"bool": {
+                                        #"must": [
+                                        "and": [ 
+                                            {
+                                                "match_phrase": {
+                                                        "news_autocomplete": {
+                                                        "query": text_to_search,
+                                                        "slop": 10000
+                                                                }
+                                                        }
+                                             },
+                                             {
+                                                "range": {
+                                                     "publish_epoch": {
+                                                              refresh: timestamp
+                                                                }
+                                                        }
+                                             }]},
+                                    
+                                                                 
+                                "from": skip,
+                                "size": limit,
+                                    }
+
+                except Exception as e:
+                        pass 
+
+                if not direction and not timestamp:
+
+                        proximity_search_body = {
+                                "_source": SOURCE+[argument],         
+                                "query": {
+                                        "match_phrase": {
+                                                "news_autocomplete": {
                                                 "query": text_to_search,
                                                 "slop": 10000
+                                                        }
                                                 }
-                                },
+                                        },
                         "from": skip,
                         "size": limit,
-                            }
                                     }
 
                 result = ES_CLIENT.search(index="news", doc_type="news", body=proximity_search_body)
                 return result
+		
 
 
 
 
         @staticmethod
         @process_result
-        def fuzzy_match(text_to_search, skip=0, limit=10):
+        def fuzzy_match(argument,text_to_search, skip, limit, timestamp, direction):
+                print "fuzzy"
                 """
                 Matches text to search on the basis of levenshtein algorithm
                 Args:
@@ -383,8 +614,79 @@ class ElasticSearchApis(object):
                             List of articles satisfying the query withfields mentioned in SOURCE
                 """
 
-                fuzzy_search_body = {
-                            "_source": SOURCE,
+
+                if direction == "up":
+
+                        refresh = "gt"
+
+                        """
+                        fuzzy_search_body = {
+                            "_source": SOURCE+[argument],
+                            "query": {
+                                "bool": {
+                                    "must": [
+                                    {
+                                        "match": {
+                                                "news_autocomplete": {
+                                                    "query":     text_to_search,
+                                                    "fuzziness": 10,
+                                                    "operator":  "and"
+                                                        }
+                                                }
+                                    },
+                                    {
+                                        "range": {
+                                                "publish_epoch": {
+                                                    "gt": timestamp
+                                                        }
+                                                }
+                                    }]}
+                                },
+                            "from": skip,
+                            "size": limit,
+                            }
+                        """
+
+                elif direction == "down":
+
+                        refresh = "lt"
+
+                try:
+
+                        fuzzy_search_body = {
+                            "_source": SOURCE+[argument],
+                            "min_score": 0.3,
+                            "query": {
+                                #"bool": {
+                                    #"must": [
+                                    "and": [
+                                    {
+                                        "match": {
+                                                "news_autocomplete": {
+                                                    "query":     text_to_search,
+                                                    "fuzziness": 10,
+                                                    "operator":  "and"
+                                                        }
+                                                }
+                                    },
+                                    {
+                                        "range": {
+                                                "publish_epoch": {
+                                                    refresh: timestamp
+                                                        }
+                                                }
+                                    }]
+                                },
+                            "from": skip,
+                            "size": limit,
+                            }
+
+                except Exception as e:
+                        pass 
+
+                if not direction and not timestamp:
+                        fuzzy_search_body = {
+                            "_source": SOURCE+[argument],
                             "query": {
                                     "match": {
                                         "news_autocomplete": {
@@ -394,14 +696,15 @@ class ElasticSearchApis(object):
                                         }
                                             }
                                 },
+
                             "from": skip, 
                             "size": limit,
                       }
 
 
                 result = ES_CLIENT.search(index="news", doc_type="news", body=fuzzy_search_body)
-
                 return result
+		
 
 
                 
@@ -447,6 +750,7 @@ class PopulateElasticSearch(object):
 
 
                 __result = ES_CLIENT.search(index="news", doc_type="news", body=__all)
+                print __result
                 
                 try:
                         last_epoch = [l["_source"] for l in __result["hits"]["hits"]][0]["publish_epoch"]
@@ -507,9 +811,10 @@ class PopulateElasticSearch(object):
 
 if __name__ == "__main__":
         
-        #ElasticSearchSetup(renew_indexes=True)
-        #PopulateElasticSearch()
-        print ElasticSearchApis.do_query(text_to_search="india")
+        ElasticSearchSetup(renew_indexes=True)
+        PopulateElasticSearch()
+        print ElasticSearchApis.do_query(argument='hdpi',text_to_search="johnsan")
+        print SOURCE
 
 
 

@@ -127,9 +127,10 @@ class FormulaCrash:
 				news_dict.update({"website": "www.motorsport.com", "summary": summarization_instance.summarization(full_text),\
 						"custom_summary":summary, "news": full_text, "image_link":image_link,'gmt_epoch':gmt_epoch ,'publish_epoch':\
 						publish_epoch, "day": day, "month": month, "year": year, 'ldpi': all_formats_image['ldpi'],\
-						'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime()),'type':'f1'})
+						'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime()),'type':\
+						'f1','favicon':'http://www.motorsport.com/favicon.ico'})
 			except:
-				news_dict.update({"website": "www.motorsport.com", "summary": summary,\
+				news_dict.update({"website": "www.motorsport.com", "summary": summary,'favicon':'http://www.motorsport.com/favicon.ico',\
 						"custom_summary":summary, "news": full_text, "image_link":image_link,'gmt_epoch':gmt_epoch ,'publish_epoch':\
 						publish_epoch, "day": day, "month": month, "year": year, 'ldpi': all_formats_image['ldpi'],\
 						'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime()),'type':'f1'})

@@ -2,7 +2,7 @@
 
 import requests
 from bs4 import BeautifulSoup
-
+import pprint
 
 
 
@@ -29,7 +29,7 @@ class BattingRecords:
                                 stat[3].string,'notouts':stat[4].string,'runs':int(stat[5].string),'highst':stat[6].string}
                         self.stats_list.append(_dict)
                 
-                print self.stats_list
+                pprint.pprint(self.stats_list)
 
 
 if __name__=='__main__':

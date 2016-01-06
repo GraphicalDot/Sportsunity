@@ -128,13 +128,13 @@ class TennisWta:
                                 news_dict.update({"website": "www.wtatennis.com", "summary": summarization_instance.summarization(full_text),'custom_summary':\
                                         summary, "news": full_text, "image_link":image_link,'gmt_epoch':gmt_epoch ,'publish_epoch': publish_epoch, "day": day, "month":\
                                         month, "year": year, 'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi':\
-					all_formats_image['hdpi'], "time_of_storing":time.mktime(time.localtime()),'type':'tennis'})
+					all_formats_image['hdpi'], "time_of_storing":time.mktime(time.localtime()),'type':'tennis','favicon':'http://www.wtatennis.com/i/wtaTennis/global/favicon.ico'})
 
                         except:
                                 news_dict.update({"website": "www.wtatennis.com", "summary": summary,"custom_summary": summary, "news":\
                                         full_text, "image_link":image_link,'gmt_epoch':gmt_epoch ,'publish_epoch': publish_epoch, "day": day, "month":\
                                         month, "year": year, 'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi':\
-                                        all_formats_image['hdpi'], "time_of_storing":time.mktime(time.localtime()),'type':'tennis'})
+					all_formats_image['hdpi'], "time_of_storing":time.mktime(time.localtime()),'type':'tennis','favicon':'http://www.wtatennis.com/i/wtaTennis/global/favicon.ico'})
 
                         if not full_text == " " and not news_dict['summary'] == " ...Read More":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))

@@ -88,9 +88,9 @@ class NewsApi(restful.Resource):
                 projection = {"summary": True,"custom_summary":True,"title":True,"website":True, "news_id":\
                         True, "published": True, "publish_epoch": True, "news_link": True, "type": True,'gmt_epoch':True}
 
-                projection.update({args["image_size"]: True})
+                projection.update({args["image_size"]: True, "_id":True, "time_of_storing":True})
 
-                projection.update({"_id": False, "favicon":True})
+                projection.update({"_id": False, "favicon":True, "day":True, "month":True, "year":True, "ldpi":True, "mdpi":True, "hdpi":True})
 
                 
                 if not args['search']:
@@ -291,18 +291,18 @@ class NewsApi(restful.Resource):
                                                 new_result = []
 
                                                 for val in result:
-                                                        if 'xhdpi' in val.keys():
-                                                                val['image_link']=val.pop('xhdpi')
-                                                                new_result.append(val)
-                                                        elif 'hdpi' in val.keys():
-                                                                val['image_link']=val.pop('hdpi')
-                                                                new_result.append(val)
-                                                        elif 'mdpi' in val.keys():
-                                                                val['image_link']=val.pop('mdpi')
-                                                                new_result.append(val)
-                                                        elif 'ldpi' in val.keys():
-                                                                val['image_link']=val.pop('ldpi')
-                                                                new_result.append(val)
+                                                        #if 'xhdpi' in val.keys():
+                                                        val['image_link']=val.pop(args['image_size'])
+                                                        new_result.append(val)
+                                                        #elif 'hdpi' in val.keys():
+                                                         #       val['image_link']=val.pop('hdpi')
+                                                          #      new_result.append(val)
+                                                        #elif 'mdpi' in val.keys():
+                                                         #       val['image_link']=val.pop('mdpi')
+                                                          #      new_result.append(val)
+                                                        #elif 'ldpi' in val.keys():
+                                                         #       val['image_link']=val.pop('ldpi')
+                                                          #      new_result.append(val)
 
                                                 return {"error": False,
                                                         "success": True,
@@ -318,11 +318,42 @@ class NewsApi(restful.Resource):
 
                                 else:
                                         pass
-                else:
-                        print 'eeeee'
-                        result = elasticsearch_db.ElasticSearchApis.do_query(text_to_search=args['search'])
-                        result = sorted(result,key=itemgetter('publish_epoch'),reverse=True)
-                        return result
+                elif args['search']:
+                        if not args['timestamp'] and not args['direction']:
+                                args['timestamp'] = None
+                                args['direction'] = None
+
+                                print 'eeeee'
+                                result = elasticsearch_db.ElasticSearchApis.do_query(argument=args['image_size'],text_to_search=args['search'],skip=args['skip'],limit=args['limit'],\
+                                        timestamp=args['timestamp'],direction=args['direction'])
+                                result = sorted(result,key=itemgetter('publish_epoch'),reverse=True)
+                                result = result[args['skip']:]
+                                new_result = []
+                                for val in result:
+                                        val['image_link']=val.pop(args['image_size'])
+                                        new_result.append(val)
+                                
+                                return {"error": False,
+                                        "success": True,
+                                        "result":new_result,
+                                        }
+
+                        elif args['timestamp'] and args['direction']:
+                                print "pooppooppo"
+                                
+                                result = elasticsearch_db.ElasticSearchApis.do_query(argument=args['image_size'],text_to_search=args['search'],skip=args['skip'],limit=args['limit'],\
+                                        timestamp=args['timestamp'],direction=args['direction'])
+                                result = sorted(result,key=itemgetter('publish_epoch'),reverse=True)
+                                new_result = []
+                                for val in result:
+                                        val['image_link']=val.pop(args['image_size'])
+                                        new_result.append(val)
+
+                                return {"error": False,
+                                        "success": True,
+                                        "result":new_result,
+                                        }
+
                 
                 """
                 if not args['news_id']:

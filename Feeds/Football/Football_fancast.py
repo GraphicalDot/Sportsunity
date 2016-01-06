@@ -124,12 +124,12 @@ class FootballFancast:
 						"custom_summary":summary, "news": full_text, "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch':\
 						publish_epoch, "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],\
 						'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing": \
-						time.mktime(time.localtime()),'type':'football'})
+						time.mktime(time.localtime()),'type':'football','favicon':'http://www.footballfancast.com/favicon.ico'})
                         except:
                                 news_dict.update({"website": "www.footballfancast.com", "summary": summary, "custom_summary":summary, "news": full_text,\
                                         "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch': publish_epoch, "day": day, "month": month, "year": year,\
                                         'ldpi': all_formats_image['ldpi'], 'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],\
-					"time_of_storing": time.mktime(time.localtime()),'type':'football'})
+					"time_of_storing": time.mktime(time.localtime()),'type':'football','favicon':'http://www.footballfancast.com/favicon.ico'})
 
                         if not full_text == " " and not news_dict['summary'] == " ...Read More":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))

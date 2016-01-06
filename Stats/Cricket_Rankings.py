@@ -4,7 +4,7 @@
 from bs4 import BeautifulSoup
 import requests
 import pymongo
-    
+import pprint    
 
 class CricketRanking:
 
@@ -15,6 +15,8 @@ class CricketRanking:
                 self.odi_list = list()
                 self.t20_list = list()
                 connection = pymongo.MongoClient()
+                db = connection.admin
+                db.authenticate('shivam','mama123')
                 db = connection.drake
                 self.cricket_stats = db.cricket_stats
         
@@ -43,6 +45,8 @@ class CricketRanking:
                         except:
                             pass
                 self.cricket_stats.update({"format":"Test"},{"$set":{'ranking':self.test_list}},upsert=True)
+                pprint.pprint(self.test_list)
+                print
         
 
         def odi_ranking(self):
@@ -54,7 +58,8 @@ class CricketRanking:
                         except:
                             pass
                 self.cricket_stats.update({"format":"Odi"},{"$set":{'ranking':self.odi_list}},upsert=True)
-
+                pprint.pprint(self.odi_list)
+                print
                                 
         def t20_ranking(self):
                 for x in self.soup.findAll('table',{'class':'StoryengineTable'})[2].findAll('tr'):
@@ -65,7 +70,7 @@ class CricketRanking:
                         except:
                             pass
                 self.cricket_stats.update({"format":"T20"},{"$set":{'ranking':self.t20_list}},upsert=True)
-
+                pprint.pprint(self.t20_list)
 
 
 
