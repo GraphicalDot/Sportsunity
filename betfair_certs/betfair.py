@@ -1,10 +1,5 @@
 #!/usr/bin/env python
 
-import os.path
-import sys
-basepath = os.path.dirname(__file__)
-filepath = os.path.abspath(os.path.join(basepath,'betfair_certs'))
-print filepath
 import requests
 import pprint
 import json
@@ -14,8 +9,9 @@ import datetime
 payload = 'username=sportsunity&password=su@bet432'
 headers = {'X-Application': 'Y0yB2Zob0L0dSONJ', 'Content-Type': 'application/x-www-form-urlencoded'}
 res = requests.post('https://identitysso.betfair.com/api/certlogin', data=payload, cert='client-2048.pem', headers=headers)
+print res.content
 session_token = json.loads(res.content)['sessionToken']
-print session_token
+
 
 class BetfairOdds:
     

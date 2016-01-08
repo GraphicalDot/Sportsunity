@@ -2,6 +2,7 @@
 
 from elasticsearch import Elasticsearch
 import requests
+import pymongo
 import json
 from pyfiglet import figlet_format
 from termcolor import cprint
@@ -11,6 +12,10 @@ ES_CLIENT = Elasticsearch()
 class GetTeams:
 
         def __init__(self,renew_indexes=False):
+
+                conn = pymongo.MongoClient()
+                db = conn.stats
+                self.cricket_teams = db.cricket_teams
 
                 self.settings={'settings': {'analysis': {'analyzer': {'custom_analyzer': {'filter': ['lowercase',
         'asciifolding'],
@@ -91,6 +96,8 @@ class GetTeams:
                 data = json.loads(response.content)
                 for team in data['data']:
                         print ES_CLIENT.index(index="teams", doc_type="teams", body=team)
+                for team in cricket_teams.find(projection={'_id':False,'type':False}):
+                    print ES_CLIENT.index(index="teams", doc_type="teams", body=team)
 
 
 

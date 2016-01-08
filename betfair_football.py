@@ -11,7 +11,7 @@ class BetfairOdds:
     def __init__(self):
         self.endpoint = "https://api-au.betfair.com/exchange/betting/rest/v1/"
         self.endpoint_uk = "https://api.betfair.com/exchange/betting/rest/v1/"
-        self.headers = {'X-Application': 'Y0yB2Zob0L0dSONJ', 'X-Authentication': '00yj1cCIAC0t+53kc0ODiPTpWIpTejlH4y99UYd+o80=', 'content-type': 'application/json'}
+        self.headers = {'X-Application': 'Y0yB2Zob0L0dSONJ', 'X-Authentication': 'J5D8ZZ9vMNiI2dGlXV6hNnNHJeF8dbHEgtjffe4vW6c=', 'content-type': 'application/json'}
         self.list_of_competitions = []
         self.list_of_market = []
         self.dict1 = {}

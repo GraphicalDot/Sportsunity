@@ -26,7 +26,7 @@ class GetTeam(restful.Resource):
 
         return {'error':False,
                 'success':True,
-                'result':result}
+                'data':result}
 
 class GetLeague(restful.Resource):
         
@@ -39,7 +39,7 @@ class GetLeague(restful.Resource):
 
         return {'error': False,
                 'success': True,
-                'result': result}
+                'data': result}
 
 class GetPlayer(restful.Resource):
 
@@ -54,7 +54,7 @@ class GetPlayer(restful.Resource):
 
         return {'error': False,
                 'success': True,
-                'result': result}
+                'data': result}
 
 api.add_resource(GetTeam, "/fav_team")
 api.add_resource(GetLeague, "/fav_league")

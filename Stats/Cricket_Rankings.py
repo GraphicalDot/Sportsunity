@@ -19,22 +19,11 @@ class CricketRanking:
                 db.authenticate('shivam','mama123')
                 db = connection.drake
                 self.cricket_stats = db.cricket_stats
+                db1 = connection.admin
+                db1.authenticate('shivam','mama123')
+                db1 = connection.stats
+                self.cricket_teams = db1.cricket_teams
         
-        """
-        def odi_ranking(self):
-                for x in self.soup.find_all('table',{'class':'tableizer-table'}):
-                        ranks = x.find_all('tr')
-
-                for rank in ranks:
-                        data=rank.find_all('td')
-                        try:
-                            self.rank_list.append({'rank':data[0].string, 'team':data[1].string, 'matches':data[2].string, 'points':\
-                                    data[3].string, 'rating':data[4].string})
-                        except:
-                            pass
-                
-                print self.rank_list
-        """
 
         def test_ranking(self):
                 for x in self.soup.findAll('table',{'class':'StoryengineTable'})[0].findAll('tr'):
@@ -42,10 +31,11 @@ class CricketRanking:
                             _dict = {'team':x.findAll('td')[0].string,'matches':x.findAll('td')[1].string,'points':\
                                     x.findAll('td')[2].string,'rating':x.findAll('td')[3].string}
                             self.test_list.append(_dict)
+                            #print {'team':x.findAll('td')[0].string}
                         except:
                             pass
                 self.cricket_stats.update({"format":"Test"},{"$set":{'ranking':self.test_list}},upsert=True)
-                pprint.pprint(self.test_list)
+                #pprint.pprint(self.test_list)
                 print
         
 
@@ -55,10 +45,11 @@ class CricketRanking:
                             _dict = {'team':x.findAll('td')[0].string,'matches':x.findAll('td')[1].string,'points':\
                                     x.findAll('td')[2].string,'rating':x.findAll('td')[3].string}
                             self.odi_list.append(_dict)
+                            self.cricket_teams.update({'team':x.findAll('td')[0].string},{'$set':{'team':x.findAll('td')[0].string,'league_id':'','season':'','team_id':'','flag_image':''}},upsert = True)
                         except:
                             pass
                 self.cricket_stats.update({"format":"Odi"},{"$set":{'ranking':self.odi_list}},upsert=True)
-                pprint.pprint(self.odi_list)
+                #pprint.pprint(self.odi_list)
                 print
                                 
         def t20_ranking(self):
@@ -70,7 +61,7 @@ class CricketRanking:
                         except:
                             pass
                 self.cricket_stats.update({"format":"T20"},{"$set":{'ranking':self.t20_list}},upsert=True)
-                pprint.pprint(self.t20_list)
+                #pprint.pprint(self.t20_list)
 
 
 
