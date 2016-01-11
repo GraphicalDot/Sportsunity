@@ -53,32 +53,32 @@ class GetPlayers:
                 db = conn.mydb
                 self.mycollection = db.mycollection
                 
-                db1 = conn.stats
-                self.cricket_players = db1.cricket_players
+                #db1 = conn.stats
+                #self.cricket_players = db1.cricket_players
 
-                if not ES_CLIENT.indices.exists("players"):
+                if not ES_CLIENT.indices.exists("football_players"):
                         self.prep_teams_index()
                         self.index_data()
 
                 if renew_indexes:
-                        ES_CLIENT.indices.delete(index="players")
+                        ES_CLIENT.indices.delete(index="football_players")
                         self.prep_teams_index()
                         self.index_data()
 
 
         def prep_teams_index(self):
-                ES_CLIENT.indices.create(index="players", body=self.settings)
-                ES_CLIENT.indices.put_mapping(index="players", doc_type="players", body = {"players": self.mappings })
-                a = "Mappings updated for  {0}".format("players")
+                ES_CLIENT.indices.create(index="football_players", body=self.settings)
+                ES_CLIENT.indices.put_mapping(index="football_players", doc_type="football_players", body = {"football_players": self.mappings })
+                a = "Mappings updated for  {0}".format("football_players")
                 cprint(figlet_format(a, font='starwars'), attrs=['bold'])
                 
 
         
         def index_data(self):
                 for player in self.mycollection.find(projection={'_id':False}):
-                        print ES_CLIENT.index(index='players',doc_type='players',body=player)
-                for player in self.cricket_players.find(projection={'_id':False}):
-                        print ES_CLIENT.index(index='players',doc_type='players',body=player)
+                        print ES_CLIENT.index(index='football_players',doc_type='football_players',body=player)
+                #for player in self.cricket_players.find(projection={'_id':False}):
+                        #print ES_CLIENT.index(index='players',doc_type='players',body=player)
 
 
 if __name__=="__main__":

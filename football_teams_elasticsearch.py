@@ -13,9 +13,6 @@ class GetTeams:
 
         def __init__(self,renew_indexes=False):
 
-                conn = pymongo.MongoClient()
-                db = conn.stats
-                self.cricket_teams = db.cricket_teams
 
                 self.settings={'settings': {'analysis': {'analyzer': {'custom_analyzer': {'filter': ['lowercase',
         'asciifolding'],
@@ -53,21 +50,21 @@ class GetTeams:
         }}
 
 
-                if not ES_CLIENT.indices.exists("teams"):
+                if not ES_CLIENT.indices.exists("football_teams"):
                         self.prep_teams_index()
                         self.index_data()
 
                 if renew_indexes:
-                        ES_CLIENT.indices.delete(index="teams")
+                        ES_CLIENT.indices.delete(index="football_teams")
                         self.prep_teams_index()
                         self.index_data()
 
 
         def prep_teams_index(self):
-                ES_CLIENT.indices.create(index="teams", body=self.settings)
-                ES_CLIENT.indices.put_mapping(index="teams", doc_type="teams", body = {"teams": self.mappings })
-                a = "Mappings updated for  {0}".format("teams")
-                cprint(figlet_format(a, font='mini'), attrs=['bold'])
+                ES_CLIENT.indices.create(index="football_teams", body=self.settings)
+                ES_CLIENT.indices.put_mapping(index="football_teams", doc_type="football_teams", body = {"football_teams": self.mappings })
+                a = "Mappings updated for  {0}".format("football_teams")
+                cprint(figlet_format(a, font='starwars'), attrs=['bold'])
                 
 
         
@@ -75,30 +72,27 @@ class GetTeams:
                 response = requests.get('http://52.74.142.219:8000/get_league_standings?league_id=1269')
                 data = json.loads(response.content)
                 for team in data['data']:
-                        print ES_CLIENT.index(index="teams", doc_type="teams", body=team)
+                        print ES_CLIENT.index(index="football_teams", doc_type="football_teams", body=team)
 
                 response = requests.get('http://52.74.142.219:8000/get_league_standings?league_id=1399')
                 data = json.loads(response.content)
                 for team in data['data']:
-                        print ES_CLIENT.index(index="teams", doc_type="teams", body=team)
+                        print ES_CLIENT.index(index="football_teams", doc_type="football_teams", body=team)
                 
                 response = requests.get('http://52.74.142.219:8000/get_league_standings?league_id=1229')  
                 data = json.loads(response.content)
                 for team in data['data']:
-                        print ES_CLIENT.index(index="teams", doc_type="teams", body=team)
+                        print ES_CLIENT.index(index="football_teams", doc_type="football_teams", body=team)
 
                 response = requests.get('http://52.74.142.219:8000/get_league_standings?league_id=1221')
                 data = json.loads(response.content)
                 for team in data['data']:
-                        print ES_CLIENT.index(index="teams", doc_type="teams", body=team)
+                        print ES_CLIENT.index(index="football_teams", doc_type="football_teams", body=team)
 
                 response = requests.get('http://52.74.142.219:8000/get_league_standings?league_id=1204')
                 data = json.loads(response.content)
                 for team in data['data']:
-                        print ES_CLIENT.index(index="teams", doc_type="teams", body=team)
-                for team in cricket_teams.find(projection={'_id':False,'type':False}):
-                    print ES_CLIENT.index(index="teams", doc_type="teams", body=team)
-
+                        print ES_CLIENT.index(index="football_teams", doc_type="football_teams", body=team)
 
 
 if __name__=="__main__":
