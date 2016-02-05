@@ -21,18 +21,46 @@ class TopCricketPlayers:
 
     def get_players(self):
 
+        """
         table = self.soup.findAll("table", {"class":"StoryengineTable"})
         body = table[0].findAll("tbody")
         column=body[0].findAll("td")[2]
         names=column.findAll("a",{"class":"mblLinkTxt"})
 
         for name in names:
+            print name.text
             self.top_cricket_players.insert({'name':name.text})
         print 'stored'
 
+        """
 
+        table = self.soup.findAll('table',{'class':'cricket-allRecordsTable'})
+
+        for player in table[1].findAll('tr'):
+            try:
+
+                link = player.findAll('a')[1].get('href')
+                res = requests.get('http://www.thatscricket.com/'+link)
+                soup = BeautifulSoup(res.content)
+                #description = soup.find('div',{'class':'cricket-profileDesc'})
+                full_name=soup.find('div',{'class':'cricket-profileText'})
+                self.top_cricket_players.insert({'name':full_name.text})
+                print full_name.text
+
+            except Exception,e:
+                pass
+
+        """
+        for player in table[1].findAll('tr'):
+            try:
+                self.top_cricket_players.insert({'name':player.findAll('a')[1].text})
+            except Exception,e:
+                pass
+        """
+        
 def main():
-    obj = TopCricketPlayers('http://www.espncricinfo.com/ci/content/rss/feeds_rss_cricket.html')
+    #obj = TopCricketPlayers('http://www.espncricinfo.com/ci/content/rss/feeds_rss_cricket.html')
+    obj = TopCricketPlayers('http://www.thatscricket.com/statistics/')
     obj.get_players()
 
 

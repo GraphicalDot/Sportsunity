@@ -61,7 +61,7 @@ class BetfairOdds:
 
         pprint.pprint(self.list_of_market)
 
-        res = requests.get('http://52.74.142.219:8000/get_all_matches_list')
+        res = requests.get('http://52.74.75.79:8080/get_all_matches_list')
         list_of_recent_cricket_matches = json.loads(res.content)
 
         for x in self.list_of_market:

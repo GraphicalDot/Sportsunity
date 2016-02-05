@@ -13,19 +13,29 @@ class Squads:
                 
         def get_squads(self):
                 for s in self.soup.find_all('table',{'class':'tab-squad tab-squad-players'}):
+                    #images = s.find_all('img',{'imageprop':'image'})
                     rows=s.find_all('tr')
+                    print rows
                 
                 print termcolor.colored(self.team.upper(),"red")
                 print 
                 for row in rows:
+                        image=row.find('img')
                         squad=row.find_all('td')
                         try:
                             print 'Jersey: '+squad[1].string,'Name: '+squad[2].text,'Nationality: '+squad[3].find('span').get('title'),\
-                                    'Position: '+squad[4].string
+                                    'Position: '+squad[4].string, 'image: '+image.get('src') 
                             print 'Age: '+squad[5].string,'Games: '+squad[6].string,'Goals: '+squad[7].string,'Yellow: '+squad[9].string,'Red:\
-                                    '+squad[11].string
+                                    '+squad[11].string,
                         except:
                             pass
+
+                manager = self.soup.find('table',{'class':'tab-squad tab-squad-manager'})
+                manager_name = manager.find_all('td')
+                image = manager_name[0].find('img')
+                print
+                print image.get('src')
+                print manager_name[1].text
 
 def main():
         list_of_teams = ['athletic-club','atletico-madrid','barcelona','celta-de-vigo','deportivo-la-coruna','eibar',\

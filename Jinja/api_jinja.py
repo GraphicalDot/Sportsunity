@@ -79,7 +79,7 @@ api.add_resource(TennisCollection, "/tennisdata")
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0",port = 9200, debug = True)
+    app.run(host="0.0.0.0",port = 7200, debug = True)
 
 
 

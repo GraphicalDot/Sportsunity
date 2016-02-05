@@ -10,6 +10,7 @@ from PIL import Image
 import PIL
 import base64
 import requests
+import tinify
 import goose
 file_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(file_path)
@@ -70,9 +71,11 @@ class AmazonS3(object):
                 #response = urllib.urlopen(self.image_link)
                 #response = requests.get(self.image_link)
                 try:
-
+                    tinify.key = '2dlWoPbVdVhWTeXFPrbcCqLy0X8JGC_y'
                     response = urllib.urlopen(self.image_link)
-                    self.img = Image.open(StringIO(response.read()))
+                    source = response.read()
+                    source_new = tinify.from_buffer(source).to_buffer()
+                    self.img = Image.open(StringIO(source_new))
                 except Exception as e:
                     goose_instance = goose.Goose()
                     g = goose_instance.extract(self.image_link)
@@ -97,7 +100,8 @@ class AmazonS3(object):
                 
                 wpercent = (self.hdpi_size[0]/float(self.img.size[0]))
                 hsize = int((float(self.img.size[1])*float(wpercent)))
-                self.img_hdpi = self.img.resize((self.hdpi_size[0], hsize), Image.ANTIALIAS) 
+                self.img_hdpi = self.img.resize((self.hdpi_size[0], hsize), Image.ANTIALIAS)
+                print self.img_hdpi
 
 
                 wpercent = (self.xhdpi_size[0]/float(self.img.size[0]))
@@ -112,8 +116,10 @@ class AmazonS3(object):
                 hdpi, mdpi, xdpi
                 """
                 output = StringIO()
-                self.img_ldpi.save(output, self.image_format)
+                self.img_ldpi.save(output, self.image_format,optimize=True,quality=85)
                 self.img_ldpi_contents = output.getvalue()
+                #source = tinify.from_buffer(self.img_ldpi_contents)
+                #self.img_ldpi_contents = source.to_buffer()
                 key = self.news_id + "_ldpi.png"
                 ldpi_key = self.bucket.new_key(key)
                 ldpi_key.set_metadata('Content-Type', 'image/png')
@@ -124,7 +130,7 @@ class AmazonS3(object):
 
 
                 output = StringIO()
-                self.img_mdpi.save(output, self.image_format)
+                self.img_mdpi.save(output, self.image_format,optimize=True,quality=85)
                 key = self.news_id + "_mdpi.png"
                 mdpi_key = self.bucket.new_key(key)
                 mdpi_key.set_metadata('Content-Type', 'image/png')
@@ -133,7 +139,7 @@ class AmazonS3(object):
                 self.mdpi_image_url = mdpi_key.generate_url(0, query_auth=False, force_http=True)
                 
                 output = StringIO()
-                self.img_hdpi.save(output, self.image_format)
+                self.img_hdpi.save(output, self.image_format,optimize=True,quality=85)
                 key = self.news_id + "_hdpi.png"
                 hdpi_key = self.bucket.new_key(key)
                 hdpi_key.set_metadata('Content-Type', 'image/png')
@@ -153,7 +159,9 @@ class AmazonS3(object):
                 return
 
 
+
+
 if __name__ == "__main__":
-        i = AmazonS3(image_link='http://www.hindustantimes.com//images/2015/7/578a1c23-9809-41e4-a3f5-05d57acab824wallpaper1.jpg', news_id= 'd574f3211fb0bab45048ce4778613cc2')
+        i = AmazonS3(image_link='http://static.goal.com/2596000/2596052_heroa.jpg', news_id= 'd574f3211fb0bab45048ce4778613cc2')
         print i.run()
 

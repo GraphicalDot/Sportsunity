@@ -6,7 +6,7 @@ TIME_STAMP = "publish_epoch"
 
 ##Source: The fileds which will be returned per article 
 SOURCE = ['website', 'title', 'gmt_epoch', 'month', 'news_link', 'custom_summary', 'publish_epoch', \
-        'time_of_storing', 'year', 'news', 'news_id', 'summary', 'type', 'day', 'published', 'favicon']
+        'time_of_storing', 'year','news_id', 'summary', 'type', 'day', 'published', 'favicon']
 
 
 

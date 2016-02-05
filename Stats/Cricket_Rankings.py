@@ -35,7 +35,7 @@ class CricketRanking:
                         except:
                             pass
                 self.cricket_stats.update({"format":"Test"},{"$set":{'ranking':self.test_list}},upsert=True)
-                #pprint.pprint(self.test_list)
+                pprint.pprint(self.test_list)
                 print
         
 
@@ -49,7 +49,7 @@ class CricketRanking:
                         except:
                             pass
                 self.cricket_stats.update({"format":"Odi"},{"$set":{'ranking':self.odi_list}},upsert=True)
-                #pprint.pprint(self.odi_list)
+                pprint.pprint(self.odi_list)
                 print
                                 
         def t20_ranking(self):
@@ -61,7 +61,7 @@ class CricketRanking:
                         except:
                             pass
                 self.cricket_stats.update({"format":"T20"},{"$set":{'ranking':self.t20_list}},upsert=True)
-                #pprint.pprint(self.t20_list)
+                pprint.pprint(self.t20_list)
 
 
 

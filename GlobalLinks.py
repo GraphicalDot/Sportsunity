@@ -15,6 +15,8 @@ NDTV_CRICKET_FEED = "http://feeds.feedburner.com/NDTV-Cricket"  #ndtv sportsnews
 ESPN_CRIC_FEED = "http://www.espncricinfo.com/rss/content/story/feeds/0.xml"    #favicon_link - http://www.espncricinfo.com/favicon.ico
 BBC_CRIC_FEED = "http://feeds.bbci.co.uk/sport/0/cricket/rss.xml?edition=uk"    #favicon_link - http://www.bbc.co.uk/favicon.ico 
 CBUZ_CRIC_FEED = "http://live-feeds.cricbuzz.com/CricbuzzFeed" #criccbuzz sportsnews feed   #favicon_link - http://www.cricbuzz.com/favicon.ico
+REUT_CRIC_FEED1 = "http://feeds.reuters.com/reuters/INcricketNews?format=xml"
+REUT_CRIC_FEED = "http://mf.feeds.reuters.com/reuters/UKCricketNews"
 
 
 Fifa_dot_com = 'http://www.fifa.com/rss/index.xml'  #favicon_link - http://www.fifa.com/favicon.ico

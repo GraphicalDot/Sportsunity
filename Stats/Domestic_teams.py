@@ -32,6 +32,7 @@ class BigBash:
 
 def main():
     obj = BigBash("https://en.wikipedia.org/wiki/Indian_Premier_League")
+    #obj = BigBash('https://en.wikipedia.org/wiki/List_of_International_Cricket_Council_members')
     obj.get_teams()
 
 

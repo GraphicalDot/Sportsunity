@@ -13,17 +13,11 @@ class GetTeams:
         def __init__(self,renew_indexes=False):
 
                 self.settings={'settings': {'analysis': {'analyzer': {'custom_analyzer': {'filter': ['lowercase',
-        'asciifolding'],
-        'tokenizer': 'ngram_tokenizer', 'type':'custom'},
-        'keyword_analyzer': {'filter': ['lowercase', 'asciifolding'],
-        'tokenizer': 'keyword',
-        'type': 'custom'},
-        'shingle_analyzer': { 'filter': ['lowercase', 'asciifolding','shingle_tokenizer'],
-        'tokenizer': 'ngram_tokenizer',
-        'type': 'custom'}},
-        'filter': {'shingle_tokenizer': {'max_shingle_size': '5',
-        'min_shingle_size': '2',
-        'type': 'shingle'}},
+        'asciifolding','edge_ngram'],
+        'tokenizer': 'ngram_tokenizer', 'type':'custom'}},
+        'filter': {'edge_ngram': {'max_gram': '100',
+        'min_gram': '2',
+        'type': 'edge_ngram'}},
         'tokenizer': {'ngram_tokenizer': {'max_gram': '100',
         'min_gram': '2',
         'token_chars': ['letter', 'digit'],
@@ -59,7 +53,7 @@ class GetTeams:
 
         
         def index_data(self):
-                response = requests.get('http://52.74.142.219:8000/get_football_leagues')
+                response = requests.get('http://52.74.75.79:8000/get_football_leagues')
                 data = json.loads(response.content)
                 for league in data['data']:
                         print ES_CLIENT.index(index="leagues", doc_type="leagues", body=league)

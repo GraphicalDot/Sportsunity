@@ -204,7 +204,7 @@ class ElasticSearchSetup(object):
                 """
                 ES_CLIENT.indices.put_mapping(index="news", doc_type="news", body = {"news": self.mappings })
                 a = "Mappings updated for  {0}".format("news")
-                cprint(figlet_format(a, font='mini'), attrs=['bold'])   
+                cprint(figlet_format(a, font='starwars'), attrs=['bold'])   
                 return 
 
 
@@ -229,7 +229,7 @@ class ElasticSearchApis(object):
                 return wrapper
 
         @staticmethod
-        def do_query(argument,text_to_search, skip,limit,timestamp, direction):
+        def do_query(argument,text_to_search, skip,limit,timestamp, direction,type_1):
 		"""
                 This method of this class first tries to match the exact query searched by the user
                 If the original query doesnt returns any results then it tries to call another method 
@@ -264,18 +264,24 @@ class ElasticSearchApis(object):
 
 
 
-                result = ElasticSearchApis.exact_match(argument, text_to_search, skip, limit, timestamp, direction)          
+                result = ElasticSearchApis.exact_match(argument, text_to_search, skip, limit, timestamp, direction,type_1)          
                 if not result:
                         try:
-                                result = ElasticSearchApis.proximity_search(argument,text_to_search, skip, limit, timestamp, direction)
+                                result = ElasticSearchApis.proximity_search(argument,text_to_search, skip, limit, timestamp, direction,type_1)
                         except Exception,e:
                                 print e
                 
                 if not result:
-                        result = ElasticSearchApis.fuzzy_match(argument,text_to_search, skip, limit, timestamp, direction)          
+                        try:
+                                result = ElasticSearchApis.fuzzy_match(argument,text_to_search, skip, limit, timestamp, direction,type_1)  
+                        except Exception,e:
+                                print e
                 
                 if not result:
-                        result = ElasticSearchApis.token_search(argument,text_to_search, skip, limit, timestamp, direction)          
+                        try:
+                                result = ElasticSearchApis.token_search(argument,text_to_search, skip, limit, timestamp, direction,type_1)
+                        except Exception,e:
+                                print e
                 return result
 
 
@@ -283,7 +289,9 @@ class ElasticSearchApis(object):
 
         @staticmethod
         @process_result
-        def exact_match(argument,text_to_search, skip, limit, timestamp, direction):
+        def exact_match(argument,text_to_search, skip, limit, timestamp, direction, type_1):
+                        if not type_1:
+                                type_1 = ['cricket','football']
                         print "exact match"
                         """
                         Searches fr the exact result in the data 
@@ -295,32 +303,6 @@ class ElasticSearchApis(object):
                         if direction == "up":
 
                                 refresh = "gt"
-
-                                """
-
-	                        exact_phrase_search_body = {
-                                            "_source": SOURCE+[argument],
-                                            "query": {
-                                                "bool": {
-                                                    "must": [
-                                                      {
-                                                        "match_phrase": {
-                                                            "news_autocomplete": {
-                                                                    "query":    text_to_search,
-                                                                            }
-                                                            }
-                                                        },
-                                                      {
-                                                        "range": {
-                                                            "publish_epoch": {
-                                                                    "gt": timestamp
-                                                            }
-                                                        }
-                                                    }]}},
-                                            "from": skip, 
-                                            "size": limit, 
-                                            }
-                                   """
 
 
                         elif direction == "down":
@@ -351,6 +333,10 @@ class ElasticSearchApis(object):
                                                              }
                                                         }
                                                     }]},
+                                            "filter":{
+                                                    "terms":{ "type" : type_1 }
+                                                        },
+                                            "sort": { "publish_epoch": { "order": "desc" }},
                                             "from": skip, 
                                             "size": limit, 
                                             }
@@ -363,12 +349,18 @@ class ElasticSearchApis(object):
                                 exact_phrase_search_body = {
                                         "_source": SOURCE+[argument],
                                         "query": {
+                                                #"and": [
+                                                    #{
                                                 "match_phrase": {
                                                         "news_autocomplete": {
                                                                 "query":    text_to_search,
                                                                         }
                                                         }
                                                 },
+                                        "filter": {
+                                            "terms" : { "type" : type_1 }
+                                                },
+                                        "sort": { "publish_epoch": { "order": "desc" }},
                                         "from": skip,
                                         "size": limit,
                                         }
@@ -380,7 +372,9 @@ class ElasticSearchApis(object):
         
         @staticmethod
         @process_result
-        def token_search(argument,text_to_search, skip, limit, timestamp, direction):
+        def token_search(argument,text_to_search, skip, limit, timestamp, direction,type_1):
+                if not type_1:
+                    type_1 = ['cricket','football']
                 print "token"
                 """
                 It will work as follows
@@ -396,31 +390,6 @@ class ElasticSearchApis(object):
 
                         refresh = "gt"
 
-                        """
-                        token_search_body = {
-                                "_source": SOURCE+[argument],
-                                "query": {
-                                    "bool": {
-                                        "must": [
-                                        {
-                                           "match": {
-                                                "news_autocomplete": {
-                                                        "query":    text_to_search,
-                                                        "operator": "and"
-                                                                    }
-                                                }
-                                        },
-                                        {
-                                           "range": {
-                                                "publish_epoch": {
-                                                        "gt": timestamp
-                                                        }
-                                                }
-                                        }]}},
-                                "from" : skip,
-                                "size" : limit,
-                                }
-                            """
 
                 elif direction == "down":
 
@@ -451,6 +420,13 @@ class ElasticSearchApis(object):
                                                            }
                                                   }
                                           }]},
+                                "filter": {
+                                    "terms" : {
+                                        "type" :type_1
+                                        }
+                                    },
+                                "sort": { "publish_epoch": { "order": "desc" }},
+
                                 "from": skip, 
                                 "size": limit, 
                                 }
@@ -462,14 +438,22 @@ class ElasticSearchApis(object):
                         token_search_body = {                                                 
                                 "_source": SOURCE+[argument],
                                 "query": {
+                                    #"and" : [
+                                    {
                                         "match": {
                                                 "news_autocomplete": {
                                                         "query":    text_to_search,
                                                         "operator": "and"
                                                                     }
                                                 }
+                                        }},
+                                "filter": {
+                                    "terms": {
+                                        "type": type_1
+                                            }
                                         },
-                                
+                                "sort": { "publish_epoch": { "order": "desc" }},
+
                                 "from": skip,
                                 "size": limit,
                                 }
@@ -485,7 +469,9 @@ class ElasticSearchApis(object):
 
         @staticmethod
         @process_result
-        def proximity_search(argument,text_to_search, skip, limit, timestamp, direction):
+        def proximity_search(argument,text_to_search, skip, limit, timestamp, direction,type_1):
+                if not type_1:
+                    type_1 = ['cricket','football']
                 print "proxy"
                 """
                 Sometimes a phrase match can be too restrictive. What if we’re not really interested in a precise match, but we’d rather 
@@ -503,35 +489,6 @@ class ElasticSearchApis(object):
 
                         refresh = "gt"
 
-                        """
-                        proximity_search_body = {
-                                "_source": SOURCE+[argument],
-                                "query": {
-                                    "bool": {
-                                        "must": [
-                                            {
-                                                "match_phrase": {
-                                                        "news_autocomplete": {
-                                                        "query": text_to_search,
-                                                        "slop": 10000
-                                                                }
-                                                        }
-                                             },
-                                             {
-                                                "range": {
-                                                     "publish_epoch": {
-                                                              "gt": timestamp
-                                                                }
-                                                        }
-                                             }]}
-                                    },
-                                                                
-                                "from": skip,
-                                "size": limit,
-                                    }
-        
-                            """
-
                 elif direction == "down":
 
                         refresh = "lt"
@@ -542,8 +499,6 @@ class ElasticSearchApis(object):
                                "_source": SOURCE+[argument],
                                "min_score": 0.3,
                                 "query": {
-                                    #"bool": {
-                                        #"must": [
                                         "and": [ 
                                             {
                                                 "match_phrase": {
@@ -560,7 +515,12 @@ class ElasticSearchApis(object):
                                                                 }
                                                         }
                                              }]},
-                                    
+                                "filter": {
+                                    "terms": {
+                                        "type": type_1
+                                            }
+                                        },
+                                "sort": { "publish_epoch": { "order": "desc" }},
                                                                  
                                 "from": skip,
                                 "size": limit,
@@ -574,13 +534,23 @@ class ElasticSearchApis(object):
                         proximity_search_body = {
                                 "_source": SOURCE+[argument],         
                                 "query": {
+                                    #"and" : [
+                                        {
                                         "match_phrase": {
                                                 "news_autocomplete": {
                                                 "query": text_to_search,
                                                 "slop": 10000
                                                         }
                                                 }
+                                        }},
+                                "filter": {
+                                    "terms": {
+                                        "type": type_1
+                                            }
                                         },
+                                "sort": { "publish_epoch": { "order": "desc" }},
+
+
                         "from": skip,
                         "size": limit,
                                     }
@@ -594,7 +564,9 @@ class ElasticSearchApis(object):
 
         @staticmethod
         @process_result
-        def fuzzy_match(argument,text_to_search, skip, limit, timestamp, direction):
+        def fuzzy_match(argument,text_to_search, skip, limit, timestamp, direction,type_1):
+                if not type_1:
+                    type_1 = ['cricket','football']
                 print "fuzzy"
                 """
                 Matches text to search on the basis of levenshtein algorithm
@@ -619,33 +591,6 @@ class ElasticSearchApis(object):
 
                         refresh = "gt"
 
-                        """
-                        fuzzy_search_body = {
-                            "_source": SOURCE+[argument],
-                            "query": {
-                                "bool": {
-                                    "must": [
-                                    {
-                                        "match": {
-                                                "news_autocomplete": {
-                                                    "query":     text_to_search,
-                                                    "fuzziness": 10,
-                                                    "operator":  "and"
-                                                        }
-                                                }
-                                    },
-                                    {
-                                        "range": {
-                                                "publish_epoch": {
-                                                    "gt": timestamp
-                                                        }
-                                                }
-                                    }]}
-                                },
-                            "from": skip,
-                            "size": limit,
-                            }
-                        """
 
                 elif direction == "down":
 
@@ -675,8 +620,14 @@ class ElasticSearchApis(object):
                                                     refresh: timestamp
                                                         }
                                                 }
-                                    }]
-                                },
+                                    }]},
+
+                            "filter": {
+                                "terms":{
+                                    "type": type_1
+                                        }
+                                    },
+                            "sort": { "publish_epoch": { "order": "desc" }},
                             "from": skip,
                             "size": limit,
                             }
@@ -688,6 +639,8 @@ class ElasticSearchApis(object):
                         fuzzy_search_body = {
                             "_source": SOURCE+[argument],
                             "query": {
+                                #"and" : [
+                                    {
                                     "match": {
                                         "news_autocomplete": {
                                                     "query":     text_to_search,
@@ -695,7 +648,13 @@ class ElasticSearchApis(object):
                                                     "operator":  "and"
                                         }
                                             }
-                                },
+                                }},
+                            "filter":{
+                                "terms":{
+                                    "type": type_1
+                                        }
+                                    },
+                            "sort": { "publish_epoch": { "order": "desc" }},
 
                             "from": skip, 
                             "size": limit,

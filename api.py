@@ -6,13 +6,6 @@ import time
 from flask import Flask,app,render_template,jsonify
 from flask.ext import restful
 from flask.ext.restful import Api, Resource, reqparse
-"""
-from DbScripts.mongo_db import CricFeedMongo
-from DbScripts.mongo_db_basketball import BasketFeedMongo
-from DbScripts.mongo_db_F1 import Formula1FeedMongo
-from DbScripts.mongo_db_football import FootFeedMongo
-from DbScripts.mongo_db_tennis import TennFeedMongo
-"""
 
 #from live_cric_scores import CricketCommentary
 from GlobalConfigs import * 
@@ -35,7 +28,6 @@ get_args.add_argument("timestamp", type=int, location="args", required=False)
 get_args.add_argument("direction", type=str, location="args", required=False)
 get_args.add_argument("search", type=str, location="args", required=False)
 
-#show_args.add_argument("match_name",type=str, location="args", required=True)
 
 class NewsApi(restful.Resource):
         
@@ -90,9 +82,27 @@ class NewsApi(restful.Resource):
 
                 projection.update({args["image_size"]: True, "_id":True, "time_of_storing":True})
 
-                projection.update({"_id": False, "favicon":True, "day":True, "month":True, "year":True, "ldpi":True, "mdpi":True, "hdpi":True})
-
+                projection.update({"_id": False, "favicon":True,})
                 
+                if not args['news_id']:
+                        pass
+                elif args['news_id']:
+                        projection.update({"news": True})
+                        try:
+                                for news in self.collection.find({"news_id":args["news_id"]}, projection=projection).sort("publish_epoch",-1):
+                                        result = news
+
+                                result['image_link'] = result.pop(args['image_size'])
+                                        
+                                return {"error": False,
+                                        "success": True,
+                                        "result": result,
+                                        }
+                        except Exception, e:
+                                print e
+                                return "news_id entered isn't correct"
+                
+
                 if not args['search']:
                         print 'gfgf'
                     
@@ -106,18 +116,8 @@ class NewsApi(restful.Resource):
                                         new_result = []
 
                                         for val in result:
-                                            if 'xhdpi' in val.keys():
-                                                val['image_link']=val.pop('xhdpi')
-                                                new_result.append(val)
-                                            elif 'hdpi' in val.keys():
-                                                val['image_link']=val.pop('hdpi')
-                                                new_result.append(val)
-                                            elif 'mdpi' in val.keys():
-                                                val['image_link']=val.pop('mdpi')
-                                                new_result.append(val)
-                                            elif 'ldpi' in val.keys():
-                                                val['image_link']=val.pop('ldpi')
-                                                new_result.append(val)
+                                            val['image_link']=val.pop(args['image_size'])
+                                            new_result.append(val)
 
                                         return {"error": False,
                                                 "success": True,
@@ -140,18 +140,8 @@ class NewsApi(restful.Resource):
                                         new_result = []
 
                                         for val in result:
-                                            if 'xhdpi' in val.keys():
-                                                val['image_link']=val.pop('xhdpi')
-                                                new_result.append(val)
-                                            elif 'hdpi' in val.keys():
-                                                val['image_link']=val.pop('hdpi')
-                                                new_result.append(val)
-                                            elif 'mdpi' in val.keys():
-                                                val['image_link']=val.pop('mdpi')
-                                                new_result.append(val)
-                                            elif 'ldpi' in val.keys():
-                                                val['image_link']=val.pop('ldpi')
-                                                new_result.append(val)
+                                            val['image_link']=val.pop(args['image_size'])
+                                            new_result.append(val)
 
                                         return {"error": False,
                                                 "success": True,
@@ -181,18 +171,9 @@ class NewsApi(restful.Resource):
                                                 new_result = []
 
                                                 for val in result:
-                                                        if 'xhdpi' in val.keys():
-                                                                val['image_link']=val.pop('xhdpi')
-                                                                new_result.append(val)
-                                                        elif 'hdpi' in val.keys():
-                                                                val['image_link']=val.pop('hdpi')
-                                                                new_result.append(val)
-                                                        elif 'mdpi' in val.keys():
-                                                                val['image_link']=val.pop('mdpi')
-                                                                new_result.append(val)
-                                                        elif 'ldpi' in val.keys():
-                                                                val['image_link']=val.pop('ldpi')
-                                                                new_result.append(val)
+                                                    val['image_link']=val.pop(args['image_size'])
+                                                    new_result.append(val)
+
 
                                                 return {"error": False,
                                                         "success":True,
@@ -217,18 +198,8 @@ class NewsApi(restful.Resource):
                                                 new_result = []
                                 
                                                 for val in result:
-                                                        if 'xhdpi' in val.keys():
-                                                                val['image_link']=val.pop('xhdpi')
-                                                                new_result.append(val)
-                                                        elif 'hdpi' in val.keys():
-                                                                val['image_link']=val.pop('hdpi')
-                                                                new_result.append(val)
-                                                        elif 'mdpi' in val.keys():
-                                                                val['image_link']=val.pop('mdpi')
-                                                                new_result.append(val)
-                                                        elif 'ldpi' in val.keys():
-                                                                val['image_link']=val.pop('ldpi')
-                                                                new_result.append(val)
+                                                    val['image_link']=val.pop(args['image_size'])
+                                                    new_result.append(val)
 
                                                 return {"error": False,
                                                         "success": True,
@@ -257,18 +228,8 @@ class NewsApi(restful.Resource):
                                                 new_result = []
 
                                                 for val in result:
-                                                        if 'xhdpi' in val.keys():
-                                                                val['image_link']=val.pop('xhdpi')
-                                                                new_result.append(val)
-                                                        elif 'hdpi' in val.keys():
-                                                                val['image_link']=val.pop('hdpi')
-                                                                new_result.append(val)
-                                                        elif 'mdpi' in val.keys():
-                                                                val['image_link']=val.pop('mdpi')
-                                                                new_result.append(val)
-                                                        elif 'ldpi' in val.keys():
-                                                                val['image_link']=val.pop('ldpi')
-                                                                new_result.append(val)
+                                                        val['image_link']=val.pop(args['image_size'])
+                                                        new_result.append(val)
 
                                                 return {"error": False,
                                                         "success": True,
@@ -291,18 +252,8 @@ class NewsApi(restful.Resource):
                                                 new_result = []
 
                                                 for val in result:
-                                                        #if 'xhdpi' in val.keys():
                                                         val['image_link']=val.pop(args['image_size'])
                                                         new_result.append(val)
-                                                        #elif 'hdpi' in val.keys():
-                                                         #       val['image_link']=val.pop('hdpi')
-                                                          #      new_result.append(val)
-                                                        #elif 'mdpi' in val.keys():
-                                                         #       val['image_link']=val.pop('mdpi')
-                                                          #      new_result.append(val)
-                                                        #elif 'ldpi' in val.keys():
-                                                         #       val['image_link']=val.pop('ldpi')
-                                                          #      new_result.append(val)
 
                                                 return {"error": False,
                                                         "success": True,
@@ -318,14 +269,17 @@ class NewsApi(restful.Resource):
 
                                 else:
                                         pass
+                
+                
                 elif args['search']:
+                        print args['type_1']
                         if not args['timestamp'] and not args['direction']:
                                 args['timestamp'] = None
                                 args['direction'] = None
 
                                 print 'eeeee'
                                 result = elasticsearch_db.ElasticSearchApis.do_query(argument=args['image_size'],text_to_search=args['search'],skip=args['skip'],limit=args['limit'],\
-                                        timestamp=args['timestamp'],direction=args['direction'])
+                                        timestamp=args['timestamp'],direction=args['direction'],type_1=args['type_1'])
                                 result = sorted(result,key=itemgetter('publish_epoch'),reverse=True)
                                 result = result[args['skip']:]
                                 new_result = []
@@ -342,7 +296,7 @@ class NewsApi(restful.Resource):
                                 print "pooppooppo"
                                 
                                 result = elasticsearch_db.ElasticSearchApis.do_query(argument=args['image_size'],text_to_search=args['search'],skip=args['skip'],limit=args['limit'],\
-                                        timestamp=args['timestamp'],direction=args['direction'])
+                                        timestamp=args['timestamp'],direction=args['direction'],type_1=args['type_1'])
                                 result = sorted(result,key=itemgetter('publish_epoch'),reverse=True)
                                 new_result = []
                                 for val in result:
@@ -355,24 +309,7 @@ class NewsApi(restful.Resource):
                                         }
 
                 
-                """
-                if not args['news_id']:
-                        pass
-                else:
-                        projection.update({"news": True})
-                        try:
-                                for news in self.collection.find({"news_id":args["news_id"]}, projection=projection).sort("publish_epoch",-1):
-                                        result = news
-                                        
-                                return {"error": False,
-                                        "success": True,
-                                        "result": result,
-                                        }
-                        except Exception, e:
-                                print e
-                                return "news_id entered isn't correct"
 
-                """
 
                 print self.collection, args['skip'], args['limit'], projection
                 ##if front end needs news jsut after news with skip and limit 
@@ -464,19 +401,6 @@ class GetMixedNews(NewsApi):
                 super(NewsApi, self).__init__()
 
 
-"""
-class GetCricketCommentary(restful.Resource):
-        def get(self):
-                args = show_args.parse_args()
-                obj = CricketCommentary('http://live-feeds.cricbuzz.com/CricbuzzFeed?format=xml')
-                try:
-                    print "Getting Commentary"
-                    print args["match_name"]
-                    return obj.show_commentary(args['match_name'])
-                except:
-                    print args["match_name"]
-                    raise ValueError("No commentary for this match")
-"""         
 
 api.add_resource(GetFootballNews, "/football")
 api.add_resource(GetCricketNews, "/cricket")
@@ -484,7 +408,6 @@ api.add_resource(GetBasketballNews, "/basketball")
 api.add_resource(GetF1News, "/formula1")
 api.add_resource(GetTennisNews, "/tennis")
 api.add_resource(GetMixedNews, "/mixed")
-#api.add_resource(GetCricketCommentary, "/commentary")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0",port = 8000, debug = True)

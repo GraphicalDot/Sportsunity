@@ -18,6 +18,9 @@ from GlobalMethods import unicode_or_bust
 from Feeds.amazon_s3 import AmazonS3
 import hashlib
 from summarize_news import ShortNews
+from dateutil.parser import parse
+from datetime import datetime
+
 
 class CricketReuters:
         """
@@ -47,7 +50,7 @@ class CricketReuters:
                 self.links_not_present = list()
                 self.rss = feedparser.parse(self.link)
                 self.news_entries = self.rss.entries
-                [self.news_list.append({"news_link": news_entry["link"], "published": news_entry["published_parsed"], "summary": \
+                [self.news_list.append({"news_link": news_entry["link"], "published": news_entry["published"], "summary": \
                         news_entry["summary"], "title": news_entry["title"], "news_id": hashlib.md5(news_entry["link"]).hexdigest()}) \
                         for news_entry in self.news_entries]
                                 
@@ -61,19 +64,12 @@ class CricketReuters:
 
         def checking(self):
                 for news_dict in self.news_list:
-                        if not CricFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]) and not\
-                                AllFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]):
+                        if not CricFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]) and not \
+				AllFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]):
                                 self.links_not_present.append(news_dict)
                                 print self.links_not_present
 
-                return
-        
-        """
-        def checking_from_mixed(self):
-                for news_dict in self.news_list:
-                        if not CricFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]):
-                                self.links_not_present.append(news_dict)
-        """
+                return 
 
 
         def full_news(self):
@@ -88,19 +84,23 @@ class CricketReuters:
                 goose_instance = Goose()
                 for news_dict in self.links_not_present:
            
-                        #if news_dict['published'].endswith("EDT") or news_dict['published'].endswith("GMT"):
-                        #        strp_time_object = time.strptime(news_dict['published'][:-4], "%a, %d %b %Y %H:%M:%S")
-                        #elif news_dict['published'].endswith("+0530") or news_dict['published'].endswith("+0000"):
-                        #        strp_time_object = time.strptime(news_dict['published'][:-6], "%a, %d %b %Y %H:%M:%S")
+			if news_dict['published'].endswith("GMT") or news_dict['published'].endswith("+0000"):
+                                date = parse(news_dict['published'])
+                                datetime_tuple = datetime.timetuple(date)
+                                publish_epoch = calendar.timegm(datetime_tuple)
+                                day = datetime_tuple.tm_mday
+                                month = datetime_tuple.tm_mon
+                                year = datetime_tuple.tm_year
 
-                        #else:
-                        #        strp_time_object = time.strptime(news_dict['published'], "%Y-%m-%d %H:%M:%S" )
-                        day = news_dict['published'].tm_mday
-                        month = news_dict['published'].tm_mon
-                        year = news_dict['published'].tm_year
-                        publish_epoch = time.mktime(news_dict['published'])
-			gmt_epoch = time.mktime(time.gmtime(publish_epoch))
-                       
+                        else:
+                                print 'couldn\'t convert'
+                                strp_time_object = time.strptime(news_dict['published'], "%Y-%m-%d %H:%M:%S" )
+                                publish_epoch = time.mktime(strp_time_object)
+                                day = strp_time_object.tm_mday
+                                month = strp_time_object.tm_mon
+                                year = strp_time_object.tm_year
+                        #publish_epoch = time.mktime(strp_time_object)
+			gmt_epoch = calendar.timegm(time.gmtime(publish_epoch))                       
  
 
                         ##Getting full article with goose
@@ -109,13 +109,15 @@ class CricketReuters:
             
                         tokenized_data = sent_tokenize(full_text)
                         length_tokenized_data=len(tokenized_data)
-            
+
+                        #if length_tokenized_data > 1:
+                                #summary=tokenized_data[0]+tokenized_data[1]+" "+ " ...Read More"
                         if length_tokenized_data > 1:
                                 summary = " ".join(word_tokenize(full_text)[:100])+" "+ " ...Read More"
-                        elif article.meta_description:
-                                summary = article.meta_description+ " "+ " ...Read More"
-                        else:
-                                summary = None
+			elif article.meta_description:
+                                summary = article.meta_description
+			else:
+				summary = None
 
                         try: 
                                 image_link = article.opengraph['image']
@@ -128,37 +130,35 @@ class CricketReuters:
                                                     "ldpi": None,
                                                     "hdpi": None,}
 
-                        summarization_instance = ShortNews()
+           		summarization_instance = ShortNews() 
 
-                        try:
-                                news_dict.update({"website": "www.bbci.co.uk", "summary":summarization_instance.summarization(full_text),\
-                                        "custom_summary":summary, "news": full_text, "image_link":image_link, 'gmt_epoch':gmt_epoch,'publish_epoch': publish_epoch,\
-                                        "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],'type':'cricket','mdpi':\
-                                        all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())})
+			try:
+                                news_dict.update({"website": "www.reuters.com", "summary": summarization_instance.summarization(full_text),\
+						"custom_summary":summary, "news": full_text, "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch':\
+						publish_epoch, "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],\
+						'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":\
+                                                time.mktime(time.localtime()),'type':'cricket','favicon':'https://upload.wikimedia.org/wikipedia/en/thumb/e/e2/Reuters_logo.svg/640px-Reuters_logo.svg.png'})
+			except:
+                                news_dict.update({"website": "www.reuters.com", "summary": summary,\
+						"custom_summary":summary, "news": full_text, "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch':\
+						publish_epoch, "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],\
+						'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":\
+                                                time.mktime(time.localtime()),'type':'cricket','favicon':'https://upload.wikimedia.org/wikipedia/en/thumb/e/e2/Reuters_logo.svg/640px-Reuters_logo.svg.png'})
 
-                        except:
-                                news_dict.update({"website": "www.bbci.co.uk", "summary":summary,\
-                                        "custom_summary":summary, "news": full_text, "image_link":image_link, 'gmt_epoch':gmt_epoch,'publish_epoch': publish_epoch,\
-                                        "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],'type':'cricket','mdpi':\
-                                        all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":time.mktime(time.localtime())})
-
-                        if not full_text == " " and not news_dict['summary'] == " ...Read More":
+                        if news_dict['news'] and not news_dict['summary'] == " ...Read More":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
-                                #CricFeedMongo.insert_news(news_dict)
-                                print news_dict['title']
-                                print news_dict['news']
-                                print news_dict['publish_epoch']
+                                CricFeedMongo.insert_news(news_dict)
 				print 'here'
-                                #AllFeedMongo.insert_news(news_dict)
-                        else:
-                                pass
+				AllFeedMongo.insert_news(news_dict)
+			else:
+				print 'not stored'
                 return                 
 
     
 if __name__ == '__main__':
-    obj = CricketReuters('http://feeds.reuters.com/reuters/INcricketNews?format=xml')
+    obj = CricketReuters(REUT_CRIC_FEED)
     obj.run()
-    #obj.rss_feeds(BBC_CRIC_FEED)
+    #obj.rss_feeds(ESPN_CRIC_FEED)
     #obj.checking()
     #obj.full_news()
 

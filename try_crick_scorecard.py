@@ -4,7 +4,7 @@ import json
 import pprint
 
 def scorecard():
-	r = requests.get("https://api.litzscore.com/rest/v2/match/afgzim_2015_one-day_04/?access_token=2s144861828237692s684320575845450913")
+	r = requests.get("https://api.litzscore.com/rest/v2/match/nzaus_2016_one-day_01/?access_token=2s144861828237692s695124318614598348")
 	data = json.loads(r.content)
 	dict2 = {}
 	for t in data['data']['card']['innings'].keys():
@@ -50,10 +50,10 @@ def scorecard():
 					'team_run_rate':data['data']['card']['innings'][t]['run_rate'],
 					'team_overs':data['data']['card']['innings'][t]['run_str'].split('in ')[1],
 					'fall_of_wickets':data['data']['card']['innings'][t]['fall_of_wickets']})
-				dict2.setdefault(data['data']['card']['teams'][t.split('_')[0]]['name'],{}).setdefault(t,{}).setdefault('extras_str',[]).append({'b':str(data['data']['card']['innings'][t]['bye'])
-					,'lb':str(data['data']['card']['innings'][t]['legbye']),
-					'w':str(data['data']['card']['innings'][t]['wide']),
-					'nb':str(data['data']['card']['innings'][t]['noball'])})
+		dict2.setdefault(data['data']['card']['teams'][t.split('_')[0]]['name'],{}).setdefault(t,{}).setdefault('extras_str',[]).append({'b':str(data['data']['card']['innings'][t]['bye'])
+			,'lb':str(data['data']['card']['innings'][t]['legbye']),
+			'w':str(data['data']['card']['innings'][t]['wide']),
+			'nb':str(data['data']['card']['innings'][t]['noball'])})
 	pprint.pprint(dict2)
 
 
