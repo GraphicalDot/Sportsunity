@@ -4,7 +4,7 @@ import json
 import pprint
 
 def scorecard():
-	r = requests.get("https://api.litzscore.com/rest/v2/match/nzaus_2016_one-day_01/?access_token=2s144861828237692s695124318614598348")
+        r = requests.get("https://api.litzscore.com/rest/v2/match/nzaus_2016_one-day_03/?access_token=2s144861828237692s696938594169923241")
 	data = json.loads(r.content)
 	dict2 = {}
 	for t in data['data']['card']['innings'].keys():
@@ -38,18 +38,18 @@ def scorecard():
 					'wickets':str(bowling_data['wickets']),
 					'extras':str(bowling_data['extras']),
 					'maiden':str(bowling_data['maiden_overs'])})
-			except:
-				pass
+			except Exception,e:
+				print e
 
 		for batsman in data['data']['card']['teams'][t.split('_')[0]]['match']['playing_xi']:
 			if batsman not in data['data']['card']['innings'][t]['batting_order']:
 				dict2.setdefault(data['data']['card']['teams'][t.split('_')[0]]['name'],{}).setdefault(t,{}).setdefault('did_not_bat',[]).append(batsman)
-				dict2.setdefault(data['data']['card']['teams'][t.split('_')[0]]['name'],{}).setdefault(t,{}).update({'inning_extras':data['data']['card']['innings'][t]['extras'],
-					'team_runs':data['data']['card']['innings'][t]['runs'],
-					'team_wickets':data['data']['card']['innings'][t]['wickets'],
-					'team_run_rate':data['data']['card']['innings'][t]['run_rate'],
-					'team_overs':data['data']['card']['innings'][t]['run_str'].split('in ')[1],
-					'fall_of_wickets':data['data']['card']['innings'][t]['fall_of_wickets']})
+			dict2.setdefault(data['data']['card']['teams'][t.split('_')[0]]['name'],{}).setdefault(t,{}).update({'inning_extras':data['data']['card']['innings'][t]['extras'],
+				'team_runs':data['data']['card']['innings'][t]['runs'],
+				'team_wickets':data['data']['card']['innings'][t]['wickets'],
+				'team_run_rate':data['data']['card']['innings'][t]['run_rate'],
+				'team_overs':data['data']['card']['innings'][t]['run_str'].split('in ')[1],
+				'fall_of_wickets':data['data']['card']['innings'][t]['fall_of_wickets']})
 		dict2.setdefault(data['data']['card']['teams'][t.split('_')[0]]['name'],{}).setdefault(t,{}).setdefault('extras_str',[]).append({'b':str(data['data']['card']['innings'][t]['bye'])
 			,'lb':str(data['data']['card']['innings'][t]['legbye']),
 			'w':str(data['data']['card']['innings'][t]['wide']),

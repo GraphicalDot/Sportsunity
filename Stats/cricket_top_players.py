@@ -1,9 +1,9 @@
 #!usr/bin/env python
 
-
 import requests
 from bs4 import BeautifulSoup
 import pymongo
+import hashlib
 
 class TopCricketPlayers:
 
@@ -44,7 +44,7 @@ class TopCricketPlayers:
                 soup = BeautifulSoup(res.content)
                 #description = soup.find('div',{'class':'cricket-profileDesc'})
                 full_name=soup.find('div',{'class':'cricket-profileText'})
-                self.top_cricket_players.insert({'name':full_name.text})
+                self.top_cricket_players.update({'player_id':hashlib.md5(full_name.text).hexdigest()},{'$set':{'name':full_name.text,'player_id':hashlib.md5(full_name.text).hexdigest()}},upsert=True)
                 print full_name.text
 
             except Exception,e:

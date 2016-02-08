@@ -62,14 +62,32 @@ class GetPlayerStats(restful.Resource):
 
         def get(self):
 
+                teams_played_for = {}
+
                 args = get_args.parse_args()
 
                 if len(list(self.player_stats.find({'player_id':args['player_id']})))>1:
-                    stats = list(self.player_stats.find({'player_id':args['player_id']},projection={'_id':False,'team_name':True,'player':True,'player_id':True,'image':True,'stats':True,'info':True}))[0]
+                    stats = list(self.player_stats.find({'player_id':args['player_id']},projection={'_id':False,'team_name':True,'player':True,'player_id':True,'image':True,'stats':True,'info':True}))
+                    for stat in stats:
+                        teams_played_for.setdefault('teams_played_for',[]).append(stat['team_name'])
+        
+                    stats[0].update(teams_played_for)
+
+                    stats[0].pop('team_name')
+
+                    stats = stats[0]
+
+                    #stats = list(self.player_stats.find({'player_id':args['player_id']},projection={'_id':False,'team_name':True,'player':True,'player_id':True,'image':True,'stats':True,'info':True}))[0]
 
                 else:
                     stats = list(self.player_stats.find({'player_id':args['player_id']},projection={'_id':False,'team_name':True,'player':True,'player_id':True,'image':True,'stats':True,'info':True}))
                 #stats = list(self.player_stats.find({'player_id':args['player_id']},projection={'_id':False,'team_name':True,'player':True,'player_id':True,'image':True,'stats':True}))
+                    
+                    teams_played_for.setdefault('teams_played_for',[]).append(stats[0].pop('team_name'))
+
+                    stats[0].update(teams_played_for)
+
+                    stats = stats[0]
 
                 return {'success':True,
                         'error':False,

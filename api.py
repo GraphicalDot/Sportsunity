@@ -312,7 +312,9 @@ class NewsApi(restful.Resource):
 
 
                 print self.collection, args['skip'], args['limit'], projection
+
                 ##if front end needs news jsut after news with skip and limit 
+
                 if not args["start_date"] and not args["end_date"]:
                         result = self.collection.find(projection=projection).limit(args['limit']).skip(args['skip']).sort("publish_epoch", -1)
                         return {"error":  False, 

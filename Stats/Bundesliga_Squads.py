@@ -33,12 +33,20 @@ class Squads:
                             link=name.find('a')
                             self.get_football_player_stats('http://www.goal.com/'+link.get('href'))
                             print self.squad[2].text
-                            self.football_player_stats.update({'short_name':self.squad[2].text.strip(),'team_name':self.team},{'$set':{'name':self.name.text.strip(),'team_name':self.team,'Jersey':\
+                            if self.list_of_profile:
+
+                                self.football_player_stats.update({'short_name':self.squad[2].text.strip(),'team_name':self.team},{'$set':{'name':self.name.text.strip(),'team_name':self.team,'Jersey':\
+                                        self.squad[1].string.strip(),'short_name':self.squad[2].text.strip(),'Nationality':self.squad[3].find('span').get('title'),'Position':self.squad[4].string.strip(),'image':\
+                                        image.get('src'),'Age':self.squad[5].string.strip(),'Games':self.squad[6].string.strip(),'Goals':self.squad[7].string.strip(),'Yellow':self.squad[9].string.strip(),'Red':\
+                                        self.squad[11].string.strip(),'profile':self.list_of_profile,'other_competitions':self.list_of_other_competitions,'competition_name':'Bundesliga','sport_type':'football'}},upsert=True)
+                            else:
+                                self.football_player_stats.update({'short_name':self.squad[2].text.strip(),'team_name':self.team},{'$set':{'name':self.squad[2].text.strip(),'team_name':self.team,'Jersey':\
                                     self.squad[1].string.strip(),'short_name':self.squad[2].text.strip(),'Nationality':self.squad[3].find('span').get('title'),'Position':self.squad[4].string.strip(),'image':\
                                     image.get('src'),'Age':self.squad[5].string.strip(),'Games':self.squad[6].string.strip(),'Goals':self.squad[7].string.strip(),'Yellow':self.squad[9].string.strip(),'Red':\
-                                    self.squad[11].string.strip(),'profile':self.list_of_profile,'other_competitions':self.list_of_other_competitions}},upsert=True)
+                                    self.squad[11].string.strip(),'profile':self.list_of_profile,'other_competitions':self.list_of_other_competitions,'competition_name':'Bundesliga','sport_type':'football'}},upsert=True)
+
                         except Exception,e:
-                            print e
+                            pass
                             
                 manager = self.soup.find('table',{'class':'tab-squad tab-squad-manager'})
                 manager_name = manager.find_all('td')
@@ -64,11 +72,20 @@ class Squads:
 
                     stat_table = soup.findAll('div',{'class':'playerGameStatsContainer'})
                     print
-                    self.list_of_profile.append({soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[0].text:soup.findAll('div',{'id':\
+                    try:
+                        self.list_of_profile.append({soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[0].text:soup.findAll('div',{'id':\
+                                                    'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[1].text,soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[1].text:\
+                                                    soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[2].text,soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':\
+                                                    'playerStatLabel'})[2].text:soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[3].text,\
+                                                    soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[3].text:soup.findAll('div',{'id':\
+                                                        'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[4].text})
+                    
+                    except Exception,e:
+                        self.list_of_profile.append({soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[0].text:soup.findAll('div',{'id':\
                                                 'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[1].text,soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[1].text:\
                                                 soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[2].text,soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':\
                                                 'playerStatLabel'})[2].text:soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[3].text})
-                    
+
                     for stat in stat_table[0].findAll('tr'):
                         column = stat.findAll('td')
                         try:

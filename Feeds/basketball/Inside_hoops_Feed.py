@@ -129,7 +129,7 @@ class BasketballHoops:
                                         "custom_summary": summary, "news":full_text, "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch':\
                                         publish_epoch, "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],'mdpi':\
                                         all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":\
-                                        time.mktime(time.localtime()),'type':'basketball','favicon':'http://www.insidehoops.com/favicon.ico'}})
+                                        time.mktime(time.localtime()),'type':'basketball','favicon':'http://www.insidehoops.com/favicon.ico'})
                         except:
                                 news_dict.update({"website":"www.insidehoops.com","summary":summary,"custom_summary":summary,"news":\
                                         full_text, "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch':publish_epoch, "day": day, "month":\
@@ -153,6 +153,7 @@ class BasketballHoops:
 if __name__ == '__main__':
     obj = BasketballHoops(Inside_hoops)
     obj.run()
+    sys.exit()
     #obj.rss_feeds(Inside_hoops)
     #obj.checking()
     #obj.full_news()
