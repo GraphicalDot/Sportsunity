@@ -162,6 +162,6 @@ class AmazonS3(object):
 
 
 if __name__ == "__main__":
-        i = AmazonS3(image_link='http://static.goal.com/2596000/2596052_heroa.jpg', news_id= 'd574f3211fb0bab45048ce4778613cc2')
+        i = AmazonS3(image_link='https://i.ytimg.com/vi/oGTbiXEeb_c/hqdefault.jpg', news_id= 'd574f3211fb0bab45048ce4778613cc2')
         print i.run()
 

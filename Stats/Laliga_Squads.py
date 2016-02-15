@@ -4,38 +4,114 @@ import requests
 from bs4 import BeautifulSoup
 import termcolor
 from itertools import izip
+import pymongo
+
 class Squads:
         
         def __init__(self,link,team):
                 res = requests.get(link)
                 self.soup = BeautifulSoup(res.content,"lxml")
                 self.team = team
+                conn = pymongo.MongoClient()
+                db = conn.admin
+                db.authenticate('shivam','mama123')
+                db = conn.test
+                self.football_player_stats = db.football_player_stats
                 
         def get_squads(self):
-                for s in self.soup.find_all('table',{'class':'tab-squad tab-squad-players'}):
-                    #images = s.find_all('img',{'imageprop':'image'})
-                    rows=s.find_all('tr')
-                    print rows
+                table = self.soup.findAll('table',{'class':'tab-squad tab-squad-players'})
+
+                rows=table[0].find_all('tr')
                 
                 print termcolor.colored(self.team.upper(),"red")
-                print 
+                print
                 for row in rows:
+                        name = row.find('td',{'class':'name'})
                         image=row.find('img')
-                        squad=row.find_all('td')
+                        self.squad=row.find_all('td')
                         try:
-                            print 'Jersey: '+squad[1].string,'Name: '+squad[2].text,'Nationality: '+squad[3].find('span').get('title'),\
-                                    'Position: '+squad[4].string, 'image: '+image.get('src') 
-                            print 'Age: '+squad[5].string,'Games: '+squad[6].string,'Goals: '+squad[7].string,'Yellow: '+squad[9].string,'Red:\
-                                    '+squad[11].string,
+                            link=name.find('a')
+                            self.get_football_player_stats('http://www.goal.com/'+link.get('href'))
+                            print self.squad[2].text
+                            if self.list_of_profile:
+
+                                self.football_player_stats.update({'short_name':self.squad[2].text.strip(),'team_name':self.team},{'$set':{'player_image':self.player_image,'name':self.name.text.strip(),'team_name':self.team,'Jersey':\
+                                        self.squad[1].string.strip(),'short_name':self.squad[2].text.strip(),'Nationality':self.squad[3].find('span').get('title'),'Position':self.squad[4].string.strip(),'image':\
+                                        image.get('src'),'Age':self.squad[5].string.strip(),'Games':self.squad[6].string.strip(),'Goals':self.squad[7].string.strip(),'Yellow':self.squad[9].string.strip(),'Red':\
+                                        self.squad[11].string.strip(),'profile':self.list_of_profile,'other_competitions':self.list_of_other_competitions,'competition_name':'Laliga','sport_type':'football'}},upsert=True)
+                            else:
+                                self.football_player_stats.update({'short_name':self.squad[2].text.strip(),'team_name':self.team},{'$set':{'player_image':'','name':self.squad[2].text.strip(),'team_name':self.team,'Jersey':\
+                                    self.squad[1].string.strip(),'short_name':self.squad[2].text.strip(),'Nationality':self.squad[3].find('span').get('title'),'Position':self.squad[4].string.strip(),'image':\
+                                    image.get('src'),'Age':self.squad[5].string.strip(),'Games':self.squad[6].string.strip(),'Goals':self.squad[7].string.strip(),'Yellow':self.squad[9].string.strip(),'Red':\
+                                    self.squad[11].string.strip(),'profile':self.list_of_profile,'other_competitions':self.list_of_other_competitions,'competition_name':'Laliga','sport_type':'football'}},upsert=True)
+
+                        except Exception,e:
+                            pass
+                            
+                manager = self.soup.find('table',{'class':'tab-squad tab-squad-manager'})
+                manager_name = manager.find_all('td')
+                self.image = manager_name[0].find('img')
+                print 
+                #print image.get('src') 
+                print manager_name[1].text
+
+                """
+                for name in table[0].findAll('td',{'class':'name'}):
+                    link=name.find('a')
+                    self.get_football_player_stats('http://www.goal.com/'+link.get('href'))
+                    print
+                """
+
+        def get_football_player_stats(self,link):
+                res = requests.get(link)
+                soup = BeautifulSoup(res.content)
+                self.list_of_other_competitions = []
+                self.list_of_profile = []
+                try:
+                    self.name=soup.findAll('div',{'id':'playerStatsCard'})[0].find('td',{'class':'playerName'})
+
+                    stat_table = soup.findAll('div',{'class':'playerGameStatsContainer'})
+                    print
+
+                    image = soup.findAll('td',{'class':'playerPicture'})[0].find('img').get('src')
+
+                    if not 'dummy' in image:
+                            self.player_image = image
+                    else:
+                            pass
+
+                    try:
+                        self.list_of_profile.append({soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[0].text:soup.findAll('div',{'id':\
+                                                    'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[1].text,soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[1].text:\
+                                                    soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[2].text,soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':\
+                                                    'playerStatLabel'})[2].text:soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[3].text,\
+                                                    soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[3].text:soup.findAll('div',{'id':\
+                                                        'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[4].text})
+                    
+                    except Exception,e:
+                        self.list_of_profile.append({soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[0].text:soup.findAll('div',{'id':\
+                                                'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[1].text,soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[1].text:\
+                                                soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[2].text,soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':\
+                                                'playerStatLabel'})[2].text:soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[3].text})
+
+                    for stat in stat_table[0].findAll('tr'):
+                        column = stat.findAll('td')
+                        try:
+                            self.list_of_other_competitions.append({'league':column[0].text,'team':column[1].text,'games':column[2].text,'goals':column[3].text,'assists':column[4].text,'yellow_card':\
+                                    column[5].text,'red_card':column[6].text})
                         except:
                             pass
 
-                manager = self.soup.find('table',{'class':'tab-squad tab-squad-manager'})
-                manager_name = manager.find_all('td')
-                image = manager_name[0].find('img')
-                print
-                print image.get('src')
-                print manager_name[1].text
+                except Exception,e:
+                    pass
+
+                return
+
+                """
+                for player in self.football_player_stats.find():
+                    self.football_player_stats.update({'short_name':player['short_name']},{'$set':{'name':name.text.strip(),'profile':list_of_profile,'other_competitions':list_of_other_competitions}})
+                """            
+    
 
 def main():
         list_of_teams = ['athletic-club','atletico-madrid','barcelona','celta-de-vigo','deportivo-la-coruna','eibar',\

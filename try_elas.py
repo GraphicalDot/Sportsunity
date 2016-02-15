@@ -69,7 +69,7 @@ class GetPlayer(restful.Resource):
         es = Elasticsearch()
         args = get_args.parse_args()
         print args['player']
-        __body = {"_source":['name','team_id','image'],"query": { "and":[ { "match_phrase_prefix" :{ "name": {"query": args['player'],"fuzziness":\
+        __body = {"_source":['name','player_id','player_image'],"query": { "and":[ { "match_phrase_prefix" :{ "name": {"query": args['player'],"fuzziness":\
                 10,"operator":  "and"}}}, { "match" : {"sport_type": args['sport_type']}}]}}
         __result = es.search(index='players',doc_type='players',body=__body)
         result = [l["_source"] for l in __result["hits"]["hits"]]

@@ -35,17 +35,18 @@ class Squads:
                             print self.squad[2].text
                             if self.list_of_profile:
 
-                                self.football_player_stats.update({'short_name':self.squad[2].text.strip(),'team_name':self.team},{'$set':{'name':self.name.text.strip(),'team_name':self.team,'Jersey':\
-                                        self.squad[1].string.strip(),'short_name':self.squad[2].text.strip(),'Nationality':self.squad[3].find('span').get('title'),'Position':self.squad[4].string.strip(),'image':\
-                                        image.get('src'),'Age':self.squad[5].string.strip(),'Games':self.squad[6].string.strip(),'Goals':self.squad[7].string.strip(),'Yellow':self.squad[9].string.strip(),'Red':\
+                                self.football_player_stats.update({'short_name':self.squad[2].text.strip(),'team_name':self.team},{'$set':{'player_image':self.player_image,'name':self.name.text.strip(),'team_name':self.team,'Jersey':\
+                                        self.squad[1].string.strip(),'short_name':self.squad[2].text.strip(),'Nationality':self.squad[3].find('span').get('title'),'Position':self.squad[4].string.strip(),'Age':\
+                                        self.squad[5].string.strip(),'Games':self.squad[6].string.strip(),'Goals':self.squad[7].string.strip(),'Yellow':self.squad[9].string.strip(),'Red':\
                                         self.squad[11].string.strip(),'profile':self.list_of_profile,'other_competitions':self.list_of_other_competitions,'competition_name':'Bundesliga','sport_type':'football'}},upsert=True)
                             else:
-                                self.football_player_stats.update({'short_name':self.squad[2].text.strip(),'team_name':self.team},{'$set':{'name':self.squad[2].text.strip(),'team_name':self.team,'Jersey':\
-                                    self.squad[1].string.strip(),'short_name':self.squad[2].text.strip(),'Nationality':self.squad[3].find('span').get('title'),'Position':self.squad[4].string.strip(),'image':\
-                                    image.get('src'),'Age':self.squad[5].string.strip(),'Games':self.squad[6].string.strip(),'Goals':self.squad[7].string.strip(),'Yellow':self.squad[9].string.strip(),'Red':\
+                                self.football_player_stats.update({'short_name':self.squad[2].text.strip(),'team_name':self.team},{'$set':{'player_image':'','name':self.squad[2].text.strip(),'team_name':self.team,'Jersey':\
+                                    self.squad[1].string.strip(),'short_name':self.squad[2].text.strip(),'Nationality':self.squad[3].find('span').get('title'),'Position':self.squad[4].string.strip(),'Age':\
+                                    self.squad[5].string.strip(),'Games':self.squad[6].string.strip(),'Goals':self.squad[7].string.strip(),'Yellow':self.squad[9].string.strip(),'Red':\
                                     self.squad[11].string.strip(),'profile':self.list_of_profile,'other_competitions':self.list_of_other_competitions,'competition_name':'Bundesliga','sport_type':'football'}},upsert=True)
 
                         except Exception,e:
+                            print e
                             pass
                             
                 manager = self.soup.find('table',{'class':'tab-squad tab-squad-manager'})
@@ -71,6 +72,14 @@ class Squads:
                     self.name=soup.findAll('div',{'id':'playerStatsCard'})[0].find('td',{'class':'playerName'})
 
                     stat_table = soup.findAll('div',{'class':'playerGameStatsContainer'})
+
+                    image = soup.findAll('td',{'class':'playerPicture'})[0].find('img').get('src')
+
+                    if not 'dummy' in image:
+                            self.player_image = image
+                    else:
+                            pass
+
                     print
                     try:
                         self.list_of_profile.append({soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[0].text:soup.findAll('div',{'id':\

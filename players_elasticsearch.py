@@ -28,7 +28,7 @@ class GetPlayers:
                 self.mappings = {'dynamic': 'strict',
         'properties': {'player_autocomplete': {'analyzer': 'custom_analyzer', 'type':'string'},
         'name': {'copy_to': ['player_autocomplete'], 'type': 'string'},
-        #'league_id': {'index': 'not_analyzed', 'type': 'string'},
+        'player_id': {'index': 'not_analyzed', 'type': 'string'},
         #'nationality': {'index': 'not_analyzed', 'type': 'string'},
         #'position' : {'index': 'not_analyzed', 'type': 'string'},
         'team_id' : {'index': 'not_analyzed', 'type': 'string'},
@@ -36,7 +36,7 @@ class GetPlayers:
         #'jersey' : {'index': 'not_analyzed', 'type': 'string'},
         #'yellow_cards' : {'index': 'not_analyzed', 'type': 'string'},
         #'red_cards' : {'index': 'not_analyzed', 'type': 'string'},
-        'image' : {'index': 'not_analyzed', 'type': 'string'},
+        'player_image' : {'index': 'not_analyzed', 'type': 'string'},
         'sport_type': {'index': 'not_analyzed', 'type': 'string'}
         }}
 
@@ -71,9 +71,9 @@ class GetPlayers:
 
         
         def index_data(self):
-                for name in self.player_stats.find(projection={'_id':False,'name':True,'team_id':True,'image':True,'sport_type':True}):
+            for name in self.player_stats.find(projection={'_id':False,'name':True,'player_id':True,'team_id':True,'player_image':True,'sport_type':True}):
                         print ES_CLIENT.index(index='players',doc_type='players',body=name)
-                for player in self.football_player_stats.find(projection={'_id':False,'name':True,'team_id':True,'image':True,'sport_type':True}):
+            for player in self.football_player_stats.find(projection={'_id':False,'name':True,'player_id':True,'team_id':True,'player_image':True,'sport_type':True}):
                         print ES_CLIENT.index(index='players',doc_type='players',body=player)
 
 

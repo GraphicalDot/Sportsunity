@@ -22,7 +22,7 @@ from dateutil.parser import parse
 from datetime import datetime
 
 
-class CricketReuters:
+class CricketRediff:
         """
         This function gets the links of all the news articles on the Rss Feed and stores them in list_of_links.
         """
@@ -50,8 +50,8 @@ class CricketReuters:
                 self.links_not_present = list()
                 self.rss = feedparser.parse(self.link)
                 self.news_entries = self.rss.entries
-                [self.news_list.append({"news_link": news_entry["link"], "published": news_entry["published"],"published_parsed":news_entry["published_parsed"] ,"summary": \
-                        news_entry["summary"], "title": news_entry["title"], "news_id": hashlib.md5(news_entry["link"]).hexdigest()}) \
+                [self.news_list.append({"news_link": news_entry["link"], "published": news_entry["published"],"summary": \
+                        news_entry["summary"], "title": news_entry["title"], "news_id": hashlib.md5(news_entry["id"]).hexdigest()}) \
                         for news_entry in self.news_entries]
                                 
 
@@ -87,20 +87,21 @@ class CricketReuters:
 			if news_dict['published'].endswith("GMT") or news_dict['published'].endswith("+0000"):
                                 date = parse(news_dict['published'])
                                 datetime_tuple = datetime.timetuple(date)
-                                publish_epoch = calendar.timegm(datetime_tuple)
+                                publish_epoch = int(calendar.timegm(datetime_tuple))
                                 day = datetime_tuple.tm_mday
                                 month = datetime_tuple.tm_mon
                                 year = datetime_tuple.tm_year
 
                         else:
                                 print 'couldn\'t convert'
-                                datetime_tuple = news_dict['published_parsed']
-                                publish_epoch = calendar.timegm(datetime_tuple)
+                                date = parse(news_dict['published'])
+                                datetime_tuple = datetime_tuple.timetuple(date)
+                                publish_epoch = int(calendar.timegm(datetime_tuple))
                                 day = datetime_tuple.tm_mday
                                 month = datetime_tuple.tm_mon
                                 year = datetime_tuple.tm_year
                         #publish_epoch = time.mktime(strp_time_object)
-			gmt_epoch = calendar.timegm(time.gmtime(publish_epoch))                       
+			gmt_epoch = publish_epoch                      
  
 
                         ##Getting full article with goose
@@ -120,7 +121,7 @@ class CricketReuters:
 				summary = None
 
                         try: 
-                                image_link = article.opengraph['image']
+                                image_link = article.infos['image']['url']
                                 obj1=AmazonS3(image_link, news_dict["news_id"])
                                 all_formats_image=obj1.run()
                         except Exception as e:
@@ -133,17 +134,17 @@ class CricketReuters:
            		summarization_instance = ShortNews() 
 
 			try:
-                                news_dict.update({"website": "www.rediff.com", "summary": summarization_instance.summarization(full_text),\
-						"custom_summary":summary, "news": full_text, "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch':\
-						publish_epoch, "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],\
+				news_dict.update({"website": "http://www.dailymail.co.uk", "summary": summarization_instance.summarization(full_text),\
+						"custom_summary":summary, "news": full_text, "image_link":image_link,'gmt_epoch':int(gmt_epoch),'publish_epoch':\
+						int(publish_epoch), "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],\
 						'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":\
-                                                time.mktime(time.localtime()),'type':'cricket','favicon':'https://upload.wikimedia.org/wikipedia/en/thumb/e/e2/Reuters_logo.svg/640px-Reuters_logo.svg.png'})
+						time.mktime(time.localtime()),'type':'cricket','favicon':'https://upload.wikimedia.org/wikipedia/en/1/11/Mail_Online.png'})
 			except:
-                                news_dict.update({"website": "www.rediff.com", "summary": summary,\
-						"custom_summary":summary, "news": full_text, "image_link":image_link,'gmt_epoch':gmt_epoch,'publish_epoch':\
-						publish_epoch, "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],\
+				news_dict.update({"website": "http://www.dailymail.co.uk", "summary": summary,\
+						"custom_summary":summary, "news": full_text, "image_link":image_link,'gmt_epoch':int(gmt_epoch),'publish_epoch':\
+						int(publish_epoch), "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],\
 						'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":\
-                                                time.mktime(time.localtime()),'type':'cricket','favicon':'https://upload.wikimedia.org/wikipedia/en/thumb/e/e2/Reuters_logo.svg/640px-Reuters_logo.svg.png'})
+						time.mktime(time.localtime()),'type':'cricket','favicon':'https://upload.wikimedia.org/wikipedia/en/1/11/Mail_Online.png'})
 
                         if news_dict['news'] and not news_dict['summary'] == " ...Read More":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
@@ -156,8 +157,8 @@ class CricketReuters:
 
     
 if __name__ == '__main__':
-    obj = CricketReuters('http://www.rediff.com/rss/cricketrss.xml')
-    obj.run()
+	obj = CricketRediff('http://www.dailymail.co.uk/sport/cricket/index.rss')
+    	obj.run()
     #obj.rss_feeds(ESPN_CRIC_FEED)
     #obj.checking()
     #obj.full_news()
