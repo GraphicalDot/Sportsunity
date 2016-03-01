@@ -17,6 +17,7 @@ BBC_CRIC_FEED = "http://feeds.bbci.co.uk/sport/0/cricket/rss.xml?edition=uk"    
 CBUZ_CRIC_FEED = "http://live-feeds.cricbuzz.com/CricbuzzFeed" #criccbuzz sportsnews feed   #favicon_link - http://www.cricbuzz.com/favicon.ico
 REUT_CRIC_FEED1 = "http://feeds.reuters.com/reuters/INcricketNews?format=xml"
 REUT_CRIC_FEED = "http://mf.feeds.reuters.com/reuters/UKCricketNews"
+MAIL_CRIC_FEED = "http://www.dailymail.co.uk/sport/cricket/index.rss"
 
 
 Fifa_dot_com = 'http://www.fifa.com/rss/index.xml'  #favicon_link - http://www.fifa.com/favicon.ico

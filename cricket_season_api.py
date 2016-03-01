@@ -26,7 +26,7 @@ class GetRecentSeasons(restful.Resource):
 
         def get(self):
                 
-                recent_seasons = list(self.season_fixtures.find(projection={'_id':False,'season_name':True,'start_date':True,'season_key':True}))
+                recent_seasons = list(self.season_fixtures.find(projection={'_id':False,'season_name':True,'start_date':True,'start_date_epoch':True,'expire_epoch':True,'season_key':True,'participating_teams':True}))
                 
                 return {'success':True,
                         'error':False,

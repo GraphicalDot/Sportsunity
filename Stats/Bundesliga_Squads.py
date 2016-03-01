@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 
+import sys
+import os
 import requests
 from bs4 import BeautifulSoup
 import termcolor
+import hashlib
 from itertools import izip
 import pymongo
 
-class Squads:
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+class BundesligaSquads:
         
         def __init__(self,link,team):
                 res = requests.get(link)
@@ -34,19 +40,22 @@ class Squads:
                             self.get_football_player_stats('http://www.goal.com/'+link.get('href'))
                             print self.squad[2].text
                             if self.list_of_profile:
-
-                                self.football_player_stats.update({'short_name':self.squad[2].text.strip(),'team_name':self.team},{'$set':{'player_image':self.player_image,'name':self.name.text.strip(),'team_name':self.team,'Jersey':\
-                                        self.squad[1].string.strip(),'short_name':self.squad[2].text.strip(),'Nationality':self.squad[3].find('span').get('title'),'Position':self.squad[4].string.strip(),'Age':\
-                                        self.squad[5].string.strip(),'Games':self.squad[6].string.strip(),'Goals':self.squad[7].string.strip(),'Yellow':self.squad[9].string.strip(),'Red':\
+                                print self.squad[8].string.strip()
+                                self.football_player_stats.update({'short_name':self.squad[2].text.strip(),'team_name':self.team},{'$set':{'player_image':self.player_image,'name':self.name.text.strip(),'long_name_id':\
+                                        hashlib.md5(self.name.text.strip()).hexdigest(),'team_id':hashlib.md5(" ".join(self.team.split('-')).title()).hexdigest(),'team_name':self.team,'image':image.get('src'),'Jersey':\
+                                        self.squad[1].string.strip(),'short_name':self.squad[2].text.strip(),'player_id':hashlib.md5(self.squad[2].text.strip()+self.squad[1].string.strip()).hexdigest(),'Nationality':\
+                                        self.squad[3].find('span').get('title'),'Position':self.squad[4].string.strip(),'Age':self.squad[5].string.strip(),'Games':self.squad[6].string.strip(),'Goals':\
+                                        self.squad[7].string.strip(),'Assists':self.squad[8].string.strip(),'Yellow':self.squad[9].string.strip(),'team':" ".join(self.team.split('-')).title(),'Red':\
                                         self.squad[11].string.strip(),'profile':self.list_of_profile,'other_competitions':self.list_of_other_competitions,'competition_name':'Bundesliga','sport_type':'football'}},upsert=True)
                             else:
-                                self.football_player_stats.update({'short_name':self.squad[2].text.strip(),'team_name':self.team},{'$set':{'player_image':'','name':self.squad[2].text.strip(),'team_name':self.team,'Jersey':\
-                                    self.squad[1].string.strip(),'short_name':self.squad[2].text.strip(),'Nationality':self.squad[3].find('span').get('title'),'Position':self.squad[4].string.strip(),'Age':\
-                                    self.squad[5].string.strip(),'Games':self.squad[6].string.strip(),'Goals':self.squad[7].string.strip(),'Yellow':self.squad[9].string.strip(),'Red':\
-                                    self.squad[11].string.strip(),'profile':self.list_of_profile,'other_competitions':self.list_of_other_competitions,'competition_name':'Bundesliga','sport_type':'football'}},upsert=True)
+                                self.football_player_stats.update({'short_name':self.squad[2].text.strip(),'team_name':self.team},{'$set':{'player_image':'','name':self.squad[2].text.strip(),'long_name_id':\
+                                        hashlib.md5(self.squad[2].text.strip()).hexdigest(),'team_id':hashlib.md5(" ".join(self.team.split('-')).title()).hexdigest(),'team_name':self.team,'image':image.get('src'),'Jersey':\
+                                        self.squad[1].string.strip(),'short_name':self.squad[2].text.strip(),'player_id':hashlib.md5(self.squad[2].text.strip()+self.squad[1].string.strip()).hexdigest(),'Nationality':\
+                                        self.squad[3].find('span').get('title'),'Position':self.squad[4].string.strip(),'Age':self.squad[5].string.strip(),'Games':self.squad[6].string.strip(),'Goals':\
+                                        self.squad[7].string.strip(),'Assists':self.squad[8].string.strip(),'Yellow':self.squad[9].string.strip(),'team':" ".join(self.team.split('-')).title(),'Red':\
+                                        self.squad[11].string.strip(),'profile':self.list_of_profile,'other_competitions':self.list_of_other_competitions,'competition_name':'Bundesliga','sport_type':'football'}},upsert=True)
 
                         except Exception,e:
-                            print e
                             pass
                             
                 manager = self.soup.find('table',{'class':'tab-squad tab-squad-manager'})
@@ -127,7 +136,7 @@ def main():
 
         for team,_id in izip(list_of_teams,list_of_ids):
             url = 'http://www.goal.com/en-us/teams/germany/bundesliga/9/'+team+_id
-            obj = Squads(url,team)
+            obj = BundesligaSquads(url,team)
             obj.get_squads()
 
 

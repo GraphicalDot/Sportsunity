@@ -2,8 +2,10 @@
 import requests
 import json
 import pprint
+from dateutil import parser
 from operator import itemgetter
 from datetime import datetime
+import calendar
 import pymongo
 
 class CricketSeason:
@@ -18,12 +20,14 @@ class CricketSeason:
                 db.authenticate('shivam','mama123')
                 db = conn.test
                 self.season_fixtures = db.season_fixtures
+                print self.auth_code
 
 
         def get_recent_seasons(self):
                 url = 'https://api.litzscore.com/rest/v2/recent_seasons/?access_token=%s'%self.auth_code
                 res = requests.get(url)
                 data = json.loads(res.content)
+                print data['data']
                 for recent_season in data['data']:
                     self.get_season_fixtures(recent_season['key'])
                     self.get_season_stats(recent_season['key'])
@@ -31,24 +35,29 @@ class CricketSeason:
 
                     if self.participating_teams and len(self.participating_teams)>2:
                             self.get_points_table(recent_season['key'])
+                            date = parser.parse(recent_season['start_date']['iso'])
+                            date_tuple = datetime.timetuple(date)
+                            start_epoch = calendar.timegm(date_tuple)
                             try:
                                 self.season_fixtures.update({'season_key':recent_season['key']},{'$set':{'season_key':recent_season['key'],'season_name':recent_season['name'],'fixtures':\
                                         self.new_list,'start_date':recent_season['start_date']['iso'],'participating_teams':self.participating_teams,'points_table':self.table,'stats':self.season_stats,'top_batsmen':\
-                                        self.season_batting_stats,'top_bowlers':self.season_bowling_stats}},upsert=True)
+                                        self.season_batting_stats,'start_date_epoch':start_epoch,'expire_epoch':float(data['expires']),'top_bowlers':self.season_bowling_stats}},upsert=True)
 
                             except Exception,e:
                                 self.season_fixtures.update({'season_key':recent_season['key']},{'$set':{'season_key':recent_season['key'],'season_name':recent_season['name'],'fixtures':\
-                                        '','start_date':recent_season['start_date']['iso'],'participating_teams':self.participating_teams,'points_table':'','stats':self.season_stats,'top_batsmen':'','top_bowlers':''}},upsert=True)
+                                        '','start_date':recent_season['start_date']['iso'],'start_date_epoch':start_epoch,'participating_teams':self.participating_teams,'points_table':'','stats':\
+                                        self.season_stats,'expire_epoch':float(data['expires']),'top_batsmen':'','top_bowlers':''}},upsert=True)
 
                     elif self.participating_teams and not len(self.participating_teams)>2:
                             try:
                                 self.season_fixtures.update({'season_key':recent_season['key']},{'$set':{'season_key':recent_season['key'],'season_name':recent_season['name'],'fixtures':\
                                         self.new_list,'start_date':recent_season['start_date']['iso'],'participating_teams':self.participating_teams,'points_table':'','stats':self.season_stats,'top_batsmen':\
-                                        self.season_batting_stats,'top_bowlers':self.season_bowling_stats}},upsert=True)
+                                        self.season_batting_stats,'top_bowlers':self.season_bowling_stats,'start_date_epoch':start_epoch,'expire_epoch':float(data['expires'])}},upsert=True)
 
                             except Exception,e:
                                     self.season_fixtures.update({'season_key':recent_season['key']},{'$set':{'season_key':recent_season['key'],'season_name':recent_season['name'],'fixtures':\
-                                            '','start_date':recent_season['start_date']['iso'],'participating_teams':self.participating_teams,'points_table':'','stats':'','top_batsmen':'','top_bowlers':''}},upsert=True)
+                                            '','start_date':recent_season['start_date']['iso'],'participating_teams':self.participating_teams,'points_table':'','stats':'','top_batsmen':\
+                                            '','top_bowlers':'','start_date_epoch':start_epoch,'expire_epoch':float(data['expires'])}},upsert=True)
                     else:
                             pass
 
@@ -74,12 +83,15 @@ class CricketSeason:
                 date = datetime.isoformat(datetime.utcnow())
                 try:
                         for match_key in data['data']['season']['matches'].keys():
+                            start_date = parser.parse(data['data']['season']['matches'][match_key]['start_date']['iso'])
+                            start_tuple = datetime.timetuple(start_date)
+                            start_epoch = calendar.timegm(start_tuple)
                             if not data['data']['season']['matches'][match_key]['start_date']['iso']<date:
                                     fixtures.append({'match_name':data['data']['season']['matches'][match_key]['title'],'match_key':match_key,'date':data['data']['season']['matches'][match_key]['start_date']['iso'],\
-                                            'info':''})
+                                            'info':'','start_epoch':start_epoch})
                             else:
                                     fixtures.append({'match_name':data['data']['season']['matches'][match_key]['title'],'match_key':match_key,'date':data['data']['season']['matches'][match_key]['start_date']['iso'],\
-                                            'info':data['data']['season']['matches'][match_key]['msgs']['info']})
+                                            'info':data['data']['season']['matches'][match_key]['msgs']['info'],'start_epoch':start_epoch})
 
                         self.new_list = sorted(fixtures,key=itemgetter('date'))
 
@@ -146,7 +158,7 @@ class CricketSeason:
                 try:
                     for top_batsman in data['data']['stats']['batting']['most_runs']:
                             try:
-                                    self.season_batting_stats.append({'player':top_batsman['full_name'],'runs':top_batsman['stats']['batting']['runs']})
+                                    self.season_batting_stats.append({'player':top_batsman['full_name'],'player_key':top_batsman['key'],'runs':top_batsman['stats']['batting']['runs']})
                             except Exception,e:
                                     print e
                                     pass
@@ -156,7 +168,7 @@ class CricketSeason:
                 try:
                     for top_bowler in data['data']['stats']['bowling']['most_wickets']:
                             try:
-                                    self.season_bowling_stats.append({'player':top_bowler['full_name'],'wickets':top_bowler['stats']['bowling']['wickets']})
+                                    self.season_bowling_stats.append({'player':top_bowler['full_name'],'player_key':top_bowler['key'],'wickets':top_bowler['stats']['bowling']['wickets']})
                             except Exception,e:
                                     print e
                                     pass

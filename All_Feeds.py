@@ -15,6 +15,7 @@ from Feeds.Cricket.BBC_Cric_Feed import CricketBbc
 from Feeds.Cricket.CBUZ_Cric_Feed import CricketCbuz
 from Feeds.Cricket.ESPN_Cric_Feed import CricketEspn
 from Feeds.Cricket.Ndtv_Feed import CricketNdtv
+from Feeds.Cricket.DailyMail_Cric_Feed import CricketDailyMail
 from Feeds.F1.Auto_sport_Feed import FormulaAuto
 from Feeds.F1.Crash_Feed import FormulaCrash
 from Feeds.F1.Grandprix_Feed import FormulaGrand
@@ -53,6 +54,8 @@ class AllInstance:
                 self.Instance_cric3.run()
                 self.Instance_cric4 = CricketNdtv(NDTV_CRICKET_FEED)
                 self.Instance_cric4.run()
+                self.Instance_cric5 = CricketDailyMail(MAIL_CRIC_FEED)
+                self.Instance_cric5.run()
         
         def f1_instances(self):
 

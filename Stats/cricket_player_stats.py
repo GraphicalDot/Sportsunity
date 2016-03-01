@@ -93,12 +93,12 @@ class CricketPlayerStats():
         if soup.find('div',{'id':'cricket-battingPerformaceBlock'}):
         #if soup.find('div',{'id':'cricket-battingPerformaceBlock'}): 
             try:
-                self.player_stats.update({'player_id':hashlib.md5(full_name.text).hexdigest(),'team_name':" ".join(self.team.split('-')).title()},{'$set':{'player':full_name.text,'player_id':\
-                        hashlib.md5(full_name.text).hexdigest(),'stats':[dict1],'image':profile_photo[0].find('img').get('src'),'team_id':\
+                self.player_stats.update({'player_id':hashlib.md5(full_name.text).hexdigest(),'team_name':" ".join(self.team.split('-')).title()},{'$set':{'name':full_name.text,'player_id':\
+                        hashlib.md5(full_name.text).hexdigest(),'stats':[dict1],'player_image':profile_photo[0].find('img').get('src'),'team_id':\
                         hashlib.md5(" ".join(self.team.split('-')).title()).hexdigest(),'info':info}},upsert=True)
             except Exception,e:
-                self.player_stats.update({'player_id':hashlib.md5(full_name.text).hexdigest(),'team_name':" ".join(self.team.split('-')).title()},{'$set':{'player':full_name.text,'player_id':\
-                        hashlib.md5(full_name.text).hexdigest(),'stats':[dict1],'image':'','team_id':hashlib.md5(" ".join(self.team.split('-')).title()).hexdigest(),'info':info}},upsert=True)
+                self.player_stats.update({'player_id':hashlib.md5(full_name.text).hexdigest(),'team_name':" ".join(self.team.split('-')).title()},{'$set':{'name':full_name.text,'player_id':\
+                        hashlib.md5(full_name.text).hexdigest(),'stats':[dict1],'player_image':'','team_id':hashlib.md5(" ".join(self.team.split('-')).title()).hexdigest(),'info':info}},upsert=True)
         else:
             print link
         
