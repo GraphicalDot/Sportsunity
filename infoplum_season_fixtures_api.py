@@ -1,8 +1,10 @@
-#!/usr/bin/env python
+#!usr/bin/env python
 
+from elasticsearch import Elasticsearch
 from flask import Flask, app, jsonify
 from flask.ext import restful
 from flask.ext.restful import Api, Resource, reqparse
+#from teams_elasticsearch import GetTeams
 import pymongo
 from operator import itemgetter
 

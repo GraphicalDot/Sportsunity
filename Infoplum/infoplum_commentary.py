@@ -71,7 +71,7 @@ class Infoplum_data:
       <seriesId>{0}</seriesId>
       <matchId>{1}</matchId>
       <inningId>1</inningId>
-      <overLimit>10</overLimit>
+      <overLimit>0</overLimit>
     </GetCommentary>
   </soap:Body>
 </soap:Envelope>""".format(series_id,match_id)
@@ -101,7 +101,7 @@ class Infoplum_data:
       <seriesId>{0}</seriesId>
       <matchId>{1}</matchId>
       <inningId>{2}</inningId>
-      <overLimit>10</overLimit>
+      <overLimit>0</overLimit>
     </GetCommentary>
   </soap:Body>
 </soap:Envelope>""".format(series_id,match_id,other_inning.get('inningid'))

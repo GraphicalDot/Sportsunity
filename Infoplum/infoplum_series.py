@@ -137,3 +137,5 @@ if __name__=="__main__":
 
         obj = Infoplum_data()
         obj.get_series_list()
+
+        
