@@ -1,0 +1,17 @@
+127.0.0.1 - - [09/Mar/2016 13:18:31] "GET /get_player_stats?player_id=2812 HTTP/1.1" 200 -
+127.0.0.1 - - [09/Mar/2016 13:18:40] "GET /get_player_stats?player_id=2812 HTTP/1.1" 200 -
+127.0.0.1 - - [09/Mar/2016 13:18:46] "GET /get_player_stats?player_id=2812 HTTP/1.1" 200 -
+127.0.0.1 - - [09/Mar/2016 13:18:55] "GET /get_team_squad?team_id=3 HTTP/1.1" 200 -
+127.0.0.1 - - [09/Mar/2016 13:44:40] "GET /get_match_summary?season_key=5177&match_id=17 HTTP/1.1" 200 -
+127.0.0.1 - - [09/Mar/2016 14:01:35] "GET /get_team_squad?team_id=3 HTTP/1.1" 200 -
+ * Detected change in '/home/madmachines/New_SportsUnity/Sportsunity/Infoplum/infoplum_season_fixtures_api.py', reloading
+ * Restarting with stat
+127.0.0.1 - - [09/Mar/2016 14:08:38] "GET /get_match_scorecard?season_key=5177&match_id=17 HTTP/1.1" 200 -
+127.0.0.1 - - [09/Mar/2016 14:08:51] "GET /get_match_scorecard?season_key=5177&match_id=17 HTTP/1.1" 200 -
+127.0.0.1 - - [09/Mar/2016 14:09:39] "GET /get_match_scorecard?season_key=5177&match_id=17 HTTP/1.1" 200 -
+127.0.0.1 - - [09/Mar/2016 14:09:44] "GET /get_match_summary?season_key=5177&match_id=17 HTTP/1.1" 200 -
+127.0.0.1 - - [09/Mar/2016 15:53:32] "GET /get_match_summary?season_key=5177&match_id=17 HTTP/1.1" 200 -
+127.0.0.1 - - [09/Mar/2016 15:59:22] "GET /get_match_summary?season_key=5177&match_id=17 HTTP/1.1" 200 -
+127.0.0.1 - - [09/Mar/2016 15:59:48] "GET /get_match_scorecard?season_key=5177&match_id=17 HTTP/1.1" 200 -
+ * Detected change in '/home/madmachines/New_SportsUnity/Sportsunity/Infoplum/infoplum_season_fixtures_api.py', reloading
+ * Restarting with stat

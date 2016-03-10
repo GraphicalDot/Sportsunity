@@ -73,7 +73,7 @@ class GetMatchScorecard(restful.Resource):
                 args = get_args.parse_args()
 
                 match_scorecard = list(self.test_infoplum_matches.find({'series_id':args['season_key'],'match_id':args['match_id']},projection={'_id':False,'series_name':True,'series_id':True,'match_name':\
-                        True,'match_id':True,'scorecard':True}))
+                        True,'match_id':True,'status':True,'result':True,'home_team':True,'away_team':True,'scorecard':True}))
 
                 return {'success':True,
                         'error':False,
@@ -102,7 +102,6 @@ class GetMatchCommentary(restful.Resource):
                 match_commentary = sorted(commentary[0]['commentary'],key=itemgetter('commentary_id'),reverse=True)
 
 
-
                 return {'success':True,
                         'error':False,
                         'data' : match_commentary,
@@ -124,7 +123,7 @@ class GetSeasonTable(restful.Resource):
                 
                 args = get_args.parse_args()
 
-                points_table = list(self.test_infoplum.find({'series_id':args['season_key']},projection={'_id':False,'series_name':True,'series_key':True,'season_table':True}))
+                points_table = list(self.test_infoplum.find({'series_id':args['season_key']},projection={'_id':False,'series_name':True,'series_id':True,'season_table':True}))
         
                 return {'success':True,
                         'error':False,
@@ -173,7 +172,24 @@ class GetPlayerStats(restful.Resource):
                         'data':player_stats
                         }
 
+"""
+class GetMatchList(restful.Resource):
 
+        def __init__(self):
+
+                conn = pymongo.MongoClient()
+                db = conn.admin
+                db.authenticate('shivam','mama123')
+                db = conn.test
+                self.test_infoplum_matches = db.test_infoplum_matches
+
+        def get(self):
+
+                args = get_args.parse_args()
+
+"""
+
+"""
 class GetSeasonStats(restful.Resource):
 
         def __init__(self):
@@ -194,9 +210,9 @@ class GetSeasonStats(restful.Resource):
                         'error':False,
                         'data':season_stats,
                         }
+"""
 
-
-class GetSeasonTopBatsmen(restful.Resource):
+class GetMatchSummary(restful.Resource):
 
             def __init__(self):
 
@@ -204,19 +220,22 @@ class GetSeasonTopBatsmen(restful.Resource):
                     db = conn.admin
                     db.authenticate('shivam','mama123')
                     db = conn.test
-                    self.season_fixtures = db.season_fixtures
+                    self.test_infoplum_matches = db.test_infoplum_matches
 
             def get(self):
                     
                     args = get_args.parse_args()
 
-                    season_top_batsmen = list(self.season_fixtures.find({'season_key':args['season_key']},projection={'_id':False,'season_name':True,'season_key':True,'top_batsmen':True}))
+                    summary = list(self.test_infoplum_matches.find({'series_id':args['season_key'],'match_id':args['match_id']},projection={'_id':False,'series_name':True,'series_id':True,'match_id':\
+                        True,'status':True,'result':True,'start_date':True,'home_team':True,'away_team':True,'summary':True}))
 
                     return {'success':True,
                             'error':False,
-                            'data':season_top_batsmen,
+                            'data':summary,
                             }
 
+                    
+"""
 class GetSeasonTopBowlers(restful.Resource):
 
             def __init__(self):
@@ -237,14 +256,14 @@ class GetSeasonTopBowlers(restful.Resource):
                             'error':False,
                             'data':season_top_bowlers,
                             }
-
+"""
 
 api.add_resource(GetRecentSeasons,'/get_recent_series')
 api.add_resource(GetSeasonFixtures, '/get_series_fixtures')
 api.add_resource(GetSeasonTable, '/get_season_table')
 api.add_resource(GetTeamSquad,'/get_team_squad')
 api.add_resource(GetPlayerStats,'/get_player_stats')
-#api.add_resource(GetSeasonTopBowlers,'/get_season_top_bowlers')
+api.add_resource(GetMatchSummary,'/get_match_summary')
 api.add_resource(GetMatchScorecard,'/get_match_scorecard')
 api.add_resource(GetMatchCommentary,'/get_match_commentary')
 

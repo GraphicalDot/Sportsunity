@@ -55,6 +55,7 @@ class SerieASquads:
                                         self.squad[11].string.strip(),'profile':self.list_of_profile,'other_competitions':self.list_of_other_competitions,'competition_name':'SerieA','sport_type':'football'}},upsert=True)
 
                         except Exception,e:
+                            print e
                             pass
                             
                 manager = self.soup.find('table',{'class':'tab-squad tab-squad-manager'})
@@ -83,11 +84,19 @@ class SerieASquads:
                             pass
 
 
-                    print
-                    self.list_of_profile.append({soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[0].text:soup.findAll('div',{'id':\
-                                                'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[1].text.strip(),soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[1].text:\
-                                                soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[2].text.strip(),soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':\
-                                                'playerStatLabel'})[2].text:soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[3].text.strip()})
+                    try:
+                        self.list_of_profile.append({soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[0].text.replace(':',''):soup.findAll('div',{'id':\
+                                    'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[1].text,soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[1].text.replace(':',''):\
+                                                    soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[2].text,soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':\
+                                                    'playerStatLabel'})[2].text.replace(':',''):soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[3].text.strip(),\
+                                                    soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[3].text.replace(':',''):soup.findAll('div',{'id':\
+                                                        'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[4].text})
+                    except Exception,e:
+
+                        self.list_of_profile.append({soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[0].text.replace(':',''):soup.findAll('div',{'id':\
+                                    'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[1].text.strip(),soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatLabel'})[1].text.replace(':',''):\
+                                                    soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[2].text.strip(),soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':\
+                                                    'playerStatLabel'})[2].text.replace(':',''):soup.findAll('div',{'id':'playerStatsCard'})[0].findAll('td',{'class':'playerStatValue'})[3].text.strip()})
                     
                     for stat in stat_table[0].findAll('tr'):
                         column = stat.findAll('td')
@@ -115,7 +124,7 @@ def main():
 
         for team,_id in izip(list_of_teams,list_of_ids):
             url = 'http://www.goal.com/en-us/teams/italy/serie-a/13/'+team+_id
-            obj = SeriesASquads(url,team)
+            obj = SerieASquads(url,team)
             obj.get_squads()
 
 

@@ -4,7 +4,7 @@ import json
 import pprint
 
 def scorecard():
-        r = requests.get("https://api.litzscore.com/rest/v2/match/nzaus_2016_test_02/?access_token=2s144861828237692s702376958096459730")
+        r = requests.get("https://api.litzscore.com/rest/v2/match/nzaus_2016_test_02/?access_token=2s144861828237692s707167167837259126")
 	data = json.loads(r.content)
 	dict2 = {}
 	for t in data['data']['card']['innings'].keys():

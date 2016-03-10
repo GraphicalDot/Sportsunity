@@ -7,7 +7,7 @@ import json
 from pprint import pprint
 import pymongo
 
-class Infoplum_data:
+class Infoplum_data_player_stats:
 
 
         def __init__(self):
@@ -140,5 +140,5 @@ class Infoplum_data:
 
 if __name__=="__main__":
 
-        obj = Infoplum_data()
+        obj = Infoplum_data_player_stats()
         obj.get_teams_list()

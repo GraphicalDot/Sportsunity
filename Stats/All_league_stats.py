@@ -3,6 +3,8 @@
 __metaclass__ = type
 
 import sys
+path = sys.path.append('Stats')
+print path
 import os
 from subprocess import call
 

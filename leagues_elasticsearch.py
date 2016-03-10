@@ -30,6 +30,7 @@ class GetTeams:
         'league_name': {'copy_to': ['league_autocomplete'], 'type': 'string'},
         'league_id': {'index': 'not_analyzed', 'type': 'string'},
         'season': {'index': 'not_analyzed', 'type': 'long'},
+        'flag_image':{'index': 'not_analyzed', 'type': 'string'},
         'region' : {'index': 'not_analyzed', 'type': 'string'},
         }}
 
