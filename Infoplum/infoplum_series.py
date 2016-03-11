@@ -86,7 +86,7 @@ class Infoplum_data_series:
                         #dict2.setdefault(match.find('name').text,[]).append({'match_id':match.get('matchid'),'series_id':match.get('seriesid'),'start_date':match.find('datestart').text,'end_date':match.find('dateend').text,'venue':\
                                 #match.find('venue1').text,'result':match.find('result').text})
                         self.list_of_fixtures.append({'match_name':match.find('name').text,'match_id':match.get('matchid'),'start_date':match.find('datestart').text,'end_date':match.find('dateend').text,'venue':\
-                                match.find('venue1').text,'result':match.find('result').text})
+                                match.find('venue1').text,'match_time':match.find('startdatetimeutc').text,'result':match.find('result').text})
 
                 print
 

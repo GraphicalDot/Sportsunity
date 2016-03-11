@@ -4,7 +4,7 @@ boto==2.38.0
 certifi==2015.4.28
 cssselect==0.9.1
 eventlet==0.17.4
-feedparser==5.2.0
+feedparser==5.2.1
 gevent==1.0.2
 goose-extractor==1.0.25
 greenlet==0.4.7

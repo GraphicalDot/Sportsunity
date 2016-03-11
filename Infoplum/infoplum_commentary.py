@@ -53,8 +53,10 @@ class Infoplum_data_commentary:
                             print 'live match!'
                             self.get_match_commentary(match.get('seriesid'),match.get('matchid'))
                             #dict1.setdefault(match.get('seriesid'),[]).append({'fixtures':self.list_of_fixtures})
-                            self.test_infoplum_commentary.update({'match_id':match.get('matchid'),'series_id':match.get('seriesid')},{'$set':{'match_id':match.get('matchid'),'status':match.find('result').text,'match_name':\
-                                    match.get('matchname'),'series_id':match.get('seriesid'),'series_name':match.get('seriesname'),'start_date':match.find('datetime').text,'commentary':self.commentary}},upsert=True)
+                            self.test_infoplum_commentary.update({'match_id':match.get('matchid'),'series_id':match.get('seriesid')},{'$set':{'match_id':match.get('matchid'),'result':match.find('result').text,'match_name':\
+                                    match.get('matchname'),'series_id':match.get('seriesid'),'series_name':match.get('seriesname'),'start_date':match.find('datetime').text,'commentary':\
+                                    self.commentary,'status':match.find('result').get('status'),'home_team':match.find('hometeam').get('fullname'),'home_team_id':\
+                                    match.find('hometeam').get('teamid'),'away_team':match.find('awayteam').get('fullname'),'away_team_id':match.find('awayteam').get('teamid')}},upsert=True)
 
                 print
 

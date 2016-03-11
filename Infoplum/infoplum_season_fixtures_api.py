@@ -73,7 +73,7 @@ class GetMatchScorecard(restful.Resource):
                 args = get_args.parse_args()
 
                 match_scorecard = list(self.test_infoplum_matches.find({'series_id':args['season_key'],'match_id':args['match_id']},projection={'_id':False,'series_name':True,'series_id':True,'match_name':\
-                        True,'match_id':True,'status':True,'result':True,'home_team':True,'away_team':True,'scorecard':True}))
+                        True,'match_id':True,'status':True,'result':True,'home_team':True,'match_time':True,'away_team':True,'scorecard':True}))
 
                 return {'success':True,
                         'error':False,
@@ -99,13 +99,22 @@ class GetMatchCommentary(restful.Resource):
                         True,'match_id':True,'commentary':True}))
 
 
-                match_commentary = sorted(commentary[0]['commentary'],key=itemgetter('commentary_id'),reverse=True)
+                if commentary:
+                    match_commentary = sorted(commentary[0]['commentary'],key=itemgetter('commentary_id'),reverse=True)
+                else:
+                    match_commentary = []
 
 
-                return {'success':True,
-                        'error':False,
-                        'data' : match_commentary,
-                        }
+                try:
+                    return {'success':True,
+                            'error':False,
+                            'data' : match_commentary,
+                            }
+
+                except Exception,e:
+                    return {'success':False,
+                            'error':True,
+                            }
 
 
 
@@ -227,7 +236,7 @@ class GetMatchSummary(restful.Resource):
                     args = get_args.parse_args()
 
                     summary = list(self.test_infoplum_matches.find({'series_id':args['season_key'],'match_id':args['match_id']},projection={'_id':False,'series_name':True,'series_id':True,'match_id':\
-                        True,'status':True,'result':True,'start_date':True,'home_team':True,'away_team':True,'summary':True}))
+                            True,'status':True,'result':True,'start_date':True,'match_time':True,'home_team':True,'away_team':True,'venue':True,'summary':True}))
 
                     return {'success':True,
                             'error':False,
