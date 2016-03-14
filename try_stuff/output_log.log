@@ -1,142 +1,57 @@
-127.0.0.1 - - [09/Mar/2016 13:18:31] "GET /get_player_stats?player_id=2812 HTTP/1.1" 200 -
-127.0.0.1 - - [09/Mar/2016 13:18:40] "GET /get_player_stats?player_id=2812 HTTP/1.1" 200 -
-127.0.0.1 - - [09/Mar/2016 13:18:46] "GET /get_player_stats?player_id=2812 HTTP/1.1" 200 -
-127.0.0.1 - - [09/Mar/2016 13:18:55] "GET /get_team_squad?team_id=3 HTTP/1.1" 200 -
-127.0.0.1 - - [09/Mar/2016 13:44:40] "GET /get_match_summary?season_key=5177&match_id=17 HTTP/1.1" 200 -
-127.0.0.1 - - [09/Mar/2016 14:01:35] "GET /get_team_squad?team_id=3 HTTP/1.1" 200 -
- * Detected change in '/home/madmachines/New_SportsUnity/Sportsunity/Infoplum/infoplum_season_fixtures_api.py', reloading
- * Restarting with stat
-127.0.0.1 - - [09/Mar/2016 14:08:38] "GET /get_match_scorecard?season_key=5177&match_id=17 HTTP/1.1" 200 -
-127.0.0.1 - - [09/Mar/2016 14:08:51] "GET /get_match_scorecard?season_key=5177&match_id=17 HTTP/1.1" 200 -
-127.0.0.1 - - [09/Mar/2016 14:09:39] "GET /get_match_scorecard?season_key=5177&match_id=17 HTTP/1.1" 200 -
-127.0.0.1 - - [09/Mar/2016 14:09:44] "GET /get_match_summary?season_key=5177&match_id=17 HTTP/1.1" 200 -
-127.0.0.1 - - [09/Mar/2016 15:53:32] "GET /get_match_summary?season_key=5177&match_id=17 HTTP/1.1" 200 -
-127.0.0.1 - - [09/Mar/2016 15:59:22] "GET /get_match_summary?season_key=5177&match_id=17 HTTP/1.1" 200 -
-127.0.0.1 - - [09/Mar/2016 15:59:48] "GET /get_match_scorecard?season_key=5177&match_id=17 HTTP/1.1" 200 -
- * Detected change in '/home/madmachines/New_SportsUnity/Sportsunity/Infoplum/infoplum_season_fixtures_api.py', reloading
- * Restarting with stat
- * Running on http://0.0.0.0:5300/ (Press CTRL+C to quit)
-Traceback (most recent call last):
-  File "/home/madmachines/New_SportsUnity/Sportsunity/Infoplum/infoplum_season_fixtures_api.py", line 280, in <module>
-    app.run(host = "0.0.0.0", port = 5300 , debug = True)
-  File "/home/madmachines/New_SportsUnity/local/lib/python2.7/site-packages/flask/app.py", line 772, in run
-    run_simple(host, port, self, **options)
-  File "/home/madmachines/New_SportsUnity/local/lib/python2.7/site-packages/werkzeug/serving.py", line 618, in run_simple
-    test_socket.bind((hostname, port))
-  File "/usr/lib/python2.7/socket.py", line 224, in meth
-    return getattr(self._sock,name)(*args)
-socket.error: [Errno 98] Address already in use
- * Running on http://0.0.0.0:5300/ (Press CTRL+C to quit)
-Traceback (most recent call last):
-  File "/home/madmachines/New_SportsUnity/Sportsunity/Infoplum/infoplum_season_fixtures_api.py", line 280, in <module>
-    app.run(host = "0.0.0.0", port = 5300 , debug = True)
-  File "/home/madmachines/New_SportsUnity/local/lib/python2.7/site-packages/flask/app.py", line 772, in run
-    run_simple(host, port, self, **options)
-  File "/home/madmachines/New_SportsUnity/local/lib/python2.7/site-packages/werkzeug/serving.py", line 618, in run_simple
-    test_socket.bind((hostname, port))
-  File "/usr/lib/python2.7/socket.py", line 224, in meth
-    return getattr(self._sock,name)(*args)
-socket.error: [Errno 98] Address already in use
- * Running on http://0.0.0.0:5300/ (Press CTRL+C to quit)
-Traceback (most recent call last):
-  File "/home/madmachines/New_SportsUnity/Sportsunity/Infoplum/infoplum_season_fixtures_api.py", line 280, in <module>
-    app.run(host = "0.0.0.0", port = 5300 , debug = True)
-  File "/home/madmachines/New_SportsUnity/local/lib/python2.7/site-packages/flask/app.py", line 772, in run
-    run_simple(host, port, self, **options)
-  File "/home/madmachines/New_SportsUnity/local/lib/python2.7/site-packages/werkzeug/serving.py", line 618, in run_simple
-    test_socket.bind((hostname, port))
-  File "/usr/lib/python2.7/socket.py", line 224, in meth
-    return getattr(self._sock,name)(*args)
-socket.error: [Errno 98] Address already in use
- * Running on http://0.0.0.0:5300/ (Press CTRL+C to quit)
-Traceback (most recent call last):
-  File "/home/madmachines/New_SportsUnity/Sportsunity/Infoplum/infoplum_season_fixtures_api.py", line 280, in <module>
-    app.run(host = "0.0.0.0", port = 5300 , debug = True)
-  File "/home/madmachines/New_SportsUnity/local/lib/python2.7/site-packages/flask/app.py", line 772, in run
-    run_simple(host, port, self, **options)
-  File "/home/madmachines/New_SportsUnity/local/lib/python2.7/site-packages/werkzeug/serving.py", line 618, in run_simple
-    test_socket.bind((hostname, port))
-  File "/usr/lib/python2.7/socket.py", line 224, in meth
-    return getattr(self._sock,name)(*args)
-socket.error: [Errno 98] Address already in use
+127.0.0.1 - - [12/Mar/2016 13:05:23] "GET /get_match_commentary?season_key=5177&match_id=17 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2016 13:06:28] "GET /get_match_summary?season_key=5177&match_id=17 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2016 13:06:44] "GET /get_match_summary?season_key=5166&match_id=6 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2016 13:07:12] "GET /get_player_stats?player_id=8191 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2016 13:20:04] "GET /get_team HTTP/1.1" 404 -
+127.0.0.1 - - [12/Mar/2016 13:20:04] "GET /get_team HTTP/1.1" 404 -
+127.0.0.1 - - [12/Mar/2016 13:20:08] "GET /get_team_squad?team_id=7 HTTP/1.1" 200 -
+192.168.1.126 - - [12/Mar/2016 13:20:41] "GET /get_team_squad?team_id=7 HTTP/1.1" 200 -
+192.168.1.100 - - [12/Mar/2016 13:22:56] "GET /get_team_squad?team_id=3 HTTP/1.1" 200 -
+192.168.1.100 - - [12/Mar/2016 13:23:28] "GET /get_team_squad?team_id=212 HTTP/1.1" 200 -
+192.168.1.126 - - [12/Mar/2016 14:41:04] "GET /get_team_squad?team_id=212 HTTP/1.1" 200 -
+192.168.1.100 - - [12/Mar/2016 14:45:30] "GET /get_team_squad?team_id=3 HTTP/1.1" 200 -
+192.168.1.100 - - [12/Mar/2016 15:45:27] "GET /get_team_squad?team_id=5 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2016 16:08:15] "GET /get_player_stats?player_id=3530 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2016 17:01:54] "GET /get_player_stats?player_id=16343 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2016 17:02:13] "GET /get_player_stats?player_id=1392 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2016 17:02:21] "GET /get_player_stats?player_id=16343 HTTP/1.1" 200 -
+192.168.1.100 - - [12/Mar/2016 17:14:47] "GET /get_team_squad?team_id=1 HTTP/1.1" 200 -
+192.168.1.100 - - [12/Mar/2016 17:40:01] "GET /get_team_squad?team_id=64 HTTP/1.1" 200 -
+192.168.1.100 - - [12/Mar/2016 17:59:25] "GET /get_team_squad?team_id=65 HTTP/1.1" 200 -
+192.168.1.100 - - [12/Mar/2016 18:11:11] "GET /get_team_squad?team_id=72 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2016 18:21:12] "GET /get_player_stats?player_id=16343 HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2016 18:21:13] "GET /get_player_stats?player_id=16343 HTTP/1.1" 200 -
+192.168.1.100 - - [12/Mar/2016 18:23:23] "GET /get_team_squad?team_id=72 HTTP/1.1" 200 -
  * Running on http://0.0.0.0:5300/ (Press CTRL+C to quit)
  * Restarting with stat
-127.0.0.1 - - [10/Mar/2016 18:19:40] "GET /get_match_commentary?season_key=5177&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [10/Mar/2016 18:19:57] "GET /get_series_fixtures?season_key=5177 HTTP/1.1" 200 -
-127.0.0.1 - - [10/Mar/2016 18:20:00] "GET /get_recent_series HTTP/1.1" 200 -
-127.0.0.1 - - [10/Mar/2016 18:29:57] "GET /get_match_commentary?season_key=5177&match_id=17 HTTP/1.1" 200 -
- * Running on http://0.0.0.0:5300/ (Press CTRL+C to quit)
- * Restarting with stat
-127.0.0.1 - - [11/Mar/2016 11:21:42] "GET /get_match_commentary?season_key=5177&match_id=16 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 11:22:14] "GET /get_match_commentary?season_key=5177&match_id=17 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 11:25:24] "GET /get_match_commentary?season_key=5177&match_id=17 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 11:25:52] "GET /get_match_scorecard?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 11:25:56] "GET /get_match_scorecard?season_key=5166&match_id=17 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 11:26:00] "GET /get_match_scorecard?season_key=5166&match_id=3 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 11:26:06] "GET /get_match_summary?season_key=5166&match_id=3 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 11:29:44] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 11:30:12] "GET /get_match_scorecard?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 11:30:31] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 12:18:34] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 12:26:03] "GET /get_match_summary?season_key=5166&match_id=7 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 12:32:24] "GET /get_match_summary?season_key=5166&match_id=7 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 12:32:31] "GET /get_match_summary?season_key=5166&match_id=10 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 12:33:22] "GET /get_match_summary?season_key=5166&match_id=2 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 12:33:37] "GET /get_match_summary?season_key=5166&match_id=3 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 12:33:42] "GET /get_match_summary?season_key=5166&match_id=4 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 12:33:44] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 12:33:47] "GET /get_match_summary?season_key=5166&match_id=6 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 12:33:52] "GET /get_match_summary?season_key=5166&match_id=7 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 12:33:57] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 12:33:59] "GET /get_match_summary?season_key=5166&match_id=4 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 13:18:34] "GET /get_match_summary?season_key=5166&match_id=4 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 13:23:33] "GET /get_match_summary?season_key=5166&match_id=4 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 13:30:41] "GET /get_match_summary?season_key=5166&match_id=4 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 13:30:48] "GET /get_match_summary?season_key=5166&match_id=4 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 13:36:55] "GET /get_match_summary?season_key=5166&match_id=4 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 13:37:01] "GET /get_match_summary?season_key=5166&match_id=7 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 13:37:09] "GET /get_match_summary?season_key=5166&match_id=6 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 14:15:53] "GET /get_match_summary?season_key=5166&match_id=6 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 14:16:09] "GET /get_match_summary?season_key=5166&match_id=6 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 14:16:24] "GET /get_match_summary?season_key=5166&match_id=12 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 14:16:26] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 14:16:29] "GET /get_match_summary?season_key=5166&match_id= HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 14:16:31] "GET /get_match_summary?season_key=5166&match_id=3 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 14:16:34] "GET /get_match_summary?season_key=5166&match_id=17 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 14:16:37] "GET /get_match_summary?season_key=5177&match_id=17 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 14:16:57] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 14:20:09] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
- * Detected change in '/home/madmachines/New_SportsUnity/Sportsunity/Infoplum/infoplum_season_fixtures_api.py', reloading
- * Restarting with stat
-127.0.0.1 - - [11/Mar/2016 14:43:24] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 14:53:19] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 14:53:42] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 16:34:41] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 16:39:07] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 16:40:27] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 16:40:46] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 16:41:03] "GET /get_player_stats?player_id=3581 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 16:41:06] "GET /get_player_stats?player_id=localhost:5300/get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 16:41:29] "GET /get_player_stats?player_id=15076 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:00:13] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:00:25] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:00:40] "GET /get_match_summary?season_key=5166&match_id=7 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:02:41] "GET /get_match_summary?season_key=5166&match_id=7 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:02:44] "GET /get_match_summary?season_key=5166&match_id=8 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:02:51] "GET /get_match_summary?season_key=5166&match_id=7 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:05:43] "GET /get_match_summary?season_key=5166&match_id=6 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:05:52] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:05:54] "GET /get_match_summary?season_key=5166&match_id=8 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:06:42] "GET /get_match_summary?season_key=5166&match_id=7 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:06:57] "GET /get_match_summary?season_key=5166&match_id=6 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:07:04] "GET /get_match_summary?season_key=5166&match_id=8 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:08:43] "GET /get_match_summary?season_key=5166&match_id=7 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:09:04] "GET /get_match_scorecard?season_key=5166&match_id=7 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:09:57] "GET /get_match_scorecard?season_key=5166&match_id=7 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:09:59] "GET /get_match_scorecard?season_key=5166&match_id=4 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:10:04] "GET /get_match_summary?season_key=5166&match_id=5 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:10:05] "GET /get_match_summary?season_key=5166&match_id=4 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:10:23] "GET /get_player_stats?player_id=14774 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:10:55] "GET /get_match_summary?season_key=5166&match_id=7 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:10:59] "GET /get_match_summary?season_key=5166&match_id=8 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Mar/2016 18:11:00] "GET /get_match_summary?season_key=5166&match_id=7 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:00:22] "GET /get_player_stats?player_id=16343 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:18:44] "GET /get_match_summary?season_key=5166&match_id=6 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:19:33] "GET /get_match_summary?season_key=5166&match_id=7 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:19:38] "GET /get_match_summary?season_key=5166&match_id=8 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:19:43] "GET /get_match_summary?season_key=5166&match_id=9 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:20:07] "GET /get_match_summary?season_key=5166&match_id=6 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:20:24] "GET /get_match_summary?season_key=5166&match_id=9 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:20:28] "GET /get_match_summary?season_key=5166&match_id=10 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:21:04] "GET /get_match_summary?season_key=5166&match_id=11 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:21:32] "GET /get_match_summary?season_key=5166&match_id=12 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:22:03] "GET /get_match_summary?season_key=5166&match_id=13 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:22:22] "GET /get_match_summary?season_key=5166&match_id=12 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:33:12] "GET /get_match_scorecard?season_key=5177&match_id=11 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:33:26] "GET /get_match_scorecard?season_key=5177&match_id=14 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:33:40] "GET /get_match_scorecard?season_key=5177&match_id=17 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:34:06] "GET /get_match_scorecard?season_key=5166&match_id=11 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:34:15] "GET /get_match_scorecard?season_key=5166&match_id=13 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:34:17] "GET /get_match_scorecard?season_key=5166&match_id=12 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:34:21] "GET /get_match_scorecard?season_key=5166&match_id=11 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:34:28] "GET /get_match_scorecard?season_key=5166&match_id=12 HTTP/1.1" 200 -
+192.168.1.100 - - [14/Mar/2016 12:35:02] "GET /get_team_squad?team_id={id} HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:35:41] "GET /get_match_summary?season_key=5166&match_id=11 HTTP/1.1" 200 -
+192.168.1.100 - - [14/Mar/2016 12:35:49] "GET /get_team_squad?team_id={id} HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:35:50] "GET /get_match_summary?season_key=5166&match_id=10 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:35:55] "GET /get_match_summary?season_key=5166&match_id=9 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:36:05] "GET /get_match_scorecard?season_key=5177&match_id=17 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:36:14] "GET /get_match_summary?season_key=5177&match_id=17 HTTP/1.1" 200 -
+127.0.0.1 - - [14/Mar/2016 12:36:30] "GET /get_match_summary?season_key=5166&match_id=10 HTTP/1.1" 200 -
+192.168.1.100 - - [14/Mar/2016 12:39:47] "GET /get_team_squad?team_id=72 HTTP/1.1" 200 -
+192.168.1.100 - - [14/Mar/2016 12:41:46] "GET /get_team_squad?team_id=53 HTTP/1.1" 200 -
+192.168.1.100 - - [14/Mar/2016 12:45:45] "GET /get_team_squad?team_id=4 HTTP/1.1" 200 -
