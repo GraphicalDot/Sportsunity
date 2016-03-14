@@ -181,7 +181,7 @@ class GetPlayerStats(restful.Resource):
                         'data':player_stats
                         }
 
-"""
+
 class GetMatchList(restful.Resource):
 
         def __init__(self):
@@ -190,13 +190,24 @@ class GetMatchList(restful.Resource):
                 db = conn.admin
                 db.authenticate('shivam','mama123')
                 db = conn.test
-                self.test_infoplum_matches = db.test_infoplum_matches
+                self.infoplum_match_list = db.infoplum_match_list
 
         def get(self):
 
-                args = get_args.parse_args()
 
-"""
+                match_list = self.infoplum_match_list.find(projection={'_id':False,'match_list':True})
+
+                if match_list:
+                    return {'success':True,
+                            'error':False,
+                            'data':list(match_list)
+                            }
+                else:
+                    return {'success':False,
+                            'error':True,
+                            'data':[]
+                            }
+
 
 """
 class GetSeasonStats(restful.Resource):
@@ -219,7 +230,9 @@ class GetSeasonStats(restful.Resource):
                         'error':False,
                         'data':season_stats,
                         }
+
 """
+
 
 class GetMatchSummary(restful.Resource):
 
@@ -267,6 +280,7 @@ class GetSeasonTopBowlers(restful.Resource):
                             }
 """
 
+api.add_resource(GetMatchList,'/get_match_list')
 api.add_resource(GetRecentSeasons,'/get_recent_series')
 api.add_resource(GetSeasonFixtures, '/get_series_fixtures')
 api.add_resource(GetSeasonTable, '/get_season_table')

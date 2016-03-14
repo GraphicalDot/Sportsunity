@@ -55,3 +55,117 @@
 192.168.1.100 - - [14/Mar/2016 12:39:47] "GET /get_team_squad?team_id=72 HTTP/1.1" 200 -
 192.168.1.100 - - [14/Mar/2016 12:41:46] "GET /get_team_squad?team_id=53 HTTP/1.1" 200 -
 192.168.1.100 - - [14/Mar/2016 12:45:45] "GET /get_team_squad?team_id=4 HTTP/1.1" 200 -
+192.168.1.100 - - [14/Mar/2016 13:39:28] "GET /get_team_squad?team_id=1 HTTP/1.1" 200 -
+192.168.1.100 - - [14/Mar/2016 15:29:53] "GET /get_team_squad?team_id=4 HTTP/1.1" 200 -
+192.168.1.100 - - [14/Mar/2016 16:10:01] "GET /get_team_squad?team_id=6 HTTP/1.1" 200 -
+ * Detected change in '/home/madmachines/New_SportsUnity/Sportsunity/Infoplum/infoplum_season_fixtures_api.py', reloading
+ * Restarting with stat
+ * Detected change in '/home/madmachines/New_SportsUnity/Sportsunity/Infoplum/infoplum_season_fixtures_api.py', reloading
+ * Restarting with stat
+ * Detected change in '/home/madmachines/New_SportsUnity/Sportsunity/Infoplum/infoplum_season_fixtures_api.py', reloading
+ * Restarting with stat
+127.0.0.1 - - [14/Mar/2016 18:25:37] "GET /get_match_list HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1836, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1820, in wsgi_app
+    response = self.make_response(self.handle_exception(e))
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask_restful/__init__.py", line 270, in error_router
+    return original_handler(e)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1403, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask_restful/__init__.py", line 267, in error_router
+    return self.handle_error(e)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1817, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1477, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask_restful/__init__.py", line 270, in error_router
+    return original_handler(e)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1381, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask_restful/__init__.py", line 267, in error_router
+    return self.handle_error(e)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1475, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1461, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask_restful/__init__.py", line 475, in wrapper
+    return self.make_response(data, code, headers=headers)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask_restful/__init__.py", line 504, in make_response
+    resp = self.representations[mediatype](data, *args, **kwargs)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask_restful/representations/json.py", line 20, in output_json
+    dumped = dumps(data, **settings) + "\n"
+  File "/usr/lib/python2.7/json/__init__.py", line 250, in dumps
+    sort_keys=sort_keys, **kw).encode(obj)
+  File "/usr/lib/python2.7/json/encoder.py", line 209, in encode
+    chunks = list(chunks)
+  File "/usr/lib/python2.7/json/encoder.py", line 434, in _iterencode
+    for chunk in _iterencode_dict(o, _current_indent_level):
+  File "/usr/lib/python2.7/json/encoder.py", line 408, in _iterencode_dict
+    for chunk in chunks:
+  File "/usr/lib/python2.7/json/encoder.py", line 442, in _iterencode
+    o = _default(o)
+  File "/usr/lib/python2.7/json/encoder.py", line 184, in default
+    raise TypeError(repr(o) + " is not JSON serializable")
+TypeError: <pymongo.cursor.Cursor object at 0x7f450b4d7210> is not JSON serializable
+ * Detected change in '/home/madmachines/New_SportsUnity/Sportsunity/Infoplum/infoplum_season_fixtures_api.py', reloading
+ * Restarting with stat
+ * Detected change in '/home/madmachines/New_SportsUnity/Sportsunity/Infoplum/infoplum_season_fixtures_api.py', reloading
+ * Restarting with stat
+127.0.0.1 - - [14/Mar/2016 18:27:21] "GET /get_match_list HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1836, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1820, in wsgi_app
+    response = self.make_response(self.handle_exception(e))
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask_restful/__init__.py", line 270, in error_router
+    return original_handler(e)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1403, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask_restful/__init__.py", line 267, in error_router
+    return self.handle_error(e)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1817, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1477, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask_restful/__init__.py", line 270, in error_router
+    return original_handler(e)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1381, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask_restful/__init__.py", line 267, in error_router
+    return self.handle_error(e)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1475, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask/app.py", line 1461, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask_restful/__init__.py", line 475, in wrapper
+    return self.make_response(data, code, headers=headers)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask_restful/__init__.py", line 504, in make_response
+    resp = self.representations[mediatype](data, *args, **kwargs)
+  File "/home/madmachines/New_SportsUnity/lib/python2.7/site-packages/flask_restful/representations/json.py", line 20, in output_json
+    dumped = dumps(data, **settings) + "\n"
+  File "/usr/lib/python2.7/json/__init__.py", line 250, in dumps
+    sort_keys=sort_keys, **kw).encode(obj)
+  File "/usr/lib/python2.7/json/encoder.py", line 209, in encode
+    chunks = list(chunks)
+  File "/usr/lib/python2.7/json/encoder.py", line 434, in _iterencode
+    for chunk in _iterencode_dict(o, _current_indent_level):
+  File "/usr/lib/python2.7/json/encoder.py", line 408, in _iterencode_dict
+    for chunk in chunks:
+  File "/usr/lib/python2.7/json/encoder.py", line 332, in _iterencode_list
+    for chunk in chunks:
+  File "/usr/lib/python2.7/json/encoder.py", line 408, in _iterencode_dict
+    for chunk in chunks:
+  File "/usr/lib/python2.7/json/encoder.py", line 332, in _iterencode_list
+    for chunk in chunks:
+  File "/usr/lib/python2.7/json/encoder.py", line 408, in _iterencode_dict
+    for chunk in chunks:
+  File "/usr/lib/python2.7/json/encoder.py", line 442, in _iterencode
+    o = _default(o)
+  File "/usr/lib/python2.7/json/encoder.py", line 184, in default
+    raise TypeError(repr(o) + " is not JSON serializable")
+TypeError: ObjectId('56d7d50a07491981b1e8f86c') is not JSON serializable
+127.0.0.1 - - [14/Mar/2016 18:31:17] "GET /get_match_list HTTP/1.1" 200 -
+ * Detected change in '/home/madmachines/New_SportsUnity/Sportsunity/Infoplum/infoplum_season_fixtures_api.py', reloading
+ * Restarting with stat
