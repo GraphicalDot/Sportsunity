@@ -45,15 +45,15 @@ class Infoplum_data_commentary:
                         print 
                         # dict1.setdefault(series.get('seriesid'),[]).append({'series_id':series.get('seriestypename'),'series_name':series.find('name').text,'start_date':series.find('startdate').text,'end_date':series.find('enddate').text,'result':series.find('result').text})
                         print match.find('result').get('status')
-                        if str(match.find('result').get('status')) == 'F' or str(match.find('result').get('status')) == 'N':
-                            print "Not an ongoing match!"
-                            pass
+                        #if str(match.find('result').get('status')) == 'F' or str(match.find('result').get('status')) == 'N':
+                         #   print "Not an ongoing match!"
+                          #  pass
 
-                        else:
-                            print 'live match!'
-                            self.get_match_commentary(match.get('seriesid'),match.get('matchid'))
+                        #else:
+                         #   print 'live match!'
+                        self.get_match_commentary(match.get('seriesid'),match.get('matchid'))
                             #dict1.setdefault(match.get('seriesid'),[]).append({'fixtures':self.list_of_fixtures})
-                            self.test_infoplum_commentary.update({'match_id':match.get('matchid'),'series_id':match.get('seriesid')},{'$set':{'match_id':match.get('matchid'),'result':match.find('result').text,'match_name':\
+                        self.test_infoplum_commentary.update({'match_id':match.get('matchid'),'series_id':match.get('seriesid')},{'$set':{'match_id':match.get('matchid'),'result':match.find('result').text,'match_name':\
                                     match.get('matchname'),'series_id':match.get('seriesid'),'series_name':match.get('seriesname'),'start_date':match.find('datetime').text,'commentary':\
                                     self.commentary,'status':match.find('result').get('status'),'home_team':match.find('hometeam').get('fullname'),'home_team_id':\
                                     match.find('hometeam').get('teamid'),'away_team':match.find('awayteam').get('fullname'),'away_team_id':match.find('awayteam').get('teamid')}},upsert=True)

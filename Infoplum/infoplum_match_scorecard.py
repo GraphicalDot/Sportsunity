@@ -70,7 +70,7 @@ class Infoplum_data_scorecard:
                         #dict1.setdefault(match.get('seriesid'),[]).append({'fixtures':self.list_of_fixtures})
 			self.test_infoplum_matches.update({'match_id':match.get('matchid'),'series_id':match.get('seriesid')},{'$set':{'match_id':match.get('matchid'),'result':match.find('result').text,'match_name':\
                                 match.get('matchname'),'series_id':match.get('seriesid'),'series_name':match.get('seriesname'),'start_date':match.find('datetime').text,'match_time':gmt_epoch,'scorecard':\
-                                self.scorecard,'status':match.find('result').get('status'),'home_team':match.find('hometeam').get('fullname'),'home_team_id':\
+                                self.scorecard,'status':match.find('result').get('status'),'home_team':match.find('hometeam').get('fullname'),'match_widget':self.score_widget,'home_team_id':\
                                 match.find('hometeam').get('teamid'),'summary':self.summary,'away_team':match.find('awayteam').get('fullname'),'away_team_id':match.find('awayteam').get('teamid')}},upsert=True)
 
                 print
@@ -106,6 +106,7 @@ class Infoplum_data_scorecard:
                 self.scorecard = {}
                 playing_xi = {}
                 self.upcoming_batsmen = {}
+                self.score_widget = list()
 
                 for inning in soup.findAll('inning'):
                         print
@@ -117,6 +118,8 @@ class Infoplum_data_scorecard:
                         #self.list_of_fixtures.append({'match_name':match.find('name').text,'match_id':match.get('matchid'),'start_date':match.find('datestart').text,'end_date':match.find('dateend').text,'venue':\
                                 #match.find('venue1').text,'result':match.find('result').text})
 
+                        print inning.findAll('bowler')
+                        print '-'*10
                         for bowler in inning.findAll('bowler'):
                                 print bowler
                                 try:
@@ -151,7 +154,17 @@ class Infoplum_data_scorecard:
                         self.scorecard.setdefault(inning.get('inningid'),{}).setdefault(inning.find('name').text,{}).update({'runs':inning.find('run').text,'overs':inning.find('over').text,'extra':\
                                 inning.find('extra').text,'bye':inning.find('bye').text,'legbye':inning.find('legbye').text,'wide':inning.find('wide').text,'noball':inning.find('noball').text,'run_rate':\
                                 inning.find('runrate').text,'required_runrate':inning.find('requiredrunrate').text})
-                    
+                
+                        
+                        innings = inning.get('inningid')
+                        try:
+                            self.score_widget.append({'team_name':inning.find('team').text,'runs':inning.find('run').text,'overs':inning.find('over').text,'wickets':inning.find('wicket').text,'inning':innings})
+                            print self.score_widget
+                            print '-'*15
+                        except Exception,e:
+                            print e
+
+
                 try:
                     self.toss = soup.find('toss').text
                 except Exception,e:
@@ -162,6 +175,7 @@ class Infoplum_data_scorecard:
                     self.umpires = {}
 
                 return
+
 
 
         def match_summary(self,series_id,match_id,upcoming_batsmen,toss,umpires):
@@ -219,10 +233,10 @@ class Infoplum_data_scorecard:
 
                 try:
                     print upcoming_batsmen
-                    print
+                    print '--'*10
                     upcoming_batsmen = upcoming_batsmen[current_inning]
                 except Exception,e:
-                    print e
+                    upcoming_batsmen = []
 
                 """
                 recent over

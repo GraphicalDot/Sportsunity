@@ -197,6 +197,8 @@ class GetMatchList(restful.Resource):
 
                 match_list = self.infoplum_match_list.find(projection={'_id':False,'match_list':True})
 
+                #match_list = sorted(match_list,key=itemgetter('match_time'))
+
                 if match_list:
                     return {'success':True,
                             'error':False,
@@ -257,8 +259,7 @@ class GetMatchSummary(restful.Resource):
                             }
 
                     
-"""
-class GetSeasonTopBowlers(restful.Resource):
+class GetMatchWidget(restful.Resource):
 
             def __init__(self):
 
@@ -266,19 +267,19 @@ class GetSeasonTopBowlers(restful.Resource):
                     db = conn.admin
                     db.authenticate('shivam','mama123')
                     db = conn.test
-                    self.season_fixtures = db.season_fixtures
+                    self.test_infoplum_matches = db.test_infoplum_matches
 
             def get(self):
                     
                     args = get_args.parse_args()
 
-                    season_top_bowlers = list(self.season_fixtures.find({'season_key':args['season_key']},projection={'_id':False,'season_name':True,'season_key':True,'top_bowlers':True}))
+                    match_widget = list(self.test_infoplum_matches.find({'series_id':args['season_key'],'match_id':args['match_id']},projection={'_id':False,'series_name':True,'series_id':True,'match_id':\
+                            True,'status':True,'result':True,'start_date':True,'match_time':True,'home_team':True,'away_team':True,'venue':True,'match_widget':True}))
 
                     return {'success':True,
                             'error':False,
-                            'data':season_top_bowlers,
+                            'data':match_widget,
                             }
-"""
 
 api.add_resource(GetMatchList,'/get_match_list')
 api.add_resource(GetRecentSeasons,'/get_recent_series')
@@ -289,6 +290,7 @@ api.add_resource(GetPlayerStats,'/get_player_stats')
 api.add_resource(GetMatchSummary,'/get_match_summary')
 api.add_resource(GetMatchScorecard,'/get_match_scorecard')
 api.add_resource(GetMatchCommentary,'/get_match_commentary')
+api.add_resource(GetMatchWidget,'/get_match_widget')
 
 if __name__ == '__main__':
     app.run(host = "0.0.0.0", port = 5300 , debug = True)

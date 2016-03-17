@@ -20,3 +20,6 @@ zope.interface==4.1.2
 urllib3==1.14
 flask==0.10.1
 flask-restful==0.3.5
+elasticsearch==2.3.0
+termcolor==1.1.0
+pyfiglet==0.7.4

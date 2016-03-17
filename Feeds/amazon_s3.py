@@ -10,7 +10,7 @@ from PIL import Image
 import PIL
 import base64
 import requests
-import tinify
+#import tinify
 import goose
 file_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(file_path)
@@ -71,10 +71,10 @@ class AmazonS3(object):
                 #response = urllib.urlopen(self.image_link)
                 #response = requests.get(self.image_link)
                 try:
-                    tinify.key = '2dlWoPbVdVhWTeXFPrbcCqLy0X8JGC_y'
+                    #tinify.key = '2dlWoPbVdVhWTeXFPrbcCqLy0X8JGC_y'
                     response = urllib.urlopen(self.image_link)
                     source = response.read()
-                    source_new = tinify.from_buffer(source).to_buffer()
+                    #source_new = tinify.from_buffer(source).to_buffer()
                     self.img = Image.open(StringIO(source_new))
                 except Exception as e:
                     goose_instance = goose.Goose()
