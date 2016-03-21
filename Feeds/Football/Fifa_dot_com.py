@@ -3,18 +3,21 @@
 import sys
 import os
 import time
+import calendar
 import json
 import feedparser
 import urllib
-from nltk.tokenize import sent_tokenize
+from nltk.tokenize import sent_tokenize, word_tokenize
 from goose import Goose
 parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(parent_dir_path)
 from mongo_db_football import FootFeedMongo
+from Feeds.All.mongo_db_all import AllFeedMongo
 from GlobalLinks import *
 from GlobalMethods import unicode_or_bust
 from Feeds.amazon_s3 import AmazonS3
 import hashlib
+from summarize_news import ShortNews
 
 class FootballFifa:
         """
@@ -45,7 +48,7 @@ class FootballFifa:
                 self.rss = feedparser.parse(self.link)
                 self.news_entries = self.rss.entries
                 [self.news_list.append({"news_link": news_entry["link"], "published": news_entry["published"], "summary": \
-                        news_entry["summary"], "title": news_entry["title"], "tags": news_entry["tags"], "news_id": hashlib.md5(news_entry["link"]).hexdigest()}) \
+                        news_entry["summary"], "title": news_entry["title"], "news_id": hashlib.md5(news_entry["link"]).hexdigest()}) \
                         for news_entry in self.news_entries]
                                 
 
@@ -58,7 +61,9 @@ class FootballFifa:
 
         def checking(self):
                 for news_dict in self.news_list:
-                        if not FootFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]) and news_dict["news_link"].endswith(".html"):
+                        if not FootFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]) and not \
+                                AllFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]) and \
+                                news_dict["news_link"].endswith(".html"):
                                 self.links_not_present.append(news_dict)
 
                 return 
@@ -77,25 +82,38 @@ class FootballFifa:
                 for news_dict in self.links_not_present:
            
 
-                        strp_time_object = time.strptime(news_dict['published'], "%a, %d %b %Y %H:%M:%S %Z")
+                        if news_dict['published'].endswith("EDT") or news_dict['published'].endswith("GMT"):
+                                strp_time_object = time.strptime(news_dict['published'][:-4], "%a, %d %b %Y %H:%M:%S")
+                        elif news_dict['published'].endswith("+0530") or news_dict['published'].endswith("+0000"):
+                                strp_time_object = time.strptime(news_dict['published'][:-6], "%a, %d %b %Y %H:%M:%S")
+                        else:
+                                strp_time_object = time.strptime(news_dict['published'], "%Y-%m-%d %H:%M:%S" )
                         day = strp_time_object.tm_mday
                         month = strp_time_object.tm_mon
                         year = strp_time_object.tm_year
                         publish_epoch = time.mktime(strp_time_object)
-                       
+               		gmt_epoch = calendar.timegm(time.gmtime(publish_epoch))        
  
 
                         ##Getting full article with goose
                         article = goose_instance.extract(news_dict["news_link"])
-                        full_text = unicode_or_bust(article.cleaned_text.format())
+                        for text in article.cleaned_text.split('\n'):
+                            if text=='':
+                                    pass
+                            else:
+                                    full_text = unicode_or_bust(text.format())
             
                         tokenized_data = sent_tokenize(full_text)
                         length_tokenized_data=len(tokenized_data)
             
-                        if length_tokenized_data > 2:
-                                summary=tokenized_data[0]+tokenized_data[1]+tokenized_data[2]
-                        else:
+                        #if length_tokenized_data > 2:
+                                #summary=tokenized_data[0]+tokenized_data[1]+" "+ " ...Read More"
+                        if length_tokenized_data > 1:
+                                summary = " ".join(word_tokenize(full_text)[:100])+" "+ " ...Read More"
+			elif article.meta_description:
                                 summary = article.meta_description
+			else:
+				summary = None
 
                         try: 
                                 image_link = article.opengraph['image']
@@ -108,16 +126,28 @@ class FootballFifa:
                                                     "ldpi": None,
                                                     "hdpi": None,}
 
-            
+                        
+                        summarization_instance = ShortNews()
 
-                        news_dict.update({"website": "Fifa_dot_com", "summary": summary, "news": full_text, "image_link":image_link, 
-                            'publish_epoch': publish_epoch, "day": day, "month": month, "year": year, 
-                                        'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],
-                                        "time_of_storing":time.mktime(time.localtime())})
+                        try:
+                                news_dict.update({"website": "www.fifa.com", "summary": summarization_instance.summarization(full_text),\
+                                        "custom_summary":summary, "news": full_text, "image_link":image_link,'gmt_epoch':gmt_epoch ,'publish_epoch': publish_epoch,\
+                                        "day": day, "month": month, "year": year, 'ldpi': all_formats_image['ldpi'],'mdpi': \
+                                        all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":\
+                                        time.mktime(time.localtime()),'type':'football','favicon':'http://www.fifa.com/favicon.ico'})
+                        except:
+                                news_dict.update({"website": "www.fifa.com", "summary": summary, "custom_summary":summary, "news": full_text,\
+                                        "image_link":image_link,'gmt_epoch':gmt_epoch ,'publish_epoch': publish_epoch, "day": day, "month": month, "year": year,\
+                                        'ldpi': all_formats_image['ldpi'],'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],\
+                                        "time_of_storing":time.mktime(time.localtime()),'type':'football','favicon':'http://www.fifa.com/favicon.ico'})
 
-                        if not full_text == " ":
+                        if not full_text == "" and not news_dict['summary'] == " ...Read More":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
                                 FootFeedMongo.insert_news(news_dict)
+                                print 'here'
+                                AllFeedMongo.insert_news(news_dict)
+                        else:
+                                print "not inserted in db"
                 return                 
 
     
