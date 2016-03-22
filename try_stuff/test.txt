@@ -1,4 +1,0 @@
-urllib3==1.14
-flask==0.10.1
-urllib3==1.14
-flask==0.10.1
