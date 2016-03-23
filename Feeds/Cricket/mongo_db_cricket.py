@@ -24,10 +24,4 @@ class CricFeedMongo(object):
         @staticmethod
         def insert_news(news_dict):
                 news_collection_cric.insert(news_dict)
-                """
-                bulk = news_collection_cric.initialize_unordered_bulk_op()
-                for news_dict in news_list:
-                        bulk.insert(news)
-                bulk.execute()
-                """
                 return

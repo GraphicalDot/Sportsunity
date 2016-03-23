@@ -2,7 +2,11 @@
 
 import requests
 from bs4 import BeautifulSoup
-import pymongo
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import connection
+
 
 class BigBash:
 
@@ -10,7 +14,7 @@ class BigBash:
 
         response = requests.get(url)
         self.soup = BeautifulSoup(response.content,"lxml")
-        conn = pymongo.MongoClient()
+        conn = connection.get_mongo_connection()
         db = conn.admin
         db.authenticate('shivam','mama123')
         db = conn.stats

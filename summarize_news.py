@@ -2,9 +2,6 @@
 
 import os
 import sys
-#file_path = os.path.dirname(os.path.abspath(__file__))
-#sys.path.append(file_path)
-#print file_path
 from news_summary import FrequencySummarizer
 
 
@@ -33,7 +30,8 @@ def main():
 
                 
                 
-if __name__=="__main__":main()
+if __name__=="__main__":
+        main()
 
 
 

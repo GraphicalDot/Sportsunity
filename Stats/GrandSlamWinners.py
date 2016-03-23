@@ -2,13 +2,17 @@ import os
 import sys
 from bs4 import BeautifulSoup
 import requests
-import pymongo
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import connection
+
 
 class GrandSlams:
 
         def __init__(self, link):
                 self.columns = list()
-                conn = pymongo.MongoClient()
+                conn = connection.get_mongo_connection()
                 db = conn.drake
                 self.tennis_stats = db.tennis_stats
                 res = requests.get(link)

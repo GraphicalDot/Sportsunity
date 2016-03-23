@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 
-import pymongo
+import connection
 
-conn = pymongo.MongoClient()
+conn = connection.get_mongo_connection()
 db = conn.Cricket_db
 Unity_Cricket = db.Unity_Cricket
 

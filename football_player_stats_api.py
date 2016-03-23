@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-from elasticsearch import Elasticsearch
 from flask import Flask, app, jsonify
 from flask.ext import restful
 from flask.ext.restful import Api, Resource, reqparse
-#from teams_elasticsearch import GetTeams
-import pymongo
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import connection
 
 
 app = Flask(__name__)
@@ -17,18 +18,19 @@ get_args.add_argument("player", type=str, location="args", required=False)
 get_args.add_argument("sport_type", type=str, location="args", required=False)
 get_args.add_argument("player_id", type=str, location="args", required=False)
 
+
 class GetSquad(restful.Resource):
 
         def __init__(self):
 
-                conn = pymongo.MongoClient()
+                conn = connection.get_mongo_connection()
                 db = conn.admin
                 db.authenticate('shivam','mama123')
                 db = conn.test
                 self.football_player_stats = db.football_player_stats
 
         def get(self):
-                
+
                 args = get_args.parse_args()
 
                 """
@@ -43,9 +45,9 @@ class GetSquad(restful.Resource):
                 print team_name
                 """
 
-                squad = list(self.football_player_stats.find({'team_id':args['team_id']},projection={'_id':False,'team':True,'team_id':True,'team':True,'short_name':True,'image':True,'Goals':\
+                squad = list(self.football_player_stats.find({'team_id':args['team_id']},projection={'_id':False,'team':True,'team_id':True,'team':True,'short_name':True,'image':True,'Goals': \
                         True,'Assists':True,'Games':True,'Nationality':True,'Position':True,'Jersey':True,'Age':True,'Red':True,'Yellow':True,'player_id':True}))
-                
+
                 return {'success':True,
                         'error':False,
                         'data':sorted(squad),
@@ -55,7 +57,7 @@ class GetPlayerProfile(restful.Resource):
 
         def __init__(self):
 
-                conn = pymongo.MongoClient()
+                conn = connection.get_mongo_connection()
                 db = conn.admin
                 db.authenticate('shivam','mama123')
                 db = conn.test
@@ -72,22 +74,15 @@ class GetPlayerProfile(restful.Resource):
                         'data':profile,
                         }
 
-        
+
 
 
 api.add_resource(GetSquad,'/get_football_team_squad')
 api.add_resource(GetPlayerProfile, '/get_football_player_profile')
 
 if __name__ == '__main__':
-    app.run(host = "0.0.0.0", port = 5600 , debug = True)
+        app.run(host = "0.0.0.0", port = 5600 , debug = True)
 
-
-
-                
-
-
-                
-                
         
 
         

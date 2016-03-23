@@ -3,15 +3,19 @@
 import requests
 from bs4 import BeautifulSoup
 import json
-import pymongo
 import hashlib
 import pprint
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import connection
+
 
 class CricketPlayerStats():
 
     def __init__(self,team):
         self.team = team
-        conn = pymongo.MongoClient()
+        conn = connection.get_mongo_connection()
         db = conn.admin
         db.authenticate('shivam','mama123')
         db = conn.test

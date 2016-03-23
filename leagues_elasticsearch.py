@@ -1,38 +1,43 @@
 #!/usr/bin/env python
 
-from elasticsearch import Elasticsearch
 import requests
 import json
 from pyfiglet import figlet_format
 from termcolor import cprint
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import connection
 
-ES_CLIENT = Elasticsearch()
+
+ES_CLIENT = connection.get_elastic_search_connection()
+
 
 class GetTeams:
 
         def __init__(self,renew_indexes=False):
 
                 self.settings={'settings': {'analysis': {'analyzer': {'custom_analyzer': {'filter': ['lowercase',
-        'asciifolding','edge_ngram'],
-        'tokenizer': 'ngram_tokenizer', 'type':'custom'}},
-        'filter': {'edge_ngram': {'max_gram': '100',
-        'min_gram': '2',
-        'type': 'edge_ngram'}},
-        'tokenizer': {'ngram_tokenizer': {'max_gram': '100',
-        'min_gram': '2',
-        'token_chars': ['letter', 'digit'],
-        'type': 'edgeNGram'}}}
+                                                                                                     'asciifolding','edge_ngram'],
+                                                                                          'tokenizer': 'ngram_tokenizer', 'type':'custom'}},
+                                                         'filter': {'edge_ngram': {'max_gram': '100',
+                                                                                   'min_gram': '2',
+                                                                                   'type': 'edge_ngram'}},
+                                                         'tokenizer': {'ngram_tokenizer': {'max_gram': '100',
+                                                                                           'min_gram': '2',
+                                                                                           'token_chars': ['letter', 'digit'],
+                                                                                           'type': 'edgeNGram'}}}
 
-        }}
+                                            }}
 
                 self.mappings = {'dynamic': 'strict',
-        'properties': {'league_autocomplete': {'analyzer': 'custom_analyzer', 'type':'string'},
-        'league_name': {'copy_to': ['league_autocomplete'], 'type': 'string'},
-        'league_id': {'index': 'not_analyzed', 'type': 'string'},
-        'season': {'index': 'not_analyzed', 'type': 'long'},
-        'flag_image':{'index': 'not_analyzed', 'type': 'string'},
-        'region' : {'index': 'not_analyzed', 'type': 'string'},
-        }}
+                                 'properties': {'league_autocomplete': {'analyzer': 'custom_analyzer', 'type':'string'},
+                                                'league_name': {'copy_to': ['league_autocomplete'], 'type': 'string'},
+                                                'league_id': {'index': 'not_analyzed', 'type': 'string'},
+                                                'season': {'index': 'not_analyzed', 'type': 'long'},
+                                                'flag_image':{'index': 'not_analyzed', 'type': 'string'},
+                                                'region' : {'index': 'not_analyzed', 'type': 'string'},
+                                                }}
 
 
                 if not ES_CLIENT.indices.exists("leagues"):
@@ -50,9 +55,9 @@ class GetTeams:
                 ES_CLIENT.indices.put_mapping(index="leagues", doc_type="leagues", body = {"leagues": self.mappings })
                 a = "Mappings updated for  {0}".format("leagues")
                 cprint(figlet_format(a, font='starwars'), attrs=['bold'])
-                
 
-        
+
+
         def index_data(self):
                 response = requests.get('http://52.74.75.79:8000/get_football_leagues')
                 data = json.loads(response.content)
@@ -61,9 +66,6 @@ class GetTeams:
 
 
 if __name__=="__main__":
-
         obj = GetTeams(renew_indexes=True)
-        
-        
 
        

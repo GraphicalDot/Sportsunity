@@ -4,28 +4,30 @@ import requests
 from bs4 import BeautifulSoup
 import pprint
 import termcolor
-import pymongo
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import connection
 
 
 class BattingRecords:
 
         def __init__(self):
-                conn = pymongo.MongoClient()
-                db = conn.admin
-                db.authenticate('shivam','mama123')
+                conn = connection.get_mongo_connection()
+                # db = conn.admin
+                # db.authenticate('shivam','mama123')
                 db = conn.stats
                 self.player_stats = db.player_stats
                 self.stats_list = list()
                 for x in range(1,10):
                     self._dict1 = {}
-                    #for y in range(1,4):
                     response = requests.get('http://stats.espncricinfo.com/ci/engine/stats/index.html?class=2;spanmax2=18+Jan+2016;spanmin2=18+Jan+2015;spanval2=span;team={0};template=results;type=batting'.format(x))
                     self.soup = BeautifulSoup(response.content,"lxml")
                     res = requests.get("http://stats.espncricinfo.com/ci/engine/stats/index.html?class=2;spanmax2=18+Jan+2016;spanmin2=18+Jan+2015;spanval2=span;team={0};template=results;type=bowling".format(x))
                     self.soup1 = BeautifulSoup(res.content,"lxml")
                     self.bowling_cricket()
                     self.batting_cricket()
-    
+
         def bowling_cricket(self):
                 team = self.soup1.find('table',{'class':'engineTable'})
                 print termcolor.colored(team.findAll('td')[1].get_text().split('team')[1],"blue")
@@ -57,7 +59,7 @@ class BattingRecords:
                                 _dict ={'player':stat[0].string,'match':stat[1].string,'inngs':\
                                         stat[2].string,'overs':stat[3].string,'maidens':stat[4].string,'runs':stat[5].string,'wickets':\
                                         stat[6].string,'average':stat[8].string,'economy':stat[9].string,'strike_rate':stat[10].string}
-                                
+
                         #self._dict1.setdefault(team.findAll('td')[1].get_text().split('team')[1].strip(),{}).setdefault("bowling",[]).append(_dict)
 
 
@@ -96,14 +98,14 @@ class BattingRecords:
                                         stat[2].string,'notouts':stat[3].string,'runs':stat[4].string,'highest':stat[5].string,'average':\
                                         stat[6].string, 'strike_rate':stat[8].string, '100s':stat[9].string, '50s':stat[10].string, '0s':\
                                         stat[11].string,'4s':stat[12].string, '6s':stat[13].string}
-                                
+
                         #self._dict1.setdefault(team.findAll('td')[1].get_text().split('team')[1].strip(),{}).setdefault("batting",[]).append(_dict)
 
 
 
                 #pprint.pprint(self._dict1)
                         #self.stats_list.append(_dict)
-                
+
                 #pprint.pprint(self.stats_list)
 
 if __name__=='__main__':

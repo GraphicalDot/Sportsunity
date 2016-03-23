@@ -3,7 +3,11 @@
 from flask import Flask, app, render_template, jsonify
 from flask.ext import restful
 from flask.ext.restful import Api, Resource, reqparse
-import pymongo
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import connection
+
 
 app = Flask(__name__)
 api = restful.Api(app)
@@ -13,7 +17,7 @@ class TopCricketPlayers(restful.Resource):
 
     def __init__(self):
 
-        conn = pymongo.MongoClient()
+        conn = connection.get_mongo_connection()
         db = conn.admin
         db.authenticate('shivam','mama123')
         db = conn.cricket

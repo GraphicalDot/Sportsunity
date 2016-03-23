@@ -2,8 +2,12 @@
 
 import requests
 from bs4 import BeautifulSoup
-import pymongo
 import hashlib
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import connection
+
 
 class TopCricketPlayers:
 
@@ -12,7 +16,7 @@ class TopCricketPlayers:
         self.link = link
         response = requests.get(self.link)
         self.soup = BeautifulSoup(response.content,'lxml')
-        conn = pymongo.MongoClient()
+        conn = connection.get_mongo_connection()
         db = conn.admin
         db.authenticate('shivam','mama123')
         db = conn.cricket

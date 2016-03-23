@@ -4,11 +4,11 @@ parent_dir_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 print parent_dir_path
 sys.path.append(parent_dir_path)
 import json
-import pymongo
+import connection
 
 
 def get_stats():
-        conn = pymongo.MongoClient()
+        conn = connection.get_mongo_connection()
         db = conn.drake
         tennis = db.tennis
         f = open("Data_Set_Tennis.json","rb")
@@ -25,7 +25,7 @@ def get_stats():
                                 x['birthday/_source'][0].encode('ascii','ignore'), "Matches_Lost_This_Year":x['year_matches_lost'][0]})
 
 def check_data():
-        conn = pymongo.MongoClient()
+        conn = connection.get_mongo_connection()
         db = conn.drake
         tennis = db.tennis
         for val in tennis.find(projection={"_id":False}):

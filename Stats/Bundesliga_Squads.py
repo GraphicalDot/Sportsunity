@@ -7,7 +7,11 @@ from bs4 import BeautifulSoup
 import termcolor
 import hashlib
 from itertools import izip
-import pymongo
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import connection
+
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -18,9 +22,9 @@ class BundesligaSquads:
                 res = requests.get(link)
                 self.soup = BeautifulSoup(res.content,"lxml")
                 self.team = team
-                conn = pymongo.MongoClient()
-                db = conn.admin
-                db.authenticate('shivam','mama123')
+                conn = connection.get_mongo_connection()
+                # db = conn.admin
+                # db.authenticate('shivam','mama123')
                 db = conn.test
                 self.football_player_stats = db.football_player_stats
                 

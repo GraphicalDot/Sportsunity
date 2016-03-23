@@ -1,6 +1,8 @@
 #!/usr/bin/env python
-
-import pymongo
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import connection
 TIME_STAMP = "publish_epoch"
 
 
@@ -9,16 +11,11 @@ SOURCE = ['website', 'title', 'gmt_epoch', 'month', 'news_link', 'custom_summary
         'time_of_storing', 'year','news_id', 'summary', 'type', 'day', 'published', 'favicon']
 
 
-
-
-connection = pymongo.MongoClient("localhost")
+connection = connection.get_mongo_connection()
 sports_db = connection.admin
-sports_db.authenticate('shivam','mama123')
+# sports_db.authenticate('shivam','mama123')
 sports_db = connection.SPORTS_UNITY_NEWS
 
 
 MONGO_SPORTS_UNITY_NEWS_ALL_COLL = sports_db.SPORTS_UNITY_NEWS_ALL
 ELASTICSEARCH_IP = "localhost"
-
-
-

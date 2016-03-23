@@ -3,8 +3,12 @@
 
 from bs4 import BeautifulSoup
 import requests
-import pymongo
-import pprint    
+import pprint
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import connection
+
 
 class CricketRanking:
 
@@ -14,7 +18,7 @@ class CricketRanking:
                 self.test_list = list()
                 self.odi_list = list()
                 self.t20_list = list()
-                connection = pymongo.MongoClient()
+                connection = connection.get_mongo_connection()
                 db = connection.admin
                 db.authenticate('shivam','mama123')
                 db = connection.drake
