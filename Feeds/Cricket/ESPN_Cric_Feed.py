@@ -34,10 +34,10 @@ class CricketEspn(MainCricketFeedHandler):
         goose_instance = Goose()
         for news_dict in self.links_not_present:
             published_news = news_dict['published']
-            if published_news.endswith("EDT") or published_news.endswith("GMT"):
+            if published_news.endswith(("EDT", "GMT")):
                 strp_time_object = time.strptime(published_news[:-4], "%a, %d %b %Y %H:%M:%S")
 
-            elif published_news.endswith("+0530") or published_news.endswith("+0000"):
+            elif published_news.endswith(("+0530", "+0000")):
                 strp_time_object = time.strptime(published_news[:-6], "%a, %d %b %Y %H:%M:%S")
             else:
                 strp_time_object = time.strptime(published_news, "%Y-%m-%d %H:%M:%S" )
@@ -97,9 +97,9 @@ class CricketEspn(MainCricketFeedHandler):
 
             if full_text != " " and news_dict['summary'] != " ...Read More":
                 print "Inserting news id %s with news link %s" % (news_dict.get("news_id"), news_dict.get("news_link"))
-                CricFeedMongo.insert_news(news_dict)
+                CricFeedMongo().insert_news(news_dict)
                 print 'here'
-                AllFeedMongo.insert_news(news_dict)
+                AllFeedMongo().insert_news(news_dict)
         return
 
 

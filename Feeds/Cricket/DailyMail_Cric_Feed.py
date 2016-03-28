@@ -32,7 +32,7 @@ class CricketDailyMail(MainCricketFeedHandler):
         goose_instance = Goose()
         for news_dict in self.links_not_present:
 
-            if news_dict['published'].endswith("GMT") or news_dict['published'].endswith("+0000"):
+            if news_dict['published'].endswith(("GMT", "+0000")):
                 date = parse(news_dict['published'])
                 datetime_tuple = datetime.timetuple(date)
                 publish_epoch = int(calendar.timegm(datetime_tuple))
@@ -99,9 +99,9 @@ class CricketDailyMail(MainCricketFeedHandler):
 
             if news_dict['news'] and news_dict['summary'] != " ...Read More":
                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
-                CricFeedMongo.insert_news(news_dict)
+                CricFeedMongo().insert_news(news_dict)
                 print 'here'
-                AllFeedMongo.insert_news(news_dict)
+                AllFeedMongo().insert_news(news_dict)
         return
 
 

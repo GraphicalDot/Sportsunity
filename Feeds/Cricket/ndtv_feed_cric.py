@@ -65,7 +65,7 @@ class NdtvCricketRss(object):
                             "website": "NDTV", 
                             }
                     print __dict
-                    CricFeedMongo.insert_news(__dict)
+                    CricFeedMongo().insert_news(__dict)
                     self.news.append(__dict)
         def __filter(self):
                 """

@@ -248,7 +248,7 @@ def start_running():
                                 env.run('pwd')
                                 env.run('ls')
                                 env.run("sudo apt-get install mongodb")
-                                env.run("python Run_Feeds.py")
+                                # env.run("python Run_Feeds.py")
 
 
 @task

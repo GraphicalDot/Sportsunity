@@ -1,18 +1,15 @@
-#!/usr/bin/env python
-
 import sys
 import os
 import feedparser
-from nltk.tokenize import sent_tokenize, word_tokenize
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from mongo_db_cricket import CricFeedMongo
+from mongo_db_basketball import BaskFeedMongo
 from Feeds.All.mongo_db_all import AllFeedMongo
 from GlobalLinks import *
 import hashlib
 
 
-class MainCricketFeedHandler(object):
+class MainBasketBallFeedHandler(object):
     def __init__(self, link):
         """
         Args:
@@ -44,15 +41,14 @@ class MainCricketFeedHandler(object):
     def run(self):
         print "Total number of news link in rss %s" % len(self.news_list)
         self.checking()
-        print "Number of news links not stored in the databse %s"%len(self.links_not_present)
+        print "Number of news links not stored in the databse %s" % len(self.links_not_present)
         self.full_news()
         return
 
     def checking(self):
         for news_dict in self.news_list:
-            if not CricFeedMongo().if_news_exists(news_dict["news_id"], news_dict["news_link"]) and not \
+            if not BaskFeedMongo().if_news_exists(news_dict["news_id"], news_dict["news_link"]) and not \
                     AllFeedMongo().if_news_exists(news_dict["news_id"], news_dict["news_link"]):
                 self.links_not_present.append(news_dict)
                 print self.links_not_present
-
         return

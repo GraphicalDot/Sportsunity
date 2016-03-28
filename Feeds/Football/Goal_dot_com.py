@@ -30,7 +30,7 @@ class FootballGoal(MainFootballFeedHandler):
         goose_instance = Goose()
         for news_dict in self.links_not_present:
             published_news = news_dict['published']
-            if published_news.endswith("+0000") or published_news.endswith("+0530"):
+            if published_news.endswith(("+0000", "+0530")):
                 strp_time_object = time.strptime(published_news[:-6], "%a, %d %b %Y %H:%M:%S")
             else:
                 strp_time_object = time.strptime(published_news, "%a, %d %b %Y %H:%M:%S %Z")
@@ -94,9 +94,9 @@ class FootballGoal(MainFootballFeedHandler):
 
             if full_text != " " and news_dict['summary'] != " ...Read More":
                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
-                FootFeedMongo.insert_news(news_dict)
+                FootFeedMongo().insert_news(news_dict)
                 print 'here'
-                AllFeedMongo.insert_news(news_dict)
+                AllFeedMongo().insert_news(news_dict)
         return
 
 

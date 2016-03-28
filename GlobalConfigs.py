@@ -49,23 +49,3 @@ news_collection_all = eval("connection.{db_name}.{collection_name}".format(
 news_collection_prem = eval("connection.{db_name}.{collection_name}".format(
           db_name = MONGO_SPORTS_UNITY_NEWS_DB,
             collection_name=MONGO_SPORTS_UNITY_NEWS_PREM_COLL))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

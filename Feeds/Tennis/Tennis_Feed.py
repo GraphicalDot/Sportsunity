@@ -1,18 +1,26 @@
-#!/usr/bin/env python
-
 import sys
 import os
+import time
+import calendar
+import json
 import feedparser
+import urllib
 from nltk.tokenize import sent_tokenize, word_tokenize
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-
-from mongo_db_cricket import CricFeedMongo
+from goose import Goose
+parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(parent_dir_path)
+from mongo_db_tennis import TennFeedMongo
 from Feeds.All.mongo_db_all import AllFeedMongo
 from GlobalLinks import *
+from GlobalMethods import unicode_or_bust
+from Feeds.amazon_s3 import AmazonS3
 import hashlib
 
 
-class MainCricketFeedHandler(object):
+class MainTennisFeedHandler:
+    """
+    This function gets the links of all the news articles on the Rss Feed and stores them in list_of_links.
+    """
     def __init__(self, link):
         """
         Args:
@@ -50,7 +58,7 @@ class MainCricketFeedHandler(object):
 
     def checking(self):
         for news_dict in self.news_list:
-            if not CricFeedMongo().if_news_exists(news_dict["news_id"], news_dict["news_link"]) and not \
+            if not TennFeedMongo().if_news_exists(news_dict["news_id"], news_dict["news_link"]) and not \
                     AllFeedMongo().if_news_exists(news_dict["news_id"], news_dict["news_link"]):
                 self.links_not_present.append(news_dict)
                 print self.links_not_present

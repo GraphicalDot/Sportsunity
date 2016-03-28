@@ -51,7 +51,7 @@ class BBCCricketRss(object):
                         news.update({"full_text": full_text})
                         news.update({"images": self.image})
                         print full_text
-                        CricFeedMongo.insert_news(news)
+                        CricFeedMongo().insert_news(news)
                 return 
 
 
@@ -72,7 +72,7 @@ class BBCCricketRss(object):
                                         "text": text, 
                                         "title": news["title"],
                                         "news_id": news_id, 
-                                        "scraped": CricFeedMongo.check_cric(news_id), 
+                                        "scraped": CricFeedMongo.check_cric(news_id),
                                         "base_link": self.base_link, 
                                         "website": "BBC", 
                                         })

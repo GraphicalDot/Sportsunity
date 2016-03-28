@@ -64,8 +64,8 @@ class CricketReuters:
 
         def checking(self):
                 for news_dict in self.news_list:
-                        if not CricFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]) and not \
-				AllFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]):
+                        if not CricFeedMongo().if_news_exists(news_dict["news_id"], news_dict["news_link"]) and not \
+				AllFeedMongo().if_news_exists(news_dict["news_id"], news_dict["news_link"]):
                                 self.links_not_present.append(news_dict)
                                 print self.links_not_present
 
@@ -147,9 +147,9 @@ class CricketReuters:
 
                         if news_dict['news'] and not news_dict['summary'] == " ...Read More":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
-                                CricFeedMongo.insert_news(news_dict)
+                                CricFeedMongo().insert_news(news_dict)
 				print 'here'
-				AllFeedMongo.insert_news(news_dict)
+				AllFeedMongo().insert_news(news_dict)
 			else:
 				print 'not stored'
                 return                 

@@ -1,90 +1,77 @@
 #!/usr/bin/env python
 
-from flask import Flask, app, jsonify
-from flask.ext import restful
-from flask.ext.restful import Api, Resource, reqparse
 import os
 import sys
+import tornado
+import tornado.autoreload
+import tornado.ioloop
+import tornado.web
+from pymongo.errors import PyMongoError
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import connection
 
 
-app = Flask(__name__)
-api = restful.Api(app)
+class GetSquad(tornado.web.RequestHandler):
+    """
 
-get_args = reqparse.RequestParser()
-get_args.add_argument("team_id", type=str, location="args", required=False)
-get_args.add_argument("player", type=str, location="args", required=False)
-get_args.add_argument("sport_type", type=str, location="args", required=False)
-get_args.add_argument("player_id", type=str, location="args", required=False)
+    """
+    def get(self):
+        response = {}
+        try:
+            team_id = self.get_argument('team_id')
 
+            conn = connection.get_mongo_connection()
+            football_player_stats_conn = conn.test.football_player_stats
 
-class GetSquad(restful.Resource):
-
-        def __init__(self):
-
-                conn = connection.get_mongo_connection()
-                db = conn.admin
-                db.authenticate('shivam','mama123')
-                db = conn.test
-                self.football_player_stats = db.football_player_stats
-
-        def get(self):
-
-                args = get_args.parse_args()
-
-                """
-                try:
-                    #team_name = args['team'].lower().split(' ')[0]+'-'+args['team'].lower().split(' ')[1]+'-'+args['team'].lower().split(' ')[2]
-                except Exception,e:
-                    try:
-                        team_name = args['team'].lower().split(' ')[0]+'-'+args['team'].lower().split(' ')[1]
-                    except Exception,e:
-                        team_name = args['team'].lower()
-
-                print team_name
-                """
-
-                squad = list(self.football_player_stats.find({'team_id':args['team_id']},projection={'_id':False,'team':True,'team_id':True,'team':True,'short_name':True,'image':True,'Goals': \
-                        True,'Assists':True,'Games':True,'Nationality':True,'Position':True,'Jersey':True,'Age':True,'Red':True,'Yellow':True,'player_id':True}))
-
-                return {'success':True,
-                        'error':False,
-                        'data':sorted(squad),
-                        }
-
-class GetPlayerProfile(restful.Resource):
-
-        def __init__(self):
-
-                conn = connection.get_mongo_connection()
-                db = conn.admin
-                db.authenticate('shivam','mama123')
-                db = conn.test
-                self.football_player_stats = db.football_player_stats
-
-        def get(self):
-
-                args = get_args.parse_args()
-
-                profile = list(self.football_player_stats.find({'player_id':args['player_id']},projection={'_id':False,'team':True,'name':True,'player_id':True,'player_image':True,'profile':True,'other_competitions':True}))
-
-                return {'success':True,
-                        'error':False,
-                        'data':profile,
-                        }
+            squad = list(football_player_stats_conn.find({'team_id': team_id}, projection={'_id': False, 'team': True,
+                        'team_id': True, 'team': True, 'short_name': True, 'image': True, 'Goals': True,
+                        'Assists': True, 'Games': True, 'Nationality': True, 'Position': True, 'Jersey': True,
+                        'Age': True, 'Red': True, 'Yellow': True, 'player_id': True}))
+            response.update({'error': False, 'success': True, 'data': sorted(squad)})
+        except PyMongoError as e:
+            response.update({'error': True, 'success': False, 'message': 'Database Error: %s' % e})
+        except Exception as e:
+            response.update({'error': True, 'success': False, 'message': 'Error: %s' % e})
+        finally:
+            self.write(response)
 
 
+class GetPlayerProfile(tornado.web.RequestHandler):
+    """
+
+    """
+    def get(self):
+        response = {}
+        try:
+            player_id = self.get_argument('player_id')
+            conn = connection.get_mongo_connection()
+            football_player_stats_conn = conn.test.football_player_stats
+
+            profile = list(football_player_stats_conn.find({'player_id': player_id},projection={'_id': False,
+                           'team': True, 'name': True, 'player_id': True, 'player_image': True, 'profile': True,
+                           'other_competitions': True}))
+            response.update({'error': False, 'success': True, 'data': profile})
+        except PyMongoError as e:
+            response.update({'error': True, 'success': False, 'message': 'Database Error: %s' % e})
+        except Exception as e:
+            response.update({'error': True, 'success': False, 'message': 'Error: %s' % e})
+        finally:
+            self.write(response)
 
 
-api.add_resource(GetSquad,'/get_football_team_squad')
-api.add_resource(GetPlayerProfile, '/get_football_player_profile')
-
-if __name__ == '__main__':
-        app.run(host = "0.0.0.0", port = 5600 , debug = True)
-
-        
-
-        
+def make_app():
+    print 'inside make app'
+    return tornado.web.Application([
+        (r"/get_football_team_squad", GetSquad),
+        (r"/get_football_player_profile", GetPlayerProfile),
+    ],
+    )
 
 
+if __name__=='__main__':
+    app = make_app()
+    app.listen(5600)
+    tornado.autoreload.start()
+    loop = tornado.ioloop.IOLoop.instance()
+    loop.start()

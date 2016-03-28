@@ -35,7 +35,7 @@ class CricketNdtv(MainCricketFeedHandler):
                 goose_instance = Goose()
                 for news_dict in self.links_not_present:
 
-           		    if news_dict['published'].endswith("+0000") or news_dict['published'].endswith("GMT"):
+                    if news_dict['published'].endswith(("+0000", "GMT")):
                         date = parse(news_dict['published'])
                         datetime_tuple = datetime.timetuple(date)
                         publish_epoch = calendar.timegm(datetime_tuple)-int(19800)
@@ -105,9 +105,9 @@ class CricketNdtv(MainCricketFeedHandler):
 
                    if full_text != " " and news_dict['summary'] != " ...Read More":
                        print "Inserting news id %s with news link %s" % (news_dict.get("news_id"), news_dict.get("news_link"))
-                       CricFeedMongo.insert_news(news_dict)
+                       CricFeedMongo().insert_news(news_dict)
 				       print 'here'
-				       AllFeedMongo.insert_news(news_dict)
+				       AllFeedMongo().insert_news(news_dict)
             return
 
 

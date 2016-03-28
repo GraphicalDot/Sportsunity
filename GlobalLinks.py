@@ -18,6 +18,7 @@ CBUZ_CRIC_FEED = "http://live-feeds.cricbuzz.com/CricbuzzFeed" #criccbuzz sports
 REUT_CRIC_FEED1 = "http://feeds.reuters.com/reuters/INcricketNews?format=xml"
 REUT_CRIC_FEED = "http://mf.feeds.reuters.com/reuters/UKCricketNews"
 MAIL_CRIC_FEED = "http://www.dailymail.co.uk/sport/cricket/index.rss"
+GOOG_ALL_FEED = "https://news.google.co.in/news?cf=all&ned=country_name&hl=en&topic=s&output=rss"
 
 
 Fifa_dot_com = 'http://www.fifa.com/rss/index.xml'  #favicon_link - http://www.fifa.com/favicon.ico
@@ -49,4 +50,3 @@ The first 4 letters of the sport followed by '_'
 followed by the first 4 letters of the website used 
 to scrape news feeds followed by 'feed'.
 """
- 

@@ -48,8 +48,8 @@ class MainFootballFeedHandler(object):
 
     def checking(self):
         for news_dict in self.news_list:
-            if not FootFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]) and not \
-                    AllFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]):
+            if not FootFeedMongo().if_news_exists(news_dict["news_id"], news_dict["news_link"]) and not \
+                    AllFeedMongo().if_news_exists(news_dict["news_id"], news_dict["news_link"]):
                 self.links_not_present.append(news_dict)
 
         return

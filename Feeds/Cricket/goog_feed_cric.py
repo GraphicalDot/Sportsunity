@@ -62,7 +62,7 @@ class GoogCricketRss(object):
                             "website": "GOOGLE", 
                             }
                     self.news.append(__dict)
-                    CricFeedMongo.insert_news(__dict)
+                    CricFeedMongo().insert_news(__dict)
         def __filter(self):
                 """
                 Filter rss on the basis if they are prsent in the mongodb or not

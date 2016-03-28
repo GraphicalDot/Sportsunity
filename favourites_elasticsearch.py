@@ -2,21 +2,13 @@
 
 import sys
 import os
-from flask import Flask, app, jsonify
-from flask.ext import restful
-from flask.ext.restful import Api, Resource, reqparse
+import tornado
+import tornado.autoreload
+import tornado.ioloop
+import tornado.web
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import connection
-
-
-app = Flask(__name__)
-api = restful.Api(app)
-
-get_args = reqparse.RequestParser()
-get_args.add_argument("team", type=str, location="args", required=False)
-get_args.add_argument("league", type=str, location="args", required=False)
-get_args.add_argument("player", type=str, location="args", required=False)
-get_args.add_argument("sport_type", type=str, location="args", required=False)
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -24,51 +16,114 @@ sys.setdefaultencoding('utf-8')
 es = connection.get_elastic_search_connection()
 
 
-class GetTeam(restful.Resource):
+class GetTeam(tornado.web.RequestHandler):
+    """
+
+    """
+    def get(self):
+        response = {}
+        try:
+            team = self.get_argument('team')
+            sport_type = self.get_argument('sport_type')
+
+            body = {
+                "_source": ['team_name','team_id','flag_image'],
+                "query": {
+                    "and": [ { "match_phrase" :{ "team_autocomplete": {"query": team,"fuzziness": 10,"operator": "and"}}},
+                             {'match': {'sport_type': sport_type}}
+                           ]
+                }
+            }
+
+            result = es.search(index='teams', doc_type='teams', body=body)
+            res = [l["_source"] for l in result["hits"]["hits"]]
+            response.update({'error': False, 'success': True, 'message': 'Success', 'result', res})
+        except Exception as e:
+            response.update({'error': True, 'success': False, 'message': 'Error: %s' % e})
+        finally:
+            self.write(response)
+
+
+class GetLeague(tornado.web.RequestHandler):
+    """
+
+    """
 
     def get(self):
-        args = get_args.parse_args()
-        __body = {"_source":['team_name','team_id','flag_image'],"query": { "and": [ { "match_phrase" :{ "team_autocomplete": {"query": args['team'],"fuzziness": \
-            10,"operator":  "and"}}}, {'match': {'sport_type':args['sport_type']}}]}}
+        response = {}
+        try:
+            league = self.get_argument('league')
+            body = {
+                "_source": ['league_name','league_id'],
+                "query": {
+                    "match_phrase" : {
+                        "league_autocomplete": {
+                            "query": league,
+                            "fuzziness": 10,
+                            "operator": "and"
+                        }
+                    }
+                }
+            }
+            result = es.search(index='leagues', doc_type='leagues', body=body)
+            res = [l["_source"] for l in result["hits"]["hits"]]
+            response.update({'error': False, 'success': True, 'message': 'Success', 'result', res})
+        except Exception as e:
+            response.update({'error': True, 'success': False, 'message': 'Error: %s' % e})
+        finally:
+            self.write(response)
 
-        __result = es.search(index='teams',doc_type='teams',body=__body)
-        result = [l["_source"] for l in __result["hits"]["hits"]]
 
-        return {'error':False,
-                'success':True,
-                'data':result}
+class GetPlayer(tornado.web.RequestHandler):
+    """
 
-
-class GetLeague(restful.Resource):
-
+    """
     def get(self):
-        args = get_args.parse_args()
-        __body = {"_source":['league_name','league_id'],"query": { "match_phrase" :{ "league_autocomplete": {"query": args['league'],"fuzziness": 10,"operator":  "and"}}}}
-        __result = es.search(index='leagues',doc_type='leagues',body=__body)
-        result = [l["_source"] for l in __result["hits"]["hits"]]
+        response = {}
+        try:
+            player = self.get_argument('player')
+            sport_type = self.get_argument('sport_type')
+            body = {
+                "_source": ['name','player_id','player_image'],
+                "query": {
+                    "and":[
+                        { "match_phrase_prefix" : {
+                            "name": {
+                                "query": player,
+                                "fuzziness": 10,
+                                "operator": "and"
+                            }
+                        }
+                    },
+                    { "match" : {
+                        "sport_type": sport_type
+                        }
+                    }
+                ]
+            }}
+            result = es.search(index='players', doc_type='players', body=body)
+            res = [l["_source"] for l in result["hits"]["hits"]]
 
-        return {'error': False,
-                'success': True,
-                'data': result}
+            response.update({'error': False, 'success': True, 'message': 'Success', 'result', res})
+        except Exception as e:
+            response.update({'error': True, 'success': False, 'message': 'Error: %s' % e})
+        finally:
+            self.write(response)
 
 
-class GetPlayer(restful.Resource):
 
-    def get(self):
-        args = get_args.parse_args()
-        print args['player']
-        __body = {"_source":['name','player_id','player_image'],"query": { "and":[ { "match_phrase_prefix" :{ "name": {"query": args['player'],"fuzziness": \
-            10,"operator":  "and"}}}, { "match" : {"sport_type": args['sport_type']}}]}}
-        __result = es.search(index='players',doc_type='players',body=__body)
-        result = [l["_source"] for l in __result["hits"]["hits"]]
-
-        return {'error': False,
-                'success': True,
-                'data': result}
+def make_app():
+    return tornado.web.Application([
+        (r"/fav_team", GetTeam),
+        (r"/fav_league", GetLeague),
+        (r"/fav_player", GetPlayer)
+    ],
+    )
 
 
-api.add_resource(GetTeam, "/fav_team")
-api.add_resource(GetLeague, "/fav_league")
-api.add_resource(GetPlayer, "/fav_player")
 if __name__=='__main__':
-    app.run(host = "0.0.0.0", port = 5000, debug = True)
+    app = make_app()
+    app.listen(5000)
+    tornado.autoreload.start()
+    loop = tornado.ioloop.IOLoop.instance()
+    loop.start()

@@ -58,7 +58,7 @@ class FootballFancast:
 
         def checking(self):
                 for news_dict in self.news_list:
-                        if not FootFeedMongo.if_news_exists(news_dict["news_id"], news_dict["news_link"]):
+                        if not FootFeedMongo().if_news_exists(news_dict["news_id"], news_dict["news_link"]):
                                 self.links_not_present.append(news_dict)
 
                 return 
@@ -121,7 +121,7 @@ class FootballFancast:
                                         "time_of_storing":time.mktime(time.localtime())})
                         if not full_text == "":
                                 print news_dict.get("news_id")
-                                FootFeedMongo.insert_news(news_dict)
+                                FootFeedMongo().insert_news(news_dict)
 
     
 if __name__ == '__main__':

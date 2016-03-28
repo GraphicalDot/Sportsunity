@@ -1,18 +1,18 @@
-#!/usr/bin/env python
-
 import sys
 import os
 import feedparser
-from nltk.tokenize import sent_tokenize, word_tokenize
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from mongo_db_cricket import CricFeedMongo
+from mongo_db_formulaone import FormFeedMongo
 from Feeds.All.mongo_db_all import AllFeedMongo
-from GlobalLinks import *
+import GlobalLinks
 import hashlib
 
 
-class MainCricketFeedHandler(object):
+class MainF1FeedHandler:
+    """
+    This function gets the links of all the news articles on the Rss Feed and stores them in list_of_links.
+    """
     def __init__(self, link):
         """
         Args:
@@ -41,8 +41,9 @@ class MainCricketFeedHandler(object):
             news_entry["summary"], "title": news_entry["title"], "news_id": hashlib.md5(news_entry["link"]).hexdigest()}) \
          for news_entry in self.news_entries]
 
+
     def run(self):
-        print "Total number of news link in rss %s" % len(self.news_list)
+        print "Total number of news link in rss %s"%len(self.news_list)
         self.checking()
         print "Number of news links not stored in the databse %s"%len(self.links_not_present)
         self.full_news()
@@ -50,9 +51,8 @@ class MainCricketFeedHandler(object):
 
     def checking(self):
         for news_dict in self.news_list:
-            if not CricFeedMongo().if_news_exists(news_dict["news_id"], news_dict["news_link"]) and not \
+            if not FormFeedMongo().if_news_exists(news_dict["news_id"], news_dict["news_link"]) and not \
                     AllFeedMongo().if_news_exists(news_dict["news_id"], news_dict["news_link"]):
                 self.links_not_present.append(news_dict)
-                print self.links_not_present
 
         return
