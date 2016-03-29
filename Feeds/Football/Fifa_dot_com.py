@@ -87,7 +87,6 @@ class FootballFifa(MainFootballFeedHandler):
                 "time_of_storing": time.mktime(time.localtime()),
                 'type':'football',
                 'favicon':'http://www.fifa.com/favicon.ico'})
-            })
 
             try:
                 news_dict.update({'summary': summarization_instance.summarization(full_text)})

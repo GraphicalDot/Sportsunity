@@ -90,11 +90,11 @@ class BasketballNba(MainBasketBallFeedHandler):
                 except:
                     news_dict.update({'summary': summary})
 
-                   if full_text != " " and news_dict['summary'] != " ...Read More":
-                       print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
-                       BaskFeedMongo().insert_news(news_dict)
-                       print "here"
-                       AllFeedMongo().insert_news(news_dict)
+                if full_text != " " and news_dict['summary'] != " ...Read More":
+                    print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
+                    BaskFeedMongo().insert_news(news_dict)
+                    print "here"
+                    AllFeedMongo().insert_news(news_dict)
             return
 
 

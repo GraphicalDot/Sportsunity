@@ -90,7 +90,6 @@ class CricketDailyMail(MainCricketFeedHandler):
                 'mdpi': all_formats_image['mdpi'],
                 'hdpi': all_formats_image['hdpi'],
                 "time_of_storing": time.mktime(time.localtime()),'type':'cricket','favicon':'https://upload.wikimedia.org/wikipedia/en/1/11/Mail_Online.png'})
-            })
 
             try:
                 news_dict.update({'summary': summarization_instance.summarization(full_text)})

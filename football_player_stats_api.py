@@ -22,7 +22,7 @@ class GetSquad(tornado.web.RequestHandler):
             team_id = self.get_argument('team_id')
 
             conn = connection.get_mongo_connection()
-            football_player_stats_conn = conn.test.football_player_stats
+            football_player_stats_conn = conn.football.football_player_stats
 
             squad = list(football_player_stats_conn.find({'team_id': team_id}, projection={'_id': False, 'team': True,
                         'team_id': True, 'team': True, 'short_name': True, 'image': True, 'Goals': True,
@@ -46,7 +46,7 @@ class GetPlayerProfile(tornado.web.RequestHandler):
         try:
             player_id = self.get_argument('player_id')
             conn = connection.get_mongo_connection()
-            football_player_stats_conn = conn.test.football_player_stats
+            football_player_stats_conn = conn.football.football_player_stats
 
             profile = list(football_player_stats_conn.find({'player_id': player_id},projection={'_id': False,
                            'team': True, 'name': True, 'player_id': True, 'player_image': True, 'profile': True,

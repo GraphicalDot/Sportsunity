@@ -21,9 +21,9 @@ class SerieASquads:
                 self.soup = BeautifulSoup(res.content,"lxml")
                 self.team = team
                 conn = connection.get_mongo_connection()
-                db = conn.admin
-                db.authenticate('shivam','mama123')
-                db = conn.test
+                # db = conn.admin
+                # db.authenticate('shivam','mama123')
+                db = conn.football
                 self.football_player_stats = db.football_player_stats
 
         def get_squads(self):

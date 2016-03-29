@@ -86,12 +86,11 @@ class FootballUk(MainFootballFeedHandler):
                 "time_of_storing": time.mktime(time.localtime()),
                 'type':'football',
                 'favicon':'http://www.football.co.uk/img/football-logo-new-small.png'})
-            })
 
             try:
                 news_dict.update({'summary': summarization_instance.summarization(full_text)})
             except:
-                news_dict.update({'summary': summary)})
+                news_dict.update({'summary': summary})
 
                 if not full_text == " " and not news_dict['summary'] == " ...Read More":
                     print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))

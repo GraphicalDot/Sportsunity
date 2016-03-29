@@ -72,10 +72,9 @@ def add_f1_news():
 def main():
     add_cricket_news()
     add_football_news()
-    add_basketball_news()
-    add_tennis_news()
-    add_tennis_news()
-    add_f1_news()
+    # add_basketball_news()
+    # add_tennis_news()
+    # add_f1_news()
 
 
 if __name__ == "__main__":

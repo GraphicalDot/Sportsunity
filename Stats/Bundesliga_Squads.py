@@ -20,12 +20,12 @@ class BundesligaSquads:
         
         def __init__(self,link,team):
                 res = requests.get(link)
-                self.soup = BeautifulSoup(res.content,"lxml")
+                self.soup = BeautifulSoup(res.content, "lxml")
                 self.team = team
                 conn = connection.get_mongo_connection()
                 # db = conn.admin
                 # db.authenticate('shivam','mama123')
-                db = conn.test
+                db = conn.football
                 self.football_player_stats = db.football_player_stats
                 
         def get_squads(self):
@@ -78,7 +78,7 @@ class BundesligaSquads:
 
         def get_football_player_stats(self,link):
                 res = requests.get(link)
-                soup = BeautifulSoup(res.content)
+                soup = BeautifulSoup(res.content, "lxml")
                 self.list_of_other_competitions = []
                 self.list_of_profile = []
                 try:

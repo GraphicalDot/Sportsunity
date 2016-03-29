@@ -18,5 +18,7 @@ def get_mongo_connection():
     """
     :return: connection to mongo server.
     """
+    from gevent import monkey
+    monkey.patch_all()
     connection = pymongo.MongoClient(settings.LOCAL_MONGO_HOST, settings.MONGO_PORT)
     return connection
