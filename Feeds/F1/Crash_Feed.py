@@ -3,106 +3,101 @@
 import sys
 import os
 import time
-import json
-import feedparser
-import urllib
-from nltk.tokenize import sent_tokenize
+import calendar
+from nltk.tokenize import sent_tokenize, word_tokenize
 from goose import Goose
-parent_dir_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(parent_dir_path)
-print parent_dir_path
-from DbScripts.mongo_db_F1 import Formula1FeedMongo
-from GlobalLinks import *
-from Feeds.download_image import ImageDownload
-class Formula_one_Crash:
-    """
-    This function gets the links 
-    of all the news articles on the
-    Rss Feed and stores them in list_of_links.
-    """
-    def rss_feeds(self,Crash_dot_net):
-        list_of_links = list()
-        self.list_of_links = list_of_links
-        self.d = feedparser.parse(Crash_dot_net)
-        self.details = self.d.entries
-        for entry in self.details:
-            self.list_of_links.append(entry['link'])
-            self.publish = entry['published']
-        print self.list_of_links
-    
-    """
-    This function gets the full text from all 
-    the links in the list_of_links, only after checking
-    for redundancy
-    """
+import GlobalLinks
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
+from mongo_db_formulaone import FormFeedMongo
+from Feeds.All.mongo_db_all import AllFeedMongo
+from GlobalMethods import unicode_or_bust
+from Feeds.amazon_s3 import AmazonS3
+from summarize_news import ShortNews
+from F1_Feed import MainF1FeedHandler
+
+
+class FormulaCrash(MainF1FeedHandler):
+
+    """
+    This function gets the links of all the news articles on the Rss Feed and stores them in list_of_links.
+    """
     def full_news(self):
+        """
+        makes full new of the new_dict and insert into mongodb with following keys
+        ['website', 'hdpi', 'tags', 'image_link', 'time_of_storing', 'news', 'ldpi', 'publish_epoch', 'mdpi', 'title', 'summary', 'news_id',
+        'news_link', 'published']
+        """
         goose_instance = Goose()
-        for val in self.list_of_fresh_links:
-	    response = urllib.urlopen(val)
-	    headers = response.info()
-	    publish_date=time.mktime(time.strptime(headers['date'], "%a, %d %b %Y %H:%M:%S %Z"))
-            article = goose_instance.extract(val)
-            full_text = article.cleaned_text.format()
-            title = article.title
-	    tokenized_data = sent_tokenize(full_text)
+        for news_dict in self.links_not_present:
+            published_news = news_dict['published']
+            if published_news.endswith(("EDT", "GMT")):
+                strp_time_object = time.strptime(published_news[:-4], "%a, %d %b %Y %H:%M:%S")
+            elif published_news.endswith(("+0530", "+0000")):
+                strp_time_object = time.strptime(published_news[:-6], "%a, %d %b %Y %H:%M:%S")
+            else:
+                strp_time_object = time.strptime(published_news, "%Y-%m-%d %H:%M:%S" )
+
+            day = strp_time_object.tm_mday
+            month = strp_time_object.tm_mon
+            year = strp_time_object.tm_year
+            publish_epoch = time.mktime(strp_time_object)
+            gmt_epoch = calendar.timegm(time.gmtime(publish_epoch))
+
+            ##Getting full article with goose
+            article = goose_instance.extract(news_dict["news_link"])
+            full_text = unicode_or_bust(article.cleaned_text.format())
+
+            tokenized_data = sent_tokenize(full_text)
             length_tokenized_data=len(tokenized_data)
-            
-            if length_tokenized_data > 2:
-                summary=tokenized_data[0]+tokenized_data[1]+tokenized_data[2]
+
+            if length_tokenized_data > 1:
+                summary = " ".join(word_tokenize(full_text)[:100])+" "+ " ...Read More"
+            elif article.meta_description:
+                summary = article.meta_description+ " "+ " ...Read More"
             else:
-                summary = article.meta_description
+                summary = None
 
-            image = article.top_image.get_src()
+            try:
+                image_link = article.opengraph['image']
+                all_formats_image = AmazonS3(image_link, news_dict["news_id"]).run()
+            except Exception as e:
+                print e
+                image_link = None
+                all_formats_image = {"mdpi": None,
+                                     "ldpi": None,
+                                     "hdpi": None,}
 
-            if image.endswith(".jpg") or image.endswith(".png")==True:
-                obj1=ImageDownload(image)
-                all_formats_image=obj1.runn()
-            else:
-                all_formats_image={'ldpi':None,'mdpi':None,'hdpi':None}
+            summarization_instance = ShortNews()
 
-	    _dict = {"website":"Crash_dot_net", "news_id":val,"summary":summary,"publish_date":publish_date,"news":full_text,"title":title,"image":image,'ldpi':all_formats_image['ldpi'],'mdpi':all_formats_image['mdpi'],'hdpi':all_formats_image['hdpi'],"time_of_Storing":time.mktime(time.localtime())}
-            Formula1FeedMongo.insert_news(_dict)
-    
-    """
-    This function checks for duplicate news_ids.
-    If a duplicate is found function full_news doesn't run
-    """
-    
-    def checking(self):
-	list_of_fresh_links=list()
-        self.list_of_fresh_links = list_of_fresh_links
-        for val in self.list_of_links:
-            if not Formula1FeedMongo.check_f1(val):
-		self.list_of_fresh_links.append(val)
-	self.full_news()
+            news_dict.update({
+                "website": "www.motorsport.com",
+                "custom_summary": summary,
+                "news": full_text,
+                "image_link": image_link,
+                'gmt_epoch': gmt_epoch,
+                'publish_epoch': publish_epoch,
+                "day": day,
+                "month": month,
+                "year": year,
+                'ldpi': all_formats_image['ldpi'],
+                'mdpi': all_formats_image['mdpi'],
+                'hdpi': all_formats_image['hdpi'],
+                "time_of_storing": time.mktime(time.localtime()),
+                'type': 'f1',
+                'favicon':'http://www.motorsport.com/favicon.ico'})
+            try:
+                news_dict.update({'summary': summarization_instance.summarization(full_text)})
+            except:
+                news_dict.update({'summary': summary})
 
-    """
-    This function is used in the API to
-    reflect the data from the database.
-    """
-
-    def reflect_data(self):
-	return json.dumps(Formula1FeedMongo.show_news())
-
-
-    def run(self):
-	self.rss_feeds(Crash_dot_net)
-	self.checking()
-	return self.reflect_data()
+            if full_text != " " and news_dict['summary'] != " ...Read More":
+                print "Inserting news id %s with news link %s" % (news_dict.get("news_id"), news_dict.get("news_link"))
+                FormFeedMongo().insert_news(news_dict)
+                print "here"
+                AllFeedMongo().insert_news(news_dict)
+        return
 
 
 if __name__ == '__main__':
-    obj = Formula_one_Crash()
-    obj.run()
-    #obj.rss_feeds(Crash_dot_net)
-    #obj.checking()
-    #obj.full_news()
-
-
-
-
-
-
-
-
+    obj = FormulaCrash(Crash_dot_net).run()

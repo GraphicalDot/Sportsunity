@@ -28,7 +28,7 @@ This is the file which remotely makes an ec2 instance for the use of this reposi
 VIRTUAL_ENVIRONMENT = "/home/{0}/VirtualEnvironment".format(env["user"])
 print VIRTUAL_ENVIRONMENT
 
-PATH = "/home/{0}/VirtualEnvironment/Canworks/".format(env["user"])
+PATH = "/home/{0}".format(env["user"])
 print PATH
 
 TAGGERS_PATH = "{0}/Text_Processing/PosTaggers/hunpos-1.0-linux".format(PATH)
@@ -42,8 +42,9 @@ def localhost():
 @task
 def remote():
     env.use_ssh_config = True
-    env.hosts = ["52.24.208.205"] ##For t2 medium
-    env.key_filename = "/home/shivam/Music/Downloads/SportsUnityfeeds.pem"
+    env.hosts = ["54.179.155.193"] ##For t2 medium
+    env.user = 'ubuntu'
+    env.key_filename = "/home/madmachines/Infoplum/infoplum_akash.pem"
     env.warn_only = True
 
 @task
@@ -247,18 +248,19 @@ def start_running():
                                 env.run('pwd')
                                 env.run('ls')
                                 env.run("sudo apt-get install mongodb")
-                                env.run("python Run_Feeds.py")
+                                # env.run("python Run_Feeds.py")
 
 
 @task
 def deploy():
-	execute(basic_setup)
-        #execute(virtual_env)
+	#execute(basic_setup)
+        execute(get_host)
+        execute(virtual_env)
 	#execute(install_text_sentence)
         #execute(download_corpora)
         #execute(change_permission_api)
         #execute(mongodb)
         #execute(mongo_restore)
-        execute(sports_unity)
+        #execute(sports_unity)
         #execute(start_running)
 
