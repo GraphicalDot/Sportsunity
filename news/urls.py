@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import signal
 import sys
@@ -9,7 +11,7 @@ import tornado.web
 from blessings import Terminal
 from tornado.log import enable_pretty_logging
 from tornado.options import options
-from handlers import GetMixedNews
+from newhandlers import GetMixedNews
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import connection

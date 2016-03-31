@@ -276,7 +276,7 @@ class ElasticSearchApis(object):
 
     @staticmethod
     @process_result
-    def exact_match(argument,text_to_search, skip, limit, timestamp, direction, type_1):
+    def exact_match(argument, text_to_search, skip, limit, timestamp, direction, type_1):
         if not type_1:
             type_1 = ['cricket','football']
         print "exact match"
@@ -327,8 +327,9 @@ class ElasticSearchApis(object):
                 "from": skip,
                 "size": limit,
             }
-
+            print exact_phrase_search_body
         except Exception as e:
+            print e
             pass
 
 
@@ -354,6 +355,8 @@ class ElasticSearchApis(object):
 
         print exact_phrase_search_body
         result = ES_CLIENT.search(index="news", doc_type="news", body=exact_phrase_search_body)
+        print exact_phrase_search_body
+        print result
         return result
 
 
@@ -722,7 +725,7 @@ class PopulateElasticSearch(object):
 
                 print ES_CLIENT.index(index="news", doc_type="news", body=news_article)
             except Exception as e:
-                print "Error --<<{0}>> in news_id=--<<{1}>>--".format(e, news_article["news_id"])
+                #print "Error --<<{0}>> in news_id=--<<{1}>>--".format(e, news_article["news_id"])
                 pass
         ES_CLIENT.indices.refresh(index="news")
         return

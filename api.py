@@ -103,6 +103,9 @@ class NewsApi(restful.Resource):
                                 return "news_id entered isn't correct"
                 
 
+                
+
+
                 if not args['search']:
                         print 'gfgf'
                     
