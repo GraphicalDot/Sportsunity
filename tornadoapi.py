@@ -138,14 +138,12 @@ class NewsApiTornado(tornado.web.RequestHandler):
 
                 
                 if self.search:
-                        print self.search, self.direction
                     
 			result = elasticsearch_db.ElasticSearchApis.do_query(argument=self.image_size, text_to_search=self.search, skip=self.skip, limit=self.limit,\
                                         timestamp=int(self.timestamp) if self.timestamp else None, 
 					direction=self.direction, type_1=self.type_1)
                         result = sorted(result,key=itemgetter('publish_epoch'),reverse=True)
                         
-                        print result
                         result = result[self.skip:]
                         ##Instead of using a loop to find image link for image siz, get documents from source form elasticsearch 
                         self.write({"error": False,

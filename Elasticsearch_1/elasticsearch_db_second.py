@@ -312,59 +312,6 @@ class ElasticSearchApis(object):
 
                         try:
 
-
-                                newe = { "_source": SOURCE+[argument],                                                 
-                                    "min_score": 0.3,
-                                    "query": {
-                                            "filtered": {
-                                                    "query":  { "match_phrase": { "news_autocomplete": "kohli" }},
-                                                    "filter": {
-                                                        "bool": {
-                                                             "must": [
-                                                                    {"term": { "sport_type": "cricket" }},
-                                                                    {"range": {"publish_epoch": {
-                                                                                refresh: timestamp
-                                                             }}}]
-                                                        }
-                                                        }
-                                                    }
-                                                         },
-                                    "sort": { "publish_epoch": { "order": "desc" }},
-                                    "from": skip, 
-                                    "size": limit, 
-                                    }
-
-
-
-                                 e = {"_source": SOURCE+[argument],
-                                    "min_score": 0.3,
-                                    "query": {
-                                            "filtered": {
-                                                    "query":  { "match_phrase": {"news_autocomplete": "kohli" }},
-                                                    "filter": { 
-                                                        "bool": {
-                                                             "must": [ 
-                                                                    {"term": { "sport_type": "cricket" }},
-                                                                    {"range": {"publish_epoch": {
-                                                                                refresh: timestamp
-                                                                    }
-                                                                            }}
-                                                        
-                                                            ] 
-                                                        }
-                                                        }
-                                                                
-                                                    
-                                                    
-                                                    }
-                                                             }
-                                             
-                                    
-                                    "sort": { "publish_epoch": { "order": "desc" }},
-                                    "from": skip, 
-                                    "size": limit, 
-                                    }
-
                                 
                                 exact_phrase_search_body = {
                                             "_source": SOURCE+[argument],
