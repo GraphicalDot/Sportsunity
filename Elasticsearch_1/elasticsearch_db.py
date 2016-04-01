@@ -288,17 +288,12 @@ class ElasticSearchApis(object):
         print direction
 
         if direction == "up":
-
             refresh = "gt"
 
-
         elif direction == "down":
-
             refresh = "lt"
 
         try:
-
-
             exact_phrase_search_body = {
                 "_source": SOURCE+[argument],
                 "min_score": 0.3,

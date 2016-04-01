@@ -27,13 +27,21 @@ from tornado.concurrent import run_on_executor
 terminal = Terminal()
 
 
+"""
+http://localhost:8888/testapi?&image_size=hdpi&limit=10&type_1=cricket
+http://localhost:8888/testapi?image_size=hdpi&limit=10&timestamp=1447739320&direction=up
+
+"""
+
+
+
 MONGO_CONNECTION  = connection.get_mongo_connection()
 collection = MONGO_CONNECTION[MONGO_SPORTS_UNITY_NEWS_DB][MONGO_SPORTS_UNITY_NEWS_ALL_COLL]
 try:
         collection.index_information()["type_1"]
         print terminal.on_blue("INdex on type exists")
 except Exception as e:
-        collection.create_indeax("type")
+        collection.create_index("type")
 
 try:
         collection.index_information()["publish_epoch_1"]
@@ -82,7 +90,8 @@ class NewsApiTornado(tornado.web.RequestHandler):
                         self.projection.update({"news": True})
                         try:
                                 result = self.collection.find_one({"news_id": self.news_id}, projection=self.projection)
-                                self.success.update({"result": result})
+                                result["image_link"] = result.pop(self.image_size)
+				self.success.update({"result": result})
                                 self.write(self.success)
                         except Exception, e:
                                 print terminal.on_red(str(e))
@@ -100,14 +109,21 @@ class NewsApiTornado(tornado.web.RequestHandler):
 
                         if self.timestamp and self.direction:
                                 print self.direction, self.timestamp
-                                (query.update({'publish_epoch':{"$lt": int(self.timestamp)}}), query.update({'publish_epoch':{"$gt": int(self.timestamp)}}))[self.direction == "up"]
+                                query.update({'publish_epoch':{"$gt": int(self.timestamp)}}) if self.direction == "up" else \
+						query.update({'publish_epoch':{"$lt": int(self.timestamp)}})
                                
                                 print query
                         try:
                                 result = self.collection.find(query, projection=self.projection).sort('publish_epoch',-1).limit(self.limit).skip(self.skip)
-                                self.write({"error": False,
+                                new_list = list()
+				for post in list(result):
+                                	post["image_link"] = post.pop(self.image_size)
+					new_list.append(post)
+
+
+				self.write({"error": False,
                                     "success": True,
-                                    "result": list(result),
+                                    "result": new_list,
                                     })
 
                         except Exception as e:
@@ -123,8 +139,10 @@ class NewsApiTornado(tornado.web.RequestHandler):
                 
                 if self.search:
                         print self.search, self.direction
-                        result = elasticsearch_db.ElasticSearchApis.do_query(argument=self.image_size, text_to_search=self.search, skip=self.skip, limit=self.limit,\
-                                        timestamp=int(self.timestamp), direction=self.direction, type_1=self.type_1)
+                    
+			result = elasticsearch_db.ElasticSearchApis.do_query(argument=self.image_size, text_to_search=self.search, skip=self.skip, limit=self.limit,\
+                                        timestamp=int(self.timestamp) if self.timestamp else None, 
+					direction=self.direction, type_1=self.type_1)
                         result = sorted(result,key=itemgetter('publish_epoch'),reverse=True)
                         
                         print result
