@@ -312,7 +312,7 @@ class ElasticSearchApis(object):
 
                         try:
 
-
+                                """
                                 newe = { "_source": SOURCE+[argument],                                                 
                                     "min_score": 0.3,
                                     "query": {
@@ -365,7 +365,7 @@ class ElasticSearchApis(object):
                                     "size": limit, 
                                     }
 
-                                
+                                """
                                 exact_phrase_search_body = {
                                             "_source": SOURCE+[argument],
                                             "min_score": 0.3,
@@ -787,17 +787,37 @@ class PopulateElasticSearch(object):
                 """
                 Populate elasticsearch with articles returned from fetch_articles_mongo
                 """
+                import time
+                import sys
+
+                toolbar_width = 100
+
+                # setup toolbar
+                sys.stdout.write("[%s]" % (" " * toolbar_width))
+                sys.stdout.flush()
+                sys.stdout.write("\b" * (toolbar_width+1))
                 error_list = list()
+                total_length = len(self.articles)
+                length = len(self.articles)/100
+
+
+                size = 0
+                start = time.time()
                 for (i, news_article)  in enumerate(self.articles):
                             _id = news_article.pop("_id")
                             sport_type = news_article.pop("type")
                             news_article.update({"sport_type": sport_type, "mongo_id": str(_id) })
                             try:
-                                    print ES_CLIENT.index(index="news", doc_type="news", body=news_article)
+                                    ES_CLIENT.index(index="news", doc_type="news", body=news_article)
                             except Exception as e:
-                                    print news_article.get("news_id")
                                     error_list.append(news_article.get("news_id"))
                                     pass 
+                            if i%length == 0:
+                                size += 1
+                                sys.stdout.write("\r%s[%s%s] %i/%i \b Errors: %s \b Percentage completion:  %s" % ("Updating", "#"*size, "."*(100-size), i, total_length, len(error_list), float(i)/total_length *100))
+                                sys.stdout.flush()
+                            sys.stdout.write("\r%s[%s%s] %i/%i \b Errors: %s \b Percentage completion:  %s" % ("Updating", "#"*size, "."*(100-size), i, total_length, len(error_list), float(i)/total_length *100))
+                            sys.stdout.flush()
                 
                 print error_list
 
