@@ -2,6 +2,8 @@ import os
 import sys
 import tornado
 import tornado.web
+from tornado.web import asynchronous
+import tornado.gen
 import traceback
 from pymongo.errors import PyMongoError
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -137,6 +139,8 @@ class GetMixedNews(NewsRequestHandler):
     6. timestamp
     7. direction
     """
+    @tornado.gen.coroutine
+    @asynchronous
     def get(self, *args, **kwargs):
         print 'inside get of GetFootballNews'
         self.response = {'status': 0, 'error': False, 'success': True, 'message': 'Success', 'result': []}
