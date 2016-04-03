@@ -148,7 +148,7 @@ class NewsApiTornado(tornado.web.RequestHandler):
                         ##Instead of using a loop to find image link for image siz, get documents from source form elasticsearch 
                         self.write({"error": False,
                                         "success": True,
-                                        "result":new_result,
+                                        "result":result,
                                         })
                 self.finish()
                 return 

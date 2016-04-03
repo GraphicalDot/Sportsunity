@@ -7,10 +7,12 @@ from elasticsearch import RequestError
 from termcolor import cprint
 from pyfiglet import figlet_format 
 import time
-import pyprind
-from tqdm import tqdm
+from blessings import Terminal
+#import pyprind
+#from tqdm import tqdm
 
 ES_CLIENT = Elasticsearch(ELASTICSEARCH_IP, timeout=30)
+terminal = Terminal()
 
 
 ##TODO: Disable scoring on documents: either omit_norms: True in settings for a field or use filtered query
@@ -291,29 +293,11 @@ class ElasticSearchApis(object):
         @staticmethod
         @process_result
         def exact_match(argument,text_to_search, skip, limit, timestamp, direction, type_1):
-                        if not type_1:
-                                type_1 = ['cricket','football']
-                        print "exact match"
-                        """
-                        Searches fr the exact result in the data 
-                        """
+                start = time.time()
+                type_1 = type_1 if type_1 else ['cricket','football']
+                refresh = ("gt" if direction == "up" else "lt")  if direction else None
 
-                        print timestamp
-                        print direction
-                        
-                        if direction == "up":
-
-                                refresh = "gt"
-
-
-                        elif direction == "down":
-
-                                refresh = "lt"
-
-                        try:
-
-                                """
-                                newe = { "_source": SOURCE+[argument],                                                 
+                exact_phrase_search_body = { "_source": SOURCE+[argument],                                                 
                                     "min_score": 0.3,
                                     "query": {
                                             "filtered": {
@@ -334,94 +318,16 @@ class ElasticSearchApis(object):
                                     "size": limit, 
                                     }
 
-
-
-                                 e = {"_source": SOURCE+[argument],
-                                    "min_score": 0.3,
-                                    "query": {
-                                            "filtered": {
-                                                    "query":  { "match_phrase": {"news_autocomplete": "kohli" }},
-                                                    "filter": { 
-                                                        "bool": {
-                                                             "must": [ 
-                                                                    {"term": { "sport_type": "cricket" }},
-                                                                    {"range": {"publish_epoch": {
-                                                                                refresh: timestamp
-                                                                    }
-                                                                            }}
-                                                        
-                                                            ] 
-                                                        }
-                                                        }
-                                                                
-                                                    
-                                                    
-                                                    }
-                                                             }
-                                             
-                                    
-                                    "sort": { "publish_epoch": { "order": "desc" }},
-                                    "from": skip, 
-                                    "size": limit, 
-                                    }
-
-                                """
-                                exact_phrase_search_body = {
-                                            "_source": SOURCE+[argument],
-                                            "min_score": 0.3,
-                                            "query": {
-                                                #"bool": {
-                                                    #"must": [
-                                                    "and": [
-                                                      {
-                                                    "match_phrase": {
-                                                            "news_autocomplete": {
-                                                                    "query":    text_to_search,
-                                                                            }
-                                                            }
-                                                    },
-                                                  {
-                                                    "range": {
-                                                        "publish_epoch": {
-                                                             refresh: timestamp
-                                                             }
-                                                        }
-                                                    }]},
-                                            "filter":{
-                                                    "terms":{ "sport_type" : type_1 }
-                                                        },
-                                            "sort": { "publish_epoch": { "order": "desc" }},
-                                            "from": skip, 
-                                            "size": limit, 
-                                            }
-
-                        except Exception as e:
-                                pass
-
-
-                        if not direction and not timestamp:
-                                exact_phrase_search_body = {
-                                        "_source": SOURCE+[argument],
-                                        "query": {
-                                                #"and": [
-                                                    #{
-                                                "match_phrase": {
-                                                        "news_autocomplete": {
-                                                                "query":    text_to_search,
-                                                                        }
-                                                        }
-                                                },
-                                        "filter": {
-                                            "terms" : { "sport_type" : type_1 }
-                                                },
-                                        "sort": { "publish_epoch": { "order": "desc" }},
-                                        "from": skip,
-                                        "size": limit,
-                                        }
-
-                        print exact_phrase_search_body
-                        result = ES_CLIENT.search(index="news", doc_type="news", body=exact_phrase_search_body)
-		        return result
+                if not direction and not timestamp:
+                        """
+                        if direction and timestamp doesnt exists, it will delete the range query part
+                        from the exact_phrase_search_body
+                        """
+                        exact_phrase_search_body["query"]["filtered"]["filter"]["bool"]["must"].pop(-1)
+                
+                print terminal.on_red("Toital time taken for exact match query to return is %s seconds"%(time.time() - start))
+                result = ES_CLIENT.search(index="news", doc_type="news", body=exact_phrase_search_body)
+                return result
                         
         
         @staticmethod
@@ -451,7 +357,29 @@ class ElasticSearchApis(object):
 
                 try:
 
+                        token_search_body = { "_source": SOURCE+[argument],                                                 
+                                    "min_score": 0.3,
+                                    "query": {
+                                            "filtered": {
+                                                    "query":  { "match": { "news_autocomplete": text_to_search }},
+                                                    "filter": {
+                                                        "bool": {
+                                                             "must": [
+                                                                    {"term": { "sport_type": type_1 }},
+                                                                    {"range": {"publish_epoch": {
+                                                                                refresh: timestamp
+                                                             }}}]
+                                                        }
+                                                        }
+                                                    }
+                                                         },
+                                    "sort": { "publish_epoch": { "order": "desc" }},
+                                    "from": skip, 
+                                    "size": limit, 
+                                    }
 
+
+                        """
                         token_search_body = { 
                                 "_source": SOURCE+[argument],
                                 "min_score":0.3,
@@ -484,6 +412,7 @@ class ElasticSearchApis(object):
                                 "from": skip, 
                                 "size": limit, 
                                 }
+                        """
 
                 except Exception as e:
                         pass
@@ -549,36 +478,28 @@ class ElasticSearchApis(object):
 
                 try:    
 
-                        proximity_search_body = {
-                               "_source": SOURCE+[argument],
-                               "min_score": 0.3,
-                                "query": {
-                                        "and": [ 
-                                            {
-                                                "match_phrase": {
-                                                        "news_autocomplete": {
-                                                        "query": text_to_search,
-                                                        "slop": 10000
-                                                                }
+                        proximity_search_body = { "_source": SOURCE+[argument],                                                 
+                                    "min_score": 0.3,
+                                    "query": {
+                                            "filtered": {
+                                                    "query":  { "match_phrase": { "news_autocomplete": text_to_search ,"slop": 10000},
+                                                    "filter": {
+                                                        "bool": {
+                                                             "must": [
+                                                                    {"term": { "sport_type": type_1 }},
+                                                                    {"range": {"publish_epoch": {
+                                                                                refresh: timestamp
+                                                             }}}]
                                                         }
-                                             },
-                                             {
-                                                "range": {
-                                                     "publish_epoch": {
-                                                              refresh: timestamp
-                                                                }
                                                         }
-                                             }]},
-                                "filter": {
-                                    "terms": {
-                                        "sport_type": type_1
-                                            }
-                                        },
-                                "sort": { "publish_epoch": { "order": "desc" }},
-                                                                 
-                                "from": skip,
-                                "size": limit,
-                                    }
+                                                    }
+                                                         },
+                                    "sort": { "publish_epoch": { "order": "desc" }},
+                                    "from": skip, 
+                                    "size": limit, 
+                                    }}
+
+                            
 
                 except Exception as e:
                         pass 
@@ -652,6 +573,28 @@ class ElasticSearchApis(object):
 
                 try:
 
+                        fuzzy_search_body = { "_source": SOURCE+[argument],                                                 
+                                    "min_score": 0.3,
+                                    "query": {
+                                            "filtered": {
+                                                    "query":  { "match": { "news_autocomplete": text_to_search ,"fuzziness": 10},
+                                                    "filter": {
+                                                        "bool": {
+                                                             "must": [
+                                                                    {"term": { "sport_type": type_1 }},
+                                                                    {"range": {"publish_epoch": {
+                                                                                refresh: timestamp
+                                                             }}}]
+                                                        }
+                                                        }
+                                                    }
+                                                         },
+                                    "sort": { "publish_epoch": { "order": "desc" }},
+                                    "from": skip, 
+                                    "size": limit, 
+                                    }}
+
+                        """
                         fuzzy_search_body = {
                             "_source": SOURCE+[argument],
                             "min_score": 0.3,
@@ -685,6 +628,7 @@ class ElasticSearchApis(object):
                             "from": skip,
                             "size": limit,
                             }
+                        """
 
                 except Exception as e:
                         pass 
@@ -806,10 +750,11 @@ class PopulateElasticSearch(object):
                 for (i, news_article)  in enumerate(self.articles):
                             _id = news_article.pop("_id")
                             sport_type = news_article.pop("type")
-                            news_article.update({"sport_type": sport_type, "mongo_id": str(_id) })
+                            news_article.update({"mongo_id": str(_id), "sport_type": sport_type })
                             try:
                                     ES_CLIENT.index(index="news", doc_type="news", body=news_article)
                             except Exception as e:
+                                    
                                     error_list.append(news_article.get("news_id"))
                                     pass 
                             if i%length == 0:
