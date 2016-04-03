@@ -232,7 +232,7 @@ class ElasticSearchApis(object):
                 return wrapper
 
         @staticmethod
-        def do_query(argument,text_to_search, skip,limit,timestamp, direction,type_1):
+        def do_query(image_size, text_to_search, skip, limit, timestamp, direction, type_1):
 		"""
                 This method of this class first tries to match the exact query searched by the user
                 If the original query doesnt returns any results then it tries to call another method 
@@ -265,49 +265,48 @@ class ElasticSearchApis(object):
                 
                 """
 
+                sport_type = type_1 if type_1 else None
+                direction_type = ("gt" if direction == "up" else "lt")  if direction else None
 
 
-                result = ElasticSearchApis.exact_match(argument, text_to_search, skip, limit, timestamp, direction,type_1)          
+                try:
+                        print terminal.on_blue("Trying for excat match")
+                        result = ElasticSearchApis.exact_match(image_size, text_to_search, skip, limit, timestamp, direction_type, sport_type)          
+                except Exception as e:
+                        print terminal.red(str(e))
+
+
                 if not result:
+                        print terminal.on_blue("Trying for fuzzy match")
                         try:
-                                result = ElasticSearchApis.proximity_search(argument,text_to_search, skip, limit, timestamp, direction,type_1)
-                        except Exception,e:
-                                print e
+                                result = ElasticSearchApis.fuzzy_match(image_size, text_to_search, skip, limit, timestamp, direction_type, sport_type)  
+                        except Exception as e:
+                                print terminal.red(str(e))
                 
                 if not result:
+                        print terminal.on_blue("Trying for token match")
                         try:
-                                result = ElasticSearchApis.fuzzy_match(argument,text_to_search, skip, limit, timestamp, direction,type_1)  
-                        except Exception,e:
-                                print e
-                
-                if not result:
-                        try:
-                                result = ElasticSearchApis.token_search(argument,text_to_search, skip, limit, timestamp, direction,type_1)
-                        except Exception,e:
-                                print e
+                                result = ElasticSearchApis.token_search(image_size, text_to_search, skip, limit, timestamp, direction_type, sport_type)
+                        except Exception as e:
+                                print terminal.red(str(e))
                 return result
 
 
 
 
         @staticmethod
-        @process_result
-        def exact_match(argument,text_to_search, skip, limit, timestamp, direction, type_1):
-                start = time.time()
-                type_1 = type_1 if type_1 else ['cricket','football']
-                refresh = ("gt" if direction == "up" else "lt")  if direction else None
-
-                exact_phrase_search_body = { "_source": SOURCE+[argument],                                                 
+        def exact_match(image_size, text_to_search, skip, limit, timestamp, direction_type, sport_type):
+                exact_phrase_search_body = { "_source": SOURCE+[image_size],                                                 
                                     "min_score": 0.3,
                                     "query": {
                                             "filtered": {
-                                                    "query":  { "match_phrase": { "news_autocomplete": "kohli" }},
+                                                    "query":  { "match_phrase": { "news_autocomplete": text_to_search }},
                                                     "filter": {
                                                         "bool": {
                                                              "must": [
-                                                                    {"term": { "sport_type": "cricket" }},
+                                                                    {"term": { "sport_type": sport_type }},
                                                                     {"range": {"publish_epoch": {
-                                                                                refresh: timestamp
+                                                                                direction_type: timestamp
                                                              }}}]
                                                         }
                                                         }
@@ -317,178 +316,28 @@ class ElasticSearchApis(object):
                                     "from": skip, 
                                     "size": limit, 
                                     }
+                return ElasticSearchApis.get_result(exact_phrase_search_body, timestamp, direction_type, sport_type)
 
-                if not direction and not timestamp:
-                        """
-                        if direction and timestamp doesnt exists, it will delete the range query part
-                        from the exact_phrase_search_body
-                        """
-                        exact_phrase_search_body["query"]["filtered"]["filter"]["bool"]["must"].pop(-1)
-                
-                print terminal.on_red("Toital time taken for exact match query to return is %s seconds"%(time.time() - start))
-                result = ES_CLIENT.search(index="news", doc_type="news", body=exact_phrase_search_body)
-                return result
-                        
+
         
         @staticmethod
-        @process_result
-        def token_search(argument,text_to_search, skip, limit, timestamp, direction,type_1):
-                if not type_1:
-                    type_1 = ['cricket','football']
-                print "token"
-                """
-                It will work as follows
-                    if text_to_search = "chelsea midfield"
-				matches for articles that have both chelsea and midfield
-
-                """
-                
-                if not timestamp:
-                        timestamp = None
-                
-                if direction == "up":
-
-                        refresh = "gt"
-
-
-                elif direction == "down":
-
-                        refresh = "lt"
-
-                try:
-
-                        token_search_body = { "_source": SOURCE+[argument],                                                 
+        def token_search(image_size, text_to_search, skip, limit, timestamp, direction_type, sport_type):
+                token_search_body = { "_source": SOURCE+[image_size],                                                 
                                     "min_score": 0.3,
                                     "query": {
                                             "filtered": {
-                                                    "query":  { "match": { "news_autocomplete": text_to_search }},
-                                                    "filter": {
-                                                        "bool": {
-                                                             "must": [
-                                                                    {"term": { "sport_type": type_1 }},
-                                                                    {"range": {"publish_epoch": {
-                                                                                refresh: timestamp
-                                                             }}}]
-                                                        }
-                                                        }
-                                                    }
-                                                         },
-                                    "sort": { "publish_epoch": { "order": "desc" }},
-                                    "from": skip, 
-                                    "size": limit, 
-                                    }
-
-
-                        """
-                        token_search_body = { 
-                                "_source": SOURCE+[argument],
-                                "min_score":0.3,
-                                "query": {
-                                    #"bool": {
-                                        #"must": [
-                                        "and": [
-                                        {
-                                            "match": {
-                                                 "news_autocomplete": {
-                                                         "query":    text_to_search,
+                                                    "query":  { "match": { "news_autocomplete": 
+                                                         {"query":    text_to_search,
                                                          "operator": "and"
-                                                                     }
-                                                   }
-                                         },
-                                         {
-                                             "range": {
-                                                  "publish_epoch": {
-                                                           refresh: timestamp
-                                                           }
-                                                  }
-                                          }]},
-                                "filter": {
-                                    "terms" : {
-                                        "sport_type" :type_1
-                                        }
-                                    },
-                                "sort": { "publish_epoch": { "order": "desc" }},
-
-                                "from": skip, 
-                                "size": limit, 
-                                }
-                        """
-
-                except Exception as e:
-                        pass
-                                
-                if not direction and not timestamp:
-                        token_search_body = {                                                 
-                                "_source": SOURCE+[argument],
-                                "query": {
-                                    #"and" : [
-                                    {
-                                        "match": {
-                                                "news_autocomplete": {
-                                                        "query":    text_to_search,
-                                                        "operator": "and"
-                                                                    }
-                                                }
-                                        }},
-                                "filter": {
-                                    "terms": {
-                                        "sport_type": type_1
-                                            }
-                                        },
-                                "sort": { "publish_epoch": { "order": "desc" }},
-
-                                "from": skip,
-                                "size": limit,
-                                }
-                
-
-
-
-                result = ES_CLIENT.search(index="news", doc_type="news", body=token_search_body)
-		return result
-
-
-
-
-        @staticmethod
-        @process_result
-        def proximity_search(argument,text_to_search, skip, limit, timestamp, direction,type_1):
-                if not type_1:
-                    type_1 = ['cricket','football']
-                print "proxy"
-                """
-                Sometimes a phrase match can be too restrictive. What if we’re not really interested in a precise match, but we’d rather 
-                retrieve documents where the query terms occur somehow close to each other. This is an example of proximity search: the 
-                order of the terms doesn’t really matter, as long as they occur somehow within the same context. This concept is less 
-                restrictive than a pure phrase match, but still stronger than a general purpose query.
-                
-                
-                So, this will work as follows
-                    if text_to_search - "chelsea rui faria"
-                    it will search all the three terms in the whole article whether all the three terms in same sentence or in different sentence
-                """
-
-                if direction == "up":
-
-                        refresh = "gt"
-
-                elif direction == "down":
-
-                        refresh = "lt"
-
-                try:    
-
-                        proximity_search_body = { "_source": SOURCE+[argument],                                                 
-                                    "min_score": 0.3,
-                                    "query": {
-                                            "filtered": {
-                                                    "query":  { "match_phrase": { "news_autocomplete": text_to_search ,"slop": 10000},
+                                                        }
+                                                        
+                                                        }},
                                                     "filter": {
                                                         "bool": {
                                                              "must": [
-                                                                    {"term": { "sport_type": type_1 }},
+                                                                    {"term": { "sport_type": sport_type}},
                                                                     {"range": {"publish_epoch": {
-                                                                                refresh: timestamp
+                                                                                direction_type: timestamp
                                                              }}}]
                                                         }
                                                         }
@@ -497,93 +346,30 @@ class ElasticSearchApis(object):
                                     "sort": { "publish_epoch": { "order": "desc" }},
                                     "from": skip, 
                                     "size": limit, 
-                                    }}
-
-                            
-
-                except Exception as e:
-                        pass 
-
-                if not direction and not timestamp:
-
-                        proximity_search_body = {
-                                "_source": SOURCE+[argument],         
-                                "query": {
-                                    #"and" : [
-                                        {
-                                        "match_phrase": {
-                                                "news_autocomplete": {
-                                                "query": text_to_search,
-                                                "slop": 10000
-                                                        }
-                                                }
-                                        }},
-                                "filter": {
-                                    "terms": {
-                                        "sport_type": type_1
-                                            }
-                                        },
-                                "sort": { "publish_epoch": { "order": "desc" }},
-
-
-                        "from": skip,
-                        "size": limit,
                                     }
 
-                result = ES_CLIENT.search(index="news", doc_type="news", body=proximity_search_body)
-                return result
-		
-
-
+                return ElasticSearchApis.get_result(token_search_body, timestamp, direction_type, sport_type)
 
 
         @staticmethod
-        @process_result
-        def fuzzy_match(argument,text_to_search, skip, limit, timestamp, direction,type_1):
-                if not type_1:
-                    type_1 = ['cricket','football']
-                print "fuzzy"
-                """
-                Matches text to search on the basis of levenshtein algorithm
-                Args:
-                        text_to_search: 
-                                type: str
-                                    The text to be searched
-                        skip: 
-                                type: int
-                                    number of news articles to be skipped matching the query, 
-                        limit: 
-                                type: int 
-                                    number of news articles to be returned while querying the database 
-
-                Returns:
-                        type: list
-                            List of articles satisfying the query withfields mentioned in SOURCE
-                """
-
-
-                if direction == "up":
-
-                        refresh = "gt"
-
-
-                elif direction == "down":
-
-                        refresh = "lt"
-
-                try:
-
-                        fuzzy_search_body = { "_source": SOURCE+[argument],                                                 
+        def fuzzy_match(image_size, text_to_search, skip, limit, timestamp, direction_type, sport_type):
+                fuzzy_search_body = { "_source": SOURCE+[image_size],                                                 
                                     "min_score": 0.3,
                                     "query": {
                                             "filtered": {
-                                                    "query":  { "match": { "news_autocomplete": text_to_search ,"fuzziness": 10},
+                                                    "query":  { "match": { "news_autocomplete": 
+                                                         {"query":    text_to_search,
+                                                            "fuzziness": "AUTO",
+                                                         "operator": "and"
+                                                        }
+                                                        
+                                                        }},
                                                     "filter": {
                                                         "bool": {
                                                              "must": [
-                                                                    {"term": { "sport_type": type_1 }},
+                                                                    {"term": { "sport_type": sport_type}},
                                                                     {"range": {"publish_epoch": {
-                                                                                refresh: timestamp
+                                                                                direction_type: timestamp
                                                              }}}]
                                                         }
                                                         }
@@ -592,76 +378,27 @@ class ElasticSearchApis(object):
                                     "sort": { "publish_epoch": { "order": "desc" }},
                                     "from": skip, 
                                     "size": limit, 
-                                    }}
+                                    }
 
-                        """
-                        fuzzy_search_body = {
-                            "_source": SOURCE+[argument],
-                            "min_score": 0.3,
-                            "query": {
-                                #"bool": {
-                                    #"must": [
-                                    "and": [
-                                    {
-                                        "match": {
-                                                "news_autocomplete": {
-                                                    "query":     text_to_search,
-                                                    "fuzziness": 10,
-                                                    "operator":  "and"
-                                                        }
-                                                }
-                                    },
-                                    {
-                                        "range": {
-                                                "publish_epoch": {
-                                                    refresh: timestamp
-                                                        }
-                                                }
-                                    }]},
-
-                            "filter": {
-                                "terms":{
-                                    "sport_type": type_1
-                                        }
-                                    },
-                            "sort": { "publish_epoch": { "order": "desc" }},
-                            "from": skip,
-                            "size": limit,
-                            }
-                        """
-
-                except Exception as e:
-                        pass 
-
-                if not direction and not timestamp:
-                        fuzzy_search_body = {
-                            "_source": SOURCE+[argument],
-                            "query": {
-                                #"and" : [
-                                    {
-                                    "match": {
-                                        "news_autocomplete": {
-                                                    "query":     text_to_search,
-                                                    "fuzziness": 10,
-                                                    "operator":  "and"
-                                        }
-                                            }
-                                }},
-                            "filter":{
-                                "terms":{
-                                    "sport_type": type_1
-                                        }
-                                    },
-                            "sort": { "publish_epoch": { "order": "desc" }},
-
-                            "from": skip, 
-                            "size": limit,
-                      }
-
-
-                result = ES_CLIENT.search(index="news", doc_type="news", body=fuzzy_search_body)
-                return result
+                return ElasticSearchApis.get_result(fuzzy_search_body, timestamp, direction_type, sport_type)
 		
+        @staticmethod
+        @process_result
+        def get_result(query, timestamp, direction_type, sport_type):
+                start = time.time()
+                if not any([direction_type, timestamp, sport_type]):
+                        """
+                        if all three are false
+                        """
+                        query["query"]["filtered"].pop("filter")
+
+                if not any([direction_type, timestamp]):
+                        query["query"]["filtered"]["filter"]["bool"]["must"].pop(-1)
+                
+                print terminal.on_red("Total time taken for exact match query to return is %s seconds"%(time.time() - start))
+                result = ES_CLIENT.search(index="news", doc_type="news", body=query)
+                return result
+                        
 
 
                 

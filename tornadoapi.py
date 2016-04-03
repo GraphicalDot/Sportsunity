@@ -139,7 +139,7 @@ class NewsApiTornado(tornado.web.RequestHandler):
                 
                 if self.search:
                     
-			result = elasticsearch_db.ElasticSearchApis.do_query(argument=self.image_size, text_to_search=self.search, skip=self.skip, limit=self.limit,\
+			result = elasticsearch_db.ElasticSearchApis.do_query(image_size=self.image_size, text_to_search=self.search, skip=self.skip, limit=self.limit,\
                                         timestamp=int(self.timestamp) if self.timestamp else None, 
 					direction=self.direction, type_1=self.type_1)
                         result = sorted(result,key=itemgetter('publish_epoch'),reverse=True)
@@ -181,7 +181,7 @@ def main():
         http_server = tornado.httpserver.HTTPServer(app)
         http_server.bind("8888")
         enable_pretty_logging()
-        http_server.start(20)
+        http_server.start(30)
         loop = tornado.ioloop.IOLoop.instance()
         signal.signal(signal.SIGINT, lambda sig, frame: loop.add_callback_from_signal(on_shutdown))
         loop.start()
