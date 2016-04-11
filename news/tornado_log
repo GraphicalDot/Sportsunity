@@ -1,0 +1,443 @@
+[I 160331 12:20:27 process:124] Starting 40 processes
+[W 160331 12:20:43 web:1811] 404 GET /mixedapi (127.0.0.1) 0.45ms
+[W 160331 12:20:43 web:1811] 404 GET /favicon.ico (127.0.0.1) 0.27ms
+[I 160331 12:20:54 web:1811] 200 GET /mixed (127.0.0.1) 0.75ms
+[I 160331 12:21:37 web:1811] 200 GET /mixed?image_size=hdpi (127.0.0.1) 30044.67ms
+[I 160331 12:48:17 process:124] Starting 40 processes
+[I 160331 12:49:13 connectionpool:207] Starting new HTTP connection (1): localhost
+[I 160331 12:49:13 base:63] GET http://localhost:9200/news/news/_search [status:200 request:0.168s]
+[I 160331 12:49:13 web:1811] 200 GET /mixed?image_size=hdpi&search=Johnson&sport_type=cricket (127.0.0.1) 169.89ms
+[I 160331 12:50:23 process:124] Starting 40 processes
+[I 160331 12:50:31 connectionpool:207] Starting new HTTP connection (1): localhost
+[I 160331 12:51:20 connectionpool:207] Starting new HTTP connection (1): localhost
+[I 160331 12:51:33 connectionpool:207] Starting new HTTP connection (1): localhost
+[W 160331 12:51:45 web:1811] 404 GET /favicon.ico (127.0.0.1) 0.53ms
+[I 160331 12:52:23 connectionpool:207] Starting new HTTP connection (1): localhost
+[I 160331 12:58:00 process:124] Starting 40 processes
+[I 160331 12:58:05 connectionpool:207] Starting new HTTP connection (1): localhost
+[I 160331 13:05:15 process:124] Starting 40 processes
+[I 160331 13:06:54 process:124] Starting 40 processes
+[I 160331 13:07:05 connectionpool:207] Starting new HTTP connection (1): localhost
+[W 160331 13:07:05 base:82] GET /news/news/_search [status:400 request:0.019s]
+[I 160331 13:07:05 web:1811] 200 GET /mixed?image_size=hdpi&type_1=cricket&search=india (127.0.0.1) 24.46ms
+[E 160331 13:07:05 web:1407] Uncaught exception GET /mixed?image_size=hdpi&type_1=cricket&search=india (127.0.0.1)
+    HTTPServerRequest(protocol='http', host='localhost:3000', method='GET', uri='/mixed?image_size=hdpi&type_1=cricket&search=india', version='HTTP/1.1', remote_ip='127.0.0.1', headers={'Connection': 'keep-alive', 'Accept-Language': 'en-US,en;q=0.8', 'Accept-Encoding': 'gzip, deflate, sdch', 'Host': 'localhost:3000', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8', 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/43.0.2357.130 Chrome/43.0.2357.130 Safari/537.36'})
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1332, in _execute
+        result = method(*self.path_args, **self.path_kwargs)
+      File "/home/kmama02/Programs/Python/Sportsunity/Sportsunity/news/newhandlers.py", line 157, in get
+        self.response.update({ 'status': settings.ERROR_500, 'error': True, 'success': False, 'message': "Error: %s" % e })
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/elasticsearch/exceptions.py", line 55, in __str__
+        cause = ', %r' % self.info['error']['root_cause'][0]['reason']
+    TypeError: string indices must be integers
+[I 160331 13:12:12 process:124] Starting 40 processes
+[E 160331 13:12:16 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:16 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:16 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:20 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:20 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:20 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:20 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:21 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:21 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:21 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:21 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:21 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:21 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:21 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:21 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:21 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:21 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:22 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:22 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:22 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:22 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:22 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:26 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:26 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:26 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:26 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:26 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:26 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:27 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:27 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:27 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:27 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:27 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:27 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:32 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[I 160331 13:12:51 process:124] Starting 40 processes
+[E 160331 13:12:54 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[E 160331 13:12:54 http1connection:53] Uncaught exception
+    Traceback (most recent call last):
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/http1connection.py", line 234, in _read_message
+        delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/httpserver.py", line 282, in finish
+        self.delegate.finish()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1884, in finish
+        self.execute()
+      File "/home/kmama02/Programs/Python/Sportsunity/local/lib/python2.7/site-packages/tornado/web.py", line 1904, in execute
+        **self.handler_kwargs)
+    TypeError: __init__() takes exactly 1 argument (3 given)
+[I 160331 13:13:16 process:124] Starting 40 processes
+[I 160331 13:13:19 connectionpool:207] Starting new HTTP connection (1): localhost

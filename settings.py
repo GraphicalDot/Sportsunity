@@ -12,6 +12,7 @@ LOCAL_ELASTIC_SERVER = 'localhost'
 ELASTIC_PORT = 9200
 
 LOCAL_MONGO_HOST = 'localhost'
-MONGO_SERVERIP = 'mongodb://10.0.4.225:27017,10.0.2.249:27018, 10.0.2.117:27019/?replicaSet=fetchfeedReplicaSet'
+#MONGO_SERVERIP = 'mongodb://10.0.4.225:27017,10.0.2.249:27018, 10.0.2.117:27019/?replicaSet=fetchfeedReplicaSet'
+MONGO_SERVERIP = 'mongodb://localhost:27017'
 MONGO_PORT = 27017
 
