@@ -268,6 +268,7 @@ class ElasticSearchApis(object):
                 sport_type = type_1 if type_1 else None
                 direction_type = ("gt" if direction == "up" else "lt")  if direction else None
 
+                result = ''
 
                 try:
                         print terminal.on_blue("Trying for excat match")
@@ -304,7 +305,7 @@ class ElasticSearchApis(object):
                                                     "filter": {
                                                         "bool": {
                                                              "must": [
-                                                                    {"term": { "sport_type": sport_type }},
+                                                                    {"terms": { "sport_type": sport_type }},
                                                                     {"range": {"publish_epoch": {
                                                                                 direction_type: timestamp
                                                              }}}]
@@ -335,7 +336,7 @@ class ElasticSearchApis(object):
                                                     "filter": {
                                                         "bool": {
                                                              "must": [
-                                                                    {"term": { "sport_type": sport_type}},
+                                                                    {"terms": { "sport_type": sport_type}},
                                                                     {"range": {"publish_epoch": {
                                                                                 direction_type: timestamp
                                                              }}}]
@@ -367,7 +368,7 @@ class ElasticSearchApis(object):
                                                     "filter": {
                                                         "bool": {
                                                              "must": [
-                                                                    {"term": { "sport_type": sport_type}},
+                                                                    {"terms": { "sport_type": sport_type}},
                                                                     {"range": {"publish_epoch": {
                                                                                 direction_type: timestamp
                                                              }}}]

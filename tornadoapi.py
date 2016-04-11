@@ -66,10 +66,10 @@ class NewsApiTornado(tornado.web.RequestHandler):
                 self.timestamp = self.get_argument("timestamp", None)
                 self.direction = self.get_argument("direction", None)
                 self.search = self.get_argument("search", None)
-                self.type_1 = self.get_argument("type_1", None)
+                self.type_1 = self.get_arguments("type_1",strip=True)
                 self.success = {"error": False, "success": True, "result": None}
                 self.error = {"error": True, "success": False, "messege": None, "status": None}
-                self.news_id = self.get_argument("news_id", None)                
+                self.news_id = self.get_argument("news_id", None)
                 
                 
                 
@@ -104,7 +104,9 @@ class NewsApiTornado(tornado.web.RequestHandler):
                 if not self.search:
                         query = {}
                         if self.type_1:
-                                query.update({"type": self.type_1})
+                                #query.update({"sport_type": self.type_1})
+                                query.update({'sport_type':{'$in':self.type_1}})
+                                print query
                                 ##result = self.collection.find({'type':{'$in':args['type_1']}}, projection=self.projection).sort('publish_epoch',-1).limit(self.limit).skip(self.skip)
 
                         if self.timestamp and self.direction:
@@ -119,7 +121,6 @@ class NewsApiTornado(tornado.web.RequestHandler):
 				for post in list(result):
                                 	post["image_link"] = post.pop(self.image_size)
 					new_list.append(post)
-
 
 				self.write({"error": False,
                                     "success": True,
@@ -155,7 +156,7 @@ class NewsApiTornado(tornado.web.RequestHandler):
                     
 
 app = tornado.web.Application([
-                    (r"/testapi", NewsApiTornado),
+                    (r"/mixed", NewsApiTornado),
                     ])
 
 
@@ -179,7 +180,7 @@ def on_shutdown():
 
 def main():
         http_server = tornado.httpserver.HTTPServer(app)
-        http_server.bind("8888")
+        http_server.bind("8000")
         enable_pretty_logging()
         http_server.start(30)
         loop = tornado.ioloop.IOLoop.instance()
