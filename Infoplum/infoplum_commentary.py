@@ -6,6 +6,10 @@ from bs4 import BeautifulSoup
 import json
 from pprint import pprint
 import pymongo
+from dateutil.parser import parse
+import pytz
+from datetime import datetime
+from check_event import Infoplum_event
 
 class Infoplum_data_commentary:
 
@@ -16,6 +20,7 @@ class Infoplum_data_commentary:
                 db.authenticate('shivam','mama123')
                 db = conn.test
                 self.test_infoplum_commentary = db.test_infoplum_commentary
+                self.test_notifications = db.test_notifications
 
         def get_match_list(self):
 
@@ -38,22 +43,26 @@ class Infoplum_data_commentary:
                 headers = {"Host": "ckt.webservice.sportsflash.com.au", 'Content-Type': "text/xml; charset=UTF-8", "Content-Length": len(encoded_request), "SOAPAction": "http://schema.sportsflash.com.au/Cricket/GetMatchList"}
                 r = requests.post("http://ckt.webservice.sportsflash.com.au/securewebservice.asmx", data=encoded_request, headers=headers, verify=False)
                 soup = BeautifulSoup((r.content),'lxml')
-                #dict1 = {}
 
                 for match in soup.findAll('match'):
                         print match 
-                        print 
-                        # dict1.setdefault(series.get('seriesid'),[]).append({'series_id':series.get('seriestypename'),'series_name':series.find('name').text,'start_date':series.find('startdate').text,'end_date':series.find('enddate').text,'result':series.find('result').text})
-                        print match.find('result').get('status')
-                        #if str(match.find('result').get('status')) == 'F' or str(match.find('result').get('status')) == 'N':
-                         #   print "Not an ongoing match!"
-                          #  pass
+                        print
+                        start_datetime = match.find('datetime').text
+                        timezone = pytz.timezone('Australia/ACT')
+                        date = parse(start_datetime)
+                        local_std = timezone.localize(date)
+                        local_utc = local_std.astimezone(pytz.utc)
+                        utc_date = local_utc.strftime('%Y-%m-%d')
+                        print utc_date
+                        utc_now=datetime.utcnow()
+                        utc_now_date = utc_now.strftime('%Y-%m-%d')
+                        print utc_now_date
 
-                        #else:
-                         #   print 'live match!'
-                        self.get_match_commentary(match.get('seriesid'),match.get('matchid'))
-                            #dict1.setdefault(match.get('seriesid'),[]).append({'fixtures':self.list_of_fixtures})
-                        self.test_infoplum_commentary.update({'match_id':match.get('matchid'),'series_id':match.get('seriesid')},{'$set':{'match_id':match.get('matchid'),'result':match.find('result').text,'match_name':\
+
+                        if str(match.find('result').get('status')) in ['F']:
+                        #if utc_date == utc_now_date:
+                            self.get_match_commentary(match.get('seriesid'),match.get('matchid'))
+                            self.test_infoplum_commentary.update({'match_id':match.get('matchid'),'series_id':match.get('seriesid')},{'$set':{'match_id':match.get('matchid'),'result':match.find('result').text,'match_name':\
                                     match.get('matchname'),'series_id':match.get('seriesid'),'series_name':match.get('seriesname'),'start_date':match.find('datetime').text,'commentary':\
                                     self.commentary,'status':match.find('result').get('status'),'home_team':match.find('hometeam').get('fullname'),'home_team_id':\
                                     match.find('hometeam').get('teamid'),'away_team':match.find('awayteam').get('fullname'),'away_team_id':match.find('awayteam').get('teamid')}},upsert=True)
@@ -92,6 +101,9 @@ class Infoplum_data_commentary:
                 soup = BeautifulSoup((r.content),'lxml')
 
                 self.commentary = []
+                comment_ids = []
+
+                obj = Infoplum_event()
 
                 if soup.findAll('otherinning'):
 
@@ -126,6 +138,11 @@ class Infoplum_data_commentary:
                             soup = BeautifulSoup(r.content)
                             
                             for comment in soup.findAll('commentary'):
+                                    if not self.test_notifications.find_one({'match_id':match_id,'commentary_id':comment.get('commentaryid')}):
+                                        obj.get_scorecard_soup(series_id,match_id,comment)
+                                        self.test_notifications.update({'match_id':match_id,'commentary_id':comment.get('commentaryid')},{'$set':{'match_id':match_id,'series_id':series_id,'commentary_id':\
+                                                comment.get('commentaryid')}},upsert=True)
+
                                     #self.commentary.setdefault(other_inning.get('inningid'),[]).append({'commentary_id':comment.get('commentaryid'),'commentary_datetime':comment.get('datetimelabel'),'how_out':\
                                             #comment.get('howoutid'),'comment':comment.find('comment').text})
                                     self.commentary.append({'commentary_id':comment.get('commentaryid'),'commentary_datetime':comment.find('datetimelabel').text,'how_out':comment.get('howoutid'),'comment':\
@@ -159,6 +176,9 @@ class Infoplum_data_commentary:
                     soup = BeautifulSoup(r.content)
                     
                     for comment in soup.findAll('commentary'):
+                            if comment.get('commentaryid') not in comment_ids:
+                                obj.get_scorecard_soup(series_id,match_id,comment)
+
                             #self.commentary.setdefault(other_inning.get('inningid'),[]).append({'commentary_id':comment.get('commentaryid'),'commentary_datetime':comment.get('datetimelabel'),'how_out':\
                                     #comment.get('howoutid'),'comment':comment.find('comment').text})
                             self.commentary.append({'commentary_id':comment.get('commentaryid'),'commentary_datetime':comment.find('datetimelabel').text,'how_out':comment.get('howoutid'),'comment':\

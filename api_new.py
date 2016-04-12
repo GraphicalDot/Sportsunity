@@ -79,11 +79,11 @@ class NewsApi(restful.Resource):
                             }
 
                 projection = {"summary": True,"custom_summary":True,"title":True,"website":True, "news_id":\
-                        True, "published": True, "publish_epoch": True, "news_link": True, "sport_type": True}
+                        True, "published": True, "publish_epoch": True, "news_link": True, "sport_type": True,'gmt_epoch':True}
 
                 projection.update({args["image_size"]: True, "_id":True, "time_of_storing":True})
 
-                projection.update({"_id": False, "favicon":True,})
+                projection.update({"favicon":True})
                 
                 if not args['news_id']:
                         pass
@@ -103,9 +103,6 @@ class NewsApi(restful.Resource):
                                 print e
                                 return "news_id entered isn't correct"
                 
-
-                
-
 
                 if not args['search']:
                         print 'gfgf'
@@ -136,7 +133,7 @@ class NewsApi(restful.Resource):
                         elif args['type_1'] and not args['timestamp'] and not args['direction']:
                                 try:
                                         print args['type_1']
-                                        result = self.collection.find({'type':{'$in':args['type_1']}},projection=projection).sort('publish_epoch',-1)\
+                                        result = self.collection.find({'sport_type':{'$in':args['type_1']}},projection=projection).sort('publish_epoch',-1)\
                                                 .limit(args['limit']).skip(args['skip'])
                                         #result = news
 
@@ -224,7 +221,7 @@ class NewsApi(restful.Resource):
                                         print 'latest'
 
                                         try:
-                                                result = self.collection.find({'type':{'$in':args['type_1']},'publish_epoch':\
+                                                result = self.collection.find({'sport_type':{'$in':args['type_1']},'publish_epoch':\
                                                         {"$gt":args['timestamp']}},projection=projection).sort('publish_epoch',-1).\
                                                         skip(args['skip']).limit(args['limit'])
 
@@ -250,7 +247,7 @@ class NewsApi(restful.Resource):
                                 elif args['direction']=='down':
                                         print "older"
                                         try:
-                                                result = self.collection.find({'type':{'$in':args['type_1']},"publish_epoch": {"$lt": args['timestamp']}},\
+                                                result = self.collection.find({'sport_type':{'$in':args['type_1']},"publish_epoch": {"$lt": args['timestamp']}},\
                                                         projection=projection).sort('publish_epoch',-1).skip(args['skip']).limit(args['limit'])
                                                 result = list(result)
                                                 new_result = []
@@ -282,7 +279,7 @@ class NewsApi(restful.Resource):
                                 args['direction'] = None
 
                                 print 'eeeee'
-                                result = elasticsearch_db.ElasticSearchApis.do_query(image_size=args['image_size'],text_to_search=args['search'],skip=args['skip'],limit=args['limit'],\
+                                result = elasticsearch_db.ElasticSearchApis.do_query(argument=args['image_size'],text_to_search=args['search'],skip=args['skip'],limit=args['limit'],\
                                         timestamp=args['timestamp'],direction=args['direction'],type_1=args['type_1'])
                                 result = sorted(result,key=itemgetter('publish_epoch'),reverse=True)
                                 result = result[args['skip']:]
@@ -299,7 +296,7 @@ class NewsApi(restful.Resource):
                         elif args['timestamp'] and args['direction']:
                                 print "pooppooppo"
                                 
-                                result = elasticsearch_db.ElasticSearchApis.do_query(image_size=args['image_size'],text_to_search=args['search'],skip=args['skip'],limit=args['limit'],\
+                                result = elasticsearch_db.ElasticSearchApis.do_query(argument=args['image_size'],text_to_search=args['search'],skip=args['skip'],limit=args['limit'],\
                                         timestamp=args['timestamp'],direction=args['direction'],type_1=args['type_1'])
                                 result = sorted(result,key=itemgetter('publish_epoch'),reverse=True)
                                 new_result = []

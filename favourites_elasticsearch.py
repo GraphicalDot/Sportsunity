@@ -1,5 +1,7 @@
 #!/usr/bin/env python
+#*--encoding: utf-8 --*
 
+#    visióna
 import os
 import signal
 import sys
@@ -20,7 +22,6 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 es = connection.get_elastic_search_connection()
-
 
 class GetTeam(tornado.web.RequestHandler):
     """

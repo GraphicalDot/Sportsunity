@@ -58,6 +58,30 @@ class GetSeasonFixtures(restful.Resource):
                         'data':sorted(season_fixtures)
                         }
 
+class GetTeamSpecificFixtures(restful.Resource):
+
+        def __init__(self):
+
+                conn = pymongo.MongoClient()
+                db = conn.admin
+                db.authenticate('shivam','mama123')
+                db = conn.test
+                self.test_infoplum_matches = db.test_infoplum_matches
+
+        def get(self):
+                
+                args = get_args.parse_args()
+
+                team_fixtures = list(self.test_infoplum_matches.find({ '$or':[ {'home_team_id':args['team_id']},{'away_team_id':args['team_id']}] },projection={'_id':False,'series_name':True,'match_id':True,'match_name':\
+                        True,'series_id':True,'home_team_id':True,'home_team_flag':True,'home_team':True,'away_team_id':True,'away_team':True,'away_team_flag':True,'venue':True,'match_widget':True,'result':True}))
+
+                return {'success':True,
+                        'error':False,
+                        'data':sorted(team_fixtures)
+                        }
+
+
+
 class GetMatchScorecard(restful.Resource):
         
         def __init__(self):
@@ -174,7 +198,7 @@ class GetPlayerStats(restful.Resource):
 
                 args = get_args.parse_args()
 
-                player_stats = list(self.test_infoplum_players.find({'player_id':args['player_id']},projection={'_id':False,'info':True,'player_image':True,'player_id':True,'statistics':True}))
+                player_stats = list(self.test_infoplum_players.find({'player_id':args['player_id']},projection={'_id':False,'info':True,'player_image':True,'team':True,'team_id':True,'player_id':True,'statistics':True}))
 
                 return {'success':True,
                         'error':False,
@@ -291,6 +315,8 @@ api.add_resource(GetMatchSummary,'/get_match_summary')
 api.add_resource(GetMatchScorecard,'/get_match_scorecard')
 api.add_resource(GetMatchCommentary,'/get_match_commentary')
 api.add_resource(GetMatchWidget,'/get_match_widget')
+api.add_resource(GetTeamSpecificFixtures,'/get_team_specific_fixtures')
+
 
 if __name__ == '__main__':
     app.run(host = "0.0.0.0", port = 5300 , debug = True)
