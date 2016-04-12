@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import signal
 import sys
 import time
 import pymongo
@@ -7,21 +8,17 @@ from GlobalConfigs import *
 from Elasticsearch_1 import elasticsearch_db
 from operator import itemgetter
 from blessings import Terminal
-import signal
 import connection
-from GlobalConfigs import MONGO_SPORTS_UNITY_NEWS_DB, MONGO_SPORTS_UNITY_NEWS_ALL_COLL
 import settings
 import tornado
+import tornado.autoreload
+import tornado.httpserver
 import tornado.ioloop
 import tornado.web
-import tornado.autoreload
-from tornado.httpclient import AsyncHTTPClient
+
 from tornado.log import enable_pretty_logging
-import shutil
-import tornado.httpserver
-from itertools import ifilter
+from GlobalConfigs import MONGO_SPORTS_UNITY_NEWS_DB, MONGO_SPORTS_UNITY_NEWS_ALL_COLL
 from tornado.web import asynchronous
-from tornado.concurrent import run_on_executor
 terminal = Terminal()
 
 

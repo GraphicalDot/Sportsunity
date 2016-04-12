@@ -8,6 +8,7 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import connection
+import settings
 
 ES_CLIENT = connection.get_elastic_search_connection()
 
@@ -16,7 +17,7 @@ class GetTeams:
 
         def __init__(self,renew_indexes=False):
 
-                conn = pymongo.MongoClient()
+                conn = connection.get_mongo_connection()
                 db = conn.cricket
                 db1 = conn.test
                 self.players = db.players
@@ -38,19 +39,8 @@ class GetTeams:
                 self.mappings = {'dynamic': 'strict',
                                 'properties': {'team_autocomplete': {'analyzer': 'custom_analyzer', 'type':'string'},
                                 'team_name': {'copy_to': ['team_autocomplete'], 'type': 'string'},
-                                #'team_points': {'index': 'not_analyzed', 'type': 'string'},
-                                #'league_id': {'index': 'not_analyzed', 'type': 'string'},
                                 'team_id' : {'index': 'not_analyzed', 'type': 'string'},
-                                # 'stand_season': {'index': 'not_analyzed', 'type': 'string'},
-                                # 'stand_group' : {'index': 'not_analyzed', 'type': 'string'},
                                 'team_flag': {'index': 'not_analyzed', 'type': 'string'},
-                                # 'league_name': {'index': 'not_analyzed', 'type': 'string'},
-                                # 'games_won': {'index': 'not_analyzed', 'type': 'string'},
-                                # 'games_lost' : {'index': 'not_analyzed', 'type': 'string'},
-                                # 'season': {'index': 'not_analyzed', 'type': 'long'},
-                                # 'position': {'index': 'not_analyzed', 'type': 'long'},
-                                # 'games_played': {'index': 'not_analyzed', 'type': 'string'},
-                                # 'games_drawn' : {'index': 'not_analyzed', 'type': 'string'},
                                 'sport_type': {'index': 'not_analyzed', 'type': 'string'}
                             }}
 
@@ -75,18 +65,16 @@ class GetTeams:
         
         def index_data(self):
                 teams = []
-                list_of_league_ids = ['1269','1399','1229','1221','1204']
+                list_of_league_ids = settings.FOOTBALL_LEAGUE_IDS
                 for league_id in list_of_league_ids:
-                        response = requests.get('http://52.74.75.79:8000/get_league_standings?league_id=%s'%league_id)
+                        response = requests.get(settings.GET_LEAGUE_STANDINGS_URL.format(settings.SCORES_SERVERIP,
+                                                                            settings.SCORES_SERVER_PORT, league_id))
                         data = json.loads(response.content)
                         for team in data['data']:
                                 teams.append({'team_name':team.pop('team_name'),'team_id':team.pop('team_id'),'sport_type':team.pop('sport_type'),'team_flag':team.pop('flag_image')})
                 print teams,'*'*10
                 for team_name in teams:
                         print ES_CLIENT.index(index="teams", doc_type="teams", body=team_name)
-
-                #for team in self.cricket_teams.find(projection={'_id':False}):
-                 #       print ES_CLIENT.index(index="teams", doc_type="teams", body=team)
 
                 team_ids_list = []
 

@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-import os
 import signal
-import sys
 import tornado
 import tornado.autoreload
 import tornado.httpserver
@@ -12,13 +10,11 @@ from blessings import Terminal
 from pymongo.errors import PyMongoError
 from tornado.log import enable_pretty_logging
 from tornado.web import asynchronous
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 terminal = Terminal()
 
 import connection
 MONGO_CONNECTION  = connection.get_mongo_connection()
 football_player_stats_collection = MONGO_CONNECTION.football.football_player_stats
-players_collection = MONGO_CONNECTION.cricket.players
 
 
 class GetPlayerNames(tornado.web.RequestHandler):
@@ -29,6 +25,7 @@ class GetPlayerNames(tornado.web.RequestHandler):
     @tornado.gen.coroutine
     def get(self):
         try:
+            players_collection = MONGO_CONNECTION.cricket.players
             cricket_players = list(players_collection.find(projection={'_id': False, 'team_name': True, 'name': True,
                                                                  'player_id': True, 'sport_type': True}))
             football_players = list(football_player_stats_collection.find(projection={'_id': False, 'name': True,
@@ -52,6 +49,7 @@ class GetAllCricketTeams(tornado.web.RequestHandler):
         teams_list = []
         team_ids_list = []
         try:
+            players_collection = MONGO_CONNECTION.cricket.players
             for player in players_collection.find(projection={'_id': False, 'team': True, 'team_id': True}):
                 if player['team_id'] not in team_ids_list:
                     teams_list.append({'team_name': player['team'], 'team_id': player['team_id']})
@@ -76,9 +74,7 @@ def make_app():
 def on_shutdown():
     print terminal.red(terminal.bold('Shutting down'))
     tornado.ioloop.IOLoop.instance().stop()
-
-    ##gracefully closing mongo connection
-    MONGO_CONNECTION.close()
+    MONGO_CONNECTION.close()        ##gracefully closing mongo connection
 
 
 if __name__=='__main__':

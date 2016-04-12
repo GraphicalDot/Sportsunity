@@ -36,7 +36,7 @@ class GetTeam(tornado.web.RequestHandler):
             sport_type = self.get_argument('sport_type')
 
             body = {
-                "_source": ['team_name','team_id','flag_image'],
+                "_source": ['team_name','team_id','team_flag'],
                 "query": {
                     "and": [ { "match_phrase" :{ "team_autocomplete": {"query": team,"fuzziness": 10,"operator": "and"}}},
                              {'match': {'sport_type': sport_type}}
