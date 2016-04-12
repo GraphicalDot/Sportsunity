@@ -49,8 +49,8 @@ class GetPlayers:
                 #db1 = conn.mydb
                 #self.mycollection = db1.mycollection
                 
-                db = conn.test
-                self.test_infoplum_players = db.test_infoplum_players
+                db = conn.cricket
+                self.players = db.players
 
                 if not ES_CLIENT.indices.exists("players"):
                         self.prep_teams_index()
@@ -71,7 +71,7 @@ class GetPlayers:
 
         
         def index_data(self):
-            for name in self.test_infoplum_players.find(projection={'_id':False,'name':True,'player_id':True,'team_id':True,'player_image':True,'sport_type':True}):
+            for name in self.players.find(projection={'_id':False,'name':True,'player_id':True,'team_id':True,'player_image':True,'sport_type':True}):
                         print ES_CLIENT.index(index='players',doc_type='players',body=name)
             for player in self.football_player_stats.find(projection={'_id':False,'name':True,'player_id':True,'team_id':True,'player_image':True,'sport_type':True}):
                         print ES_CLIENT.index(index='players',doc_type='players',body=player)

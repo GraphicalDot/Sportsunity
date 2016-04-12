@@ -22,8 +22,8 @@ class GetSquad(restful.Resource):
         def __init__(self):
 
                 conn = pymongo.MongoClient()
-                db = conn.admin
-                db.authenticate('shivam','mama123')
+                #db = conn.admin
+                #db.authenticate('shivam','mama123')
                 db = conn.test
                 self.football_player_stats = db.football_player_stats
 
@@ -65,7 +65,8 @@ class GetPlayerProfile(restful.Resource):
 
                 args = get_args.parse_args()
 
-                profile = list(self.football_player_stats.find({'player_id':args['player_id']},projection={'_id':False,'team':True,'name':True,'player_id':True,'player_image':True,'profile':True,'other_competitions':True}))
+                profile = list(self.football_player_stats.find({'player_id':args['player_id']},projection={'_id':False,'team':True,'name':True,'player_id':True,'player_image':True,'profile':\
+                        True,'other_competitions':True,'Nationality':True,'Position':True,'Jersey':True,'Age':True}))
 
                 return {'success':True,
                         'error':False,

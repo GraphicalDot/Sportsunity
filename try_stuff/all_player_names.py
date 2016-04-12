@@ -22,15 +22,16 @@ class GetPlayerNames(restful.Resource):
                 db.authenticate('shivam','mama123')
                 db = conn.test
                 self.football_player_stats = db.football_player_stats
-		self.player_stats = db.player_stats
+                db = conn.cricket
+		self.players = db.players
 
         def get(self):
 
                 args = get_args.parse_args()
 		
-                cricket_players = list(self.player_stats.find(projection={'_id':False,'team_name':True,'name':True,'player_id':True,'sport_type':True}))
+                cricket_players = list(self.players.find(projection={'_id':False,'team_name':True,'name':True,'player_id':True,'sport_type':True}))
 
-                football_players = list(self.football_player_stats.find(projection={'_id':False,'team_name':True,'name':True,'player_id':True,'sport_type':True}))
+                football_players = list(self.football_player_stats.find(projection={'_id':False,'name':True,'player_id':True,'sport_type':True}))
 
 		result = cricket_players+football_players
 
@@ -46,15 +47,17 @@ class GetAllCricketTeams(restful.Resource):
                 conn = pymongo.MongoClient()
                 db = conn.admin
                 db.authenticate('shivam','mama123')
-                db = conn.test
-                self.test_infoplum_players = db.test_infoplum_players
+                db = conn.cricket
+                self.players = db.players
                 self.teams_list = []
 
         def get(self):
+                team_ids_list = []
                 
-                for player in self.test_infoplum_players.find():
-                    if player['team'] not in self.teams_list:
-                        self.teams_list.append(player['team'])
+                for player in self.players.find(projection={'_id':False,'team':True,'team_id':True}):
+                    if player['team_id'] not in team_ids_list:
+                        self.teams_list.append({'team_name':player['team'],'team_id':player['team_id']})
+                        team_ids_list.append(player['team_id'])
                     else:
                         pass 
 

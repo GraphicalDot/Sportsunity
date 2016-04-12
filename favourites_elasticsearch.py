@@ -1,11 +1,12 @@
 #!/usr/bin/env python
+#*--encoding: utf-8 --*
 
+#    visióna
 import sys
 from elasticsearch import Elasticsearch
 from flask import Flask, app, jsonify
 from flask.ext import restful
 from flask.ext.restful import Api, Resource, reqparse
-#from teams_elasticsearch import GetTeams
 
 app = Flask(__name__)
 api = restful.Api(app)
@@ -24,7 +25,7 @@ class GetTeam(restful.Resource):
     def get(self):
         es = Elasticsearch()
         args = get_args.parse_args()
-        __body = {"_source":['team_name','team_id','flag_image'],"query": { "and": [ { "match_phrase" :{ "team_autocomplete": {"query": args['team'],"fuzziness":\
+        __body = {"_source":['team_name','team_id','team_flag'],"query": { "and": [ { "match_phrase" :{ "team_autocomplete": {"query": args['team'],"fuzziness":\
                 10,"operator":  "and"}}}, {'match': {'sport_type':args['sport_type']}}]}}
 
         __result = es.search(index='teams',doc_type='teams',body=__body)

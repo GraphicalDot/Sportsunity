@@ -49,7 +49,7 @@ class Infoplum_data_series:
                         # dict1.setdefault(series.get('seriesid'),[]).append({'fixtures':self.list_of_fixtures})
                         self.test_infoplum.update({'series_id':series.get('seriesid')},{'$set':{'series_id':series.get('seriesid'),'series_type':series.get('seriestypename'),'series_name':series.find('name').text,'start_date':\
                             series.find('startdate').text,'end_date':series.find('enddate').text,'result':series.find('result').text,'fixtures':\
-                            self.list_of_fixtures,'season_table':self.season_table}},upsert=True)
+                            self.list_of_fixtures,'season_table':self.try_this}},upsert=True)
 
                 print
 
@@ -81,12 +81,13 @@ class Infoplum_data_series:
                 self.list_of_fixtures = []
 
                 for match in soup.findAll('match'):
-                        print match
-                        print
+                        teams = match.findAll('team')
+                        print '-'*10
                         #dict2.setdefault(match.find('name').text,[]).append({'match_id':match.get('matchid'),'series_id':match.get('seriesid'),'start_date':match.find('datestart').text,'end_date':match.find('dateend').text,'venue':\
                                 #match.find('venue1').text,'result':match.find('result').text})
                         self.list_of_fixtures.append({'match_name':match.find('name').text,'match_id':match.get('matchid'),'start_date':match.find('datestart').text,'end_date':match.find('dateend').text,'venue':\
-                                match.find('venue1').text,'match_time':match.find('startdatetimeutc').text,'result':match.find('result').text})
+				match.find('venue1').text,'home_team_id':teams[0].get('teamid'),'away_team_id':teams[1].get('teamid'),'match_time':match.find('startdatetimeutc').text,'result':\
+                                match.find('result').text})
 
                 print
 
@@ -117,6 +118,7 @@ class Infoplum_data_series:
                 r = requests.post("http://ckt.webservice.sportsflash.com.au/securewebservice.asmx", data=encoded_request, headers=headers, verify=False)
                 soup = BeautifulSoup((r.content),'lxml')
                 table = []
+                self.try_this = []
                 self.season_table = {}
 
                 for team in soup.findAll('team'):
@@ -126,8 +128,12 @@ class Infoplum_data_series:
                             team.get('teamid'),'played':team.find('played').text,'points':team.find('points').text,'won':team.find('won').text,'lost':\
                             team.find('lost').text,'net_run_rate':team.find('netrunrate').text,'tied':team.find('tied').text})
 
+                print table
+                print
                 for group in table:
-                        self.season_table.setdefault(group['group_name'],[]).append(group)
+                        print group
+                        self.try_this.append({group['group_name']:group})
+                        #self.season_table.setdefault(group['group_name'],[]).append(group)
 
                 return
 

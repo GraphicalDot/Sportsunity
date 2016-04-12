@@ -94,11 +94,11 @@ class CricketNdtv:
 
                         else:
                                 strp_time_object = time.strptime(news_dict['published'], "%Y-%m-%d %H:%M:%S" )
-                        day = strp_time_object.tm_mday
-                        month = strp_time_object.tm_mon
-                        year = strp_time_object.tm_year
-                        publish_epoch = time.mktime(strp_time_object)
-			gmt_epoch = calendar.timegm(time.gmtime(publish_epoch))                       
+                                day = strp_time_object.tm_mday
+                                month = strp_time_object.tm_mon
+                                year = strp_time_object.tm_year
+                                publish_epoch = time.mktime(strp_time_object)
+			        gmt_epoch = calendar.timegm(time.gmtime(publish_epoch))                       
  
 
                         ##Getting full article with goose

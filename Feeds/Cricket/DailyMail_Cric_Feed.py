@@ -95,7 +95,7 @@ class CricketDailyMail:
                         else:
                                 print 'couldn\'t convert'
                                 date = parse(news_dict['published'])
-                                datetime_tuple = datetime_tuple.timetuple(date)
+                                datetime_tuple = datetime.timetuple(date)
                                 publish_epoch = int(calendar.timegm(datetime_tuple))
                                 day = datetime_tuple.tm_mday
                                 month = datetime_tuple.tm_mon
