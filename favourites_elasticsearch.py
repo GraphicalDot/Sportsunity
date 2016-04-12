@@ -1,6 +1,9 @@
 #!/usr/bin/env python
+#*--encoding: utf-8 --*
 
+#    visióna
 import sys
+<<<<<<< HEAD
 import os
 import tornado
 import tornado.autoreload
@@ -14,7 +17,6 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 es = connection.get_elastic_search_connection()
-
 
 class GetTeam(tornado.web.RequestHandler):
     """

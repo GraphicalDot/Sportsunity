@@ -107,7 +107,6 @@ class NewsApiTornado(tornado.web.RequestHandler):
                                 #query.update({"sport_type": self.type_1})
                                 query.update({'sport_type':{'$in':self.type_1}})
                                 print query
-                                ##result = self.collection.find({'type':{'$in':args['type_1']}}, projection=self.projection).sort('publish_epoch',-1).limit(self.limit).skip(self.skip)
 
                         if self.timestamp and self.direction:
                                 print self.direction, self.timestamp
@@ -121,6 +120,7 @@ class NewsApiTornado(tornado.web.RequestHandler):
 				for post in list(result):
                                 	post["image_link"] = post.pop(self.image_size)
 					new_list.append(post)
+
 
 				self.write({"error": False,
                                     "success": True,
