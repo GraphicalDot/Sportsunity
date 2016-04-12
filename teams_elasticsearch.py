@@ -16,8 +16,6 @@ class GetTeams:
 
         def __init__(self,renew_indexes=False):
                 conn = connection.get_mongo_connection()
-                db = conn.admin
-                db.authenticate('shivam','mama123')
                 db = conn.stats
                 self.cricket_teams = db.cricket_teams
 

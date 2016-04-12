@@ -46,8 +46,6 @@ class GetPlayers:
 
 
                 conn = connection.get_mongo_connection()
-                db = conn.admin
-                db.authenticate('shivam','mama123')
                 db1 = conn.test
                 self.football_player_stats = db1.football_player_stats
                 #db1 = conn.mydb
