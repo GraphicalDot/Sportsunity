@@ -89,7 +89,7 @@ class Infoplum_data_player_stats:
                         print self.stats_dict
 
                         self.test_infoplum_players.update({'player_id':player.get('playerid'),'team_id':team_id},{'$set':{'player_id':player.get('playerid'),'name':player.find('fullname').text,'team':team_name,'team_id':\
-                                team_id,'player_image':player.get('imageurl'),'info':info,'statistics':self.stats_dict}},upsert=True)
+                                team_id,'info':info,'statistics':self.stats_dict}},upsert=True)
 
 
 

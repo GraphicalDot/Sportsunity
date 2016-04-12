@@ -1,22 +1,20 @@
 #!/usr/bin/env python
 
-
+import signal
 import sys
 import time
 import pymongo
-from GlobalConfigs import *
 from Elasticsearch_1 import elasticsearch_db
 from operator import itemgetter
 from blessings import Terminal
-import signal
 import connection
 from GlobalConfigs import MONGO_SPORTS_UNITY_NEWS_DB, MONGO_SPORTS_UNITY_NEWS_ALL_COLL
+import settings
 import tornado
+import tornado.autoreload
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
-import tornado.autoreload
-from tornado.httpclient import AsyncHTTPClient
 from tornado.log import enable_pretty_logging
 from tornado.web import asynchronous
 terminal = Terminal()
@@ -46,10 +44,12 @@ except Exception as e:
 
 
 class NewsApiTornado(tornado.web.RequestHandler):
+    """
+    Api to handle news feed.
+    """
 
     def initialize(self):
-        print 'inside initialize'
-        self.collection = collection
+        self.collection = MONGO_CONNECTION[MONGO_SPORTS_UNITY_NEWS_DB][MONGO_SPORTS_UNITY_NEWS_ALL_COLL]
         self.set_status(200)
 
     @asynchronous
@@ -61,9 +61,9 @@ class NewsApiTornado(tornado.web.RequestHandler):
         self.timestamp = self.get_argument("timestamp", None)
         self.direction = self.get_argument("direction", None)
         self.search = self.get_argument("search", None)
-        self.type_1 = self.get_argument("type_1", None)
+        self.type_1 = self.get_arguments("type_1", strip=True)
         self.success = {"error": False, "success": True, "result": None}
-        self.error = {"error": True, "success": False, "message": None, "status": None}
+        self.error = {"error": True, "success": False, "messege": None, "status": None}
         self.news_id = self.get_argument("news_id", None)
 
         if self.image_size not in ["ldpi", "mdpi", "hdpi", "xhdpi"]:
@@ -73,12 +73,10 @@ class NewsApiTornado(tornado.web.RequestHandler):
             self.write(self.error)
             self.finish()
             return
-                
+
         self.projection = { "summary": True, "custom_summary": True, "title": True, "website": True, "news_id": True,
                             "published": True, "publish_epoch": True, "news_link": True, "type": True, "gmt_epoch":True,
-                             self.image_size: True, "_id": False, "time_of_storing": True, "favicon":True,
-                            self.get_argument("image_size"): True}
-
+                             self.image_size: True, "_id": False, "time_of_storing": True, "favicon":True, self.get_argument("image_size"): True}
 
         if self.news_id:
             self.projection.update({"news": True})
@@ -93,17 +91,16 @@ class NewsApiTornado(tornado.web.RequestHandler):
                 self.write(self.error)
             return
 
-
         if not self.search:
-            print 'if not search'
             query = {}
             if self.type_1:
-                query.update({"type": self.type_1})
+                query.update({'type':{'$in':self.type_1}})
+                print query
 
             if self.timestamp and self.direction:
                 print self.direction, self.timestamp
                 query.update({'publish_epoch':{"$gt": int(self.timestamp)}}) if self.direction == "up" else \
-                query.update({'publish_epoch':{"$lt": int(self.timestamp)}})
+                    query.update({'publish_epoch':{"$lt": int(self.timestamp)}})
                 print query
 
             try:
@@ -114,17 +111,16 @@ class NewsApiTornado(tornado.web.RequestHandler):
                     new_list.append(post)
 
                 self.write({"error": False, "success": True, "result": new_list})
+
             except Exception as e:
                 print terminal.on_red(str(e))
                 self.set_status(500)
                 self.write({'message': str(e), 'error': True, 'success': False})
 
-
-
         if self.search:
             result = elasticsearch_db.ElasticSearchApis.do_query(image_size=self.image_size, text_to_search=self.search,
-                                      skip=self.skip, limit=self.limit, timestamp=int(self.timestamp) if self.timestamp else None,
-                                      direction=self.direction, type_1=self.type_1)
+                                    skip=self.skip, limit=self.limit, timestamp=int(self.timestamp) if self.timestamp else None,
+                                    direction=self.direction, type_1=self.type_1)
             result = sorted(result, key=itemgetter('publish_epoch'),reverse=True)
             result = result[self.skip:]
 
