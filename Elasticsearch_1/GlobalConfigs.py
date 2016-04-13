@@ -13,7 +13,7 @@ SOURCE = ['website', 'title', 'gmt_epoch', 'month', 'news_link', 'custom_summary
 
 
 connection = connection.get_mongo_connection()
-sports_db = connection.admin
+sports_db = connection.SPORTS_UNITY_NEWS
 
 MONGO_SPORTS_UNITY_NEWS_ALL_COLL = sports_db.SPORTS_UNITY_NEWS_ALL
 ELASTICSEARCH_IP = "localhost"
