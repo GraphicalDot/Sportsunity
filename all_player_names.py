@@ -14,7 +14,7 @@ terminal = Terminal()
 
 import connection
 MONGO_CONNECTION  = connection.get_mongo_connection()
-football_player_stats_collection = MONGO_CONNECTION.football.football_player_stats
+football_player_stats_collection = MONGO_CONNECTION.test.football_player_stats
 
 
 class GetPlayerNames(tornado.web.RequestHandler):
