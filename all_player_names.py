@@ -6,15 +6,16 @@ import tornado.autoreload
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
+import connection
 from blessings import Terminal
 from pymongo.errors import PyMongoError
 from tornado.log import enable_pretty_logging
 from tornado.web import asynchronous
 terminal = Terminal()
 
-import connection
 MONGO_CONNECTION  = connection.get_mongo_connection()
-football_player_stats_collection = MONGO_CONNECTION.test.football_player_stats
+test_conn = MONGO_CONNECTION.test
+football_player_stats_collection = test_conn.football_player_stats
 
 
 class GetPlayerNames(tornado.web.RequestHandler):
