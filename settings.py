@@ -16,7 +16,7 @@ MONGO_SERVERIP = 'mongodb://10.0.1.205:27017, 10.0.1.139:27017, 10.0.1.151:27017
 MONGO_PORT = 27017
 
 #SCORES server config
-SCORES_SERVERIP = 'http://ScoresLB-822670678.ap-northeast-2.elb.amazonaws.com'
+SCORES_SERVERIP = 'ScoresLB-822670678.ap-northeast-2.elb.amazonaws.com'
 SCORES_SERVER_PORT = 80
 
 # teams_elasicsearch.py settings
