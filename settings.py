@@ -26,8 +26,8 @@ MONGO_PORT = 27017
 SCORES_SERVERIP = '52.74.75.79'
 SCORES_SERVER_PORT = 8000
 
-SCORES_SERVERIP = 'localhost'
-SCORES_SERVER_PORT = 8000
+SCORES_SERVERIP = 'http://ScoresLB-822670678.ap-northeast-2.elb.amazonaws.com'
+SCORES_SERVER_PORT = 80
 
 # teams_elasicsearch.py settings
 FOOTBALL_LEAGUE_IDS = ['1269','1399','1229','1221','1204']
