@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 
-from GlobalConfigs import MONGO_SPORTS_UNITY_NEWS_ALL_COLL, ELASTICSEARCH_IP, TIME_STAMP, SOURCE 
+from GlobalConfigs import MONGO_SPORTS_UNITY_NEWS_ALL_COLL, TIME_STAMP, SOURCE
 from elasticsearch import Elasticsearch, helpers
 from elasticsearch import RequestError
 from termcolor import cprint
 from pyfiglet import figlet_format 
 import time
 from blessings import Terminal
-#import pyprind
-#from tqdm import tqdm
+from connection import get_elastic_search_connection
 
-ES_CLIENT = Elasticsearch(ELASTICSEARCH_IP, timeout=30)
+ES_CLIENT = get_elastic_search_connection()
 terminal = Terminal()
 
 

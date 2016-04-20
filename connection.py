@@ -1,3 +1,4 @@
+import getpass
 import pymongo
 import settings
 from elasticsearch import Elasticsearch
@@ -10,7 +11,8 @@ def get_elastic_search_connection():
     """
     global elastic_search_conn
     if not elastic_search_conn:
-        elastic_search_conn = Elasticsearch(settings.LOCAL_ELASTIC_SERVER, timeout=30, maxsize=50)
+        elastic_search_conn = Elasticsearch(settings.ELASTIC_SERVER, timeout=30, maxsize=50) \
+            if getpass.getuser() == 'ubuntu' else Elasticsearch()
     return elastic_search_conn
 
 
@@ -18,7 +20,9 @@ def get_mongo_connection():
     """
     :return: connection to mongo server.
     """
+    getpass.getuser()
     from gevent import monkey
     monkey.patch_all()
-    connection = pymongo.MongoClient(settings.MONGO_SERVERIP, settings.MONGO_PORT)
+    connection = pymongo.MongoClient(settings.MONGO_SERVERIP, settings.MONGO_PORT) \
+        if getpass.getuser() == 'ubuntu' else pymongo.MongoClient()
     return connection
