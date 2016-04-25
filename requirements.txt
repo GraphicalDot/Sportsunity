@@ -1,6 +1,6 @@
 BeautifulSoup==3.2.1
 Pillow==3.0.0
-backports.ssl-match-hostname==3.2.1
+backports.ssl-match-hostname==3.5.0.1
 blessings==1.6
 boto==2.38.0
 certifi==2016.2.28
