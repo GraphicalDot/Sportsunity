@@ -82,19 +82,34 @@ Phase 1:
 		
 Phase 2:
 	Deals with group Creation, User discovery, group keywords
-		
-
-
-
-
 
 	Architecture:
 		Chats:
 			Postgresql for chat data consistency and batch storage in Elastic search.
-		User Discovery:
+		User Discovery:=
 			Mongodb as it supports geo-location search
-
 
 
 Phase 3:
 	Deals with Match walls
+
+
+#######################################################################################################################
+
+
+* Installation Steps:
+
+1. Create separate virtualenv for the repo:
+>> virtualenv <env_name>
+>> cd <env_name>
+>> source bin/activate
+
+2. Clone the repo:
+>> git clone https://github.com/kaali-python/Sportsunity.git
+
+3. Install the requirements
+>> pip install -r requirements.py
+
+* To start supervisor:
+>> sudo supervisord -c /etc/supervisord.conf
+>> sudo supervisorctl -c /etc/supervisord.conf start all
