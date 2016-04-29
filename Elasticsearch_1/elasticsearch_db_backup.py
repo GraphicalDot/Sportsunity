@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 
-from GlobalConfigs import MONGO_SPORTS_UNITY_NEWS_ALL_COLL, ELASTICSEARCH_IP, TIME_STAMP, SOURCE 
+from GlobalConfigs import MONGO_SPORTS_UNITY_NEWS_ALL_COLL, TIME_STAMP, SOURCE
 from elasticsearch import Elasticsearch, helpers
 from elasticsearch import RequestError
 from termcolor import cprint

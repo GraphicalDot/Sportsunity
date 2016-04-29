@@ -1,87 +1,89 @@
 #!/usr/bin/env python
 
-from flask import Flask, app, jsonify
-from flask.ext import restful
-from flask.ext.restful import Api, Resource, reqparse
-import pymongo
+import signal
+import tornado
+import tornado.autoreload
+import tornado.httpserver
+import tornado.ioloop
+import tornado.web
+import connection
+from blessings import Terminal
+from pymongo.errors import PyMongoError
+from tornado.log import enable_pretty_logging
+from tornado.web import asynchronous
+terminal = Terminal()
+
+MONGO_CONNECTION  = connection.get_mongo_connection()
+test_conn = MONGO_CONNECTION.test
+football_player_stats_collection = test_conn.football_player_stats
 
 
-app = Flask(__name__)
-api = restful.Api(app)
+class GetPlayerNames(tornado.web.RequestHandler):
+    """
 
-get_args = reqparse.RequestParser()
-get_args.add_argument("team_id", type=str, location="args", required=False)
-get_args.add_argument("sport_type", type=str, location="args", required=False)
+    """
+    @asynchronous
+    @tornado.gen.coroutine
+    def get(self):
+        try:
+            players_collection = MONGO_CONNECTION.cricket.players
+            cricket_players = list(players_collection.find(projection={'_id': False, 'team_name': True, 'name': True,
+                                                                 'player_id': True, 'sport_type': True}))
+            football_players = list(football_player_stats_collection.find(projection={'_id': False, 'name': True,
+                                                                                'player_id': True, 'sport_type': True}))
 
-class GetPlayerNames(restful.Resource):
-
-        def __init__(self):
-
-                conn = pymongo.MongoClient()
-                #db = conn.admin
-                #db.authenticate('shivam','mama123')
-                db = conn.test
-                self.football_player_stats = db.football_player_stats
-                db = conn.cricket
-		self.players = db.players
-
-        def get(self):
-
-                args = get_args.parse_args()
-		
-                cricket_players = list(self.players.find(projection={'_id':False,'team_name':True,'name':True,'player_id':True,'sport_type':True}))
-
-                football_players = list(self.football_player_stats.find(projection={'_id':False,'name':True,'player_id':True,'sport_type':True}))
-
-		result = cricket_players+football_players
-
-                return {'success':True,
-                        'error':False,
-                        'data':result,
-                        }
-
-class GetAllCricketTeams(restful.Resource):
-
-        def __init__(self):
-
-                conn = pymongo.MongoClient()
-                #db = conn.admin
-                #db.authenticate('shivam','mama123')
-                db = conn.cricket
-                self.players = db.players
-                self.teams_list = []
-
-        def get(self):
-                team_ids_list = []
-                
-                for player in self.players.find(projection={'_id':False,'team':True,'team_id':True}):
-                    if player['team_id'] not in team_ids_list:
-                        self.teams_list.append({'team_name':player['team'],'team_id':player['team_id']})
-                        team_ids_list.append(player['team_id'])
-                    else:
-                        pass 
-
-                return {'success':True,
-                        'error':False,
-                        'data':self.teams_list,
-                        }            
+            self.write({'success': True, 'error': False, 'data': cricket_players + football_players})
+        except Exception as e:
+            self.write({'success': False, 'error': True, 'message': 'Error: %s' % e})
+        finally:
+            self.finish()
+            return
 
 
-api.add_resource(GetPlayerNames, '/get_player_names')
-api.add_resource(GetAllCricketTeams, '/get_cricket_teams')
+class GetAllCricketTeams(tornado.web.RequestHandler):
+    """
 
-if __name__ == '__main__':
-    app.run(host = "0.0.0.0", port = 6900 , debug = True)
+    """
+    @asynchronous
+    @tornado.gen.coroutine
+    def get(self):
+        teams_list = []
+        team_ids_list = []
+        try:
+            players_collection = MONGO_CONNECTION.cricket.players
+            for player in players_collection.find(projection={'_id': False, 'team': True, 'team_id': True}):
+                if player['team_id'] not in team_ids_list:
+                    teams_list.append({'team_name': player['team'], 'team_id': player['team_id']})
+                    team_ids_list.append(player['team_id'])
+
+            self.write({'success': True, 'error': False, 'data': teams_list})
+        except Exception as e:
+            self.write({'success': False, 'error': True, 'message': 'Error: %s' % e})
+        finally:
+            self.finish()
+            return
 
 
-
-                
-
-
-                
-                
-        
-
-        
+def make_app():
+    return tornado.web.Application([
+        (r"/get_player_names", GetPlayerNames),
+        (r"/get_cricket_teams", GetAllCricketTeams),
+    ],
+    )
 
 
+def on_shutdown():
+    print terminal.red(terminal.bold('Shutting down'))
+    tornado.ioloop.IOLoop.instance().stop()
+    MONGO_CONNECTION.close()        ##gracefully closing mongo connection
+
+
+if __name__=='__main__':
+    app = make_app()
+    http_server = tornado.httpserver.HTTPServer(app)
+    http_server.bind("6900")
+    enable_pretty_logging()
+    http_server.start(10)
+    loop = tornado.ioloop.IOLoop.instance()
+    signal.signal(signal.SIGINT, lambda sig, frame: loop.add_callback_from_signal(on_shutdown))
+    loop.start()
