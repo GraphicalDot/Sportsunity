@@ -46,7 +46,7 @@ class GetTeam(tornado.web.RequestHandler):
 
             result = es.search(index='teams', doc_type='teams', body=body)
             res = [l["_source"] for l in result["hits"]["hits"]]
-            response.update({'error': False, 'success': True, 'message': 'Success', 'result': res})
+            response.update({'error': False, 'success': True, 'message': 'Success', 'data': res})
         except Exception as e:
             response.update({'error': True, 'success': False, 'message': 'Error: %s' % e})
         finally:
@@ -79,7 +79,7 @@ class GetLeague(tornado.web.RequestHandler):
             }
             result = es.search(index='leagues', doc_type='leagues', body=body)
             res = [l["_source"] for l in result["hits"]["hits"]]
-            response.update({'error': False, 'success': True, 'message': 'Success', 'result': res})
+            response.update({'error': False, 'success': True, 'message': 'Success', 'data': res})
         except Exception as e:
             response.update({'error': True, 'success': False, 'message': 'Error: %s' % e})
         finally:
@@ -120,7 +120,7 @@ class GetPlayer(tornado.web.RequestHandler):
             result = es.search(index='players', doc_type='players', body=body)
             res = [l["_source"] for l in result["hits"]["hits"]]
 
-            response.update({'error': False, 'success': True, 'message': 'Success', 'result': res})
+            response.update({'error': False, 'success': True, 'message': 'Success', 'data': res})
         except Exception as e:
             response.update({'error': True, 'success': False, 'message': 'Error: %s' % e})
         finally:
