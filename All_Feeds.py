@@ -160,14 +160,14 @@ class RunTennis(AllInstance):
 
 
 def main():
-        obj = RunBasketball()
-        obj.get_basknews()
+        #obj = RunBasketball()
+        #obj.get_basknews()
 
         obj1 = RunCricket()
         obj1.get_cricnews()
 
-        obj2 = RunF1()
-        obj2.get_f1news()
+        #obj2 = RunF1()
+        #obj2.get_f1news()
 
         obj3 = RunFootball()
         obj3.get_footnews()
