@@ -131,9 +131,9 @@ class GetPlayer(tornado.web.RequestHandler):
 
 def make_app():
     return tornado.web.Application([
-        (r"/fav_team", GetTeam),
-        (r"/fav_league", GetLeague),
-        (r"/fav_player", GetPlayer)
+        (r"//fav_team", GetTeam),
+        (r"//fav_league", GetLeague),
+        (r"//fav_player", GetPlayer)
     ],
     )
 
@@ -146,7 +146,7 @@ def on_shutdown():
 if __name__=='__main__':
     app = make_app()
     http_server = tornado.httpserver.HTTPServer(app)
-    http_server.bind("5000")
+    http_server.bind("9000")
     enable_pretty_logging()
     http_server.start(20)
     loop = tornado.ioloop.IOLoop.instance()

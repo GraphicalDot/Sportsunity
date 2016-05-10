@@ -120,7 +120,7 @@ class ElasticSearchSetup(object):
                                                          "index":    "not_analyzed",
                                                         },
 
-                                                "sport_type" : {
+                                                "type" : {
                                                         "type" : "string",
                                                          "index":    "not_analyzed",
                                                         },
@@ -304,7 +304,7 @@ class ElasticSearchApis(object):
                                                     "filter": {
                                                         "bool": {
                                                              "must": [
-                                                                    {"terms": { "sport_type": sport_type }},
+                                                                    {"terms": { "type": sport_type }},
                                                                     {"range": {"publish_epoch": {
                                                                                 direction_type: timestamp
                                                              }}}]
@@ -336,7 +336,7 @@ class ElasticSearchApis(object):
                                                     "filter": {
                                                         "bool": {
                                                              "must": [
-                                                                    {"terms": { "sport_type": sport_type}},
+                                                                    {"terms": { "type": sport_type}},
                                                                     {"range": {"publish_epoch": {
                                                                                 direction_type: timestamp
                                                              }}}]
@@ -369,7 +369,7 @@ class ElasticSearchApis(object):
                                                     "filter": {
                                                         "bool": {
                                                              "must": [
-                                                                    {"terms": { "sport_type": sport_type}},
+                                                                    {"terms": { "type": sport_type}},
                                                                     {"range": {"publish_epoch": {
                                                                                 direction_type: timestamp
                                                              }}}]
@@ -490,8 +490,8 @@ class PopulateElasticSearch(object):
                 for (i, news_article)  in enumerate(self.articles):
                             print news_article.keys()
                             _id = news_article.pop("_id")
-                            sport_type = news_article.pop("type")
-                            news_article.update({"mongo_id": str(_id) ,"sport_type": sport_type})
+                            #sport_type = news_article.pop("type")
+                            news_article.update({"mongo_id": str(_id)}) #,"sport_type": sport_type})
                             try:
                                     ES_CLIENT.index(index="news", doc_type="news", body=news_article)
                             except Exception as e:

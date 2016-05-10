@@ -218,7 +218,7 @@ class ElasticSearchApis(object):
         return wrapper
 
     @staticmethod
-    def do_query(argument, text_to_search, skip=None, limit=None, timestamp=None, direction=None, type_1=None):
+    def do_query(image_size, text_to_search, skip=None, limit=None, timestamp=None, direction=None, type_1=None):
         """
                 This method of this class first tries to match the exact query searched by the user
                 If the original query doesnt returns any results then it tries to call another method 
@@ -250,7 +250,9 @@ class ElasticSearchApis(object):
                 
                 
         """
-        print argument, text_to_search, skip, limit, timestamp, direction, type_1
+        print image_size, text_to_search, skip, limit, timestamp, direction, type_1
+
+        argument = image_size
 
         try:
             result = ElasticSearchApis.exact_match(argument, text_to_search, skip, limit, timestamp, direction, type_1)

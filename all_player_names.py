@@ -81,7 +81,7 @@ def on_shutdown():
 if __name__=='__main__':
     app = make_app()
     http_server = tornado.httpserver.HTTPServer(app)
-    http_server.bind("6900")
+    http_server.bind("6200")
     enable_pretty_logging()
     http_server.start(10)
     loop = tornado.ioloop.IOLoop.instance()

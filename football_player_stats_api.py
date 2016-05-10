@@ -54,7 +54,7 @@ class GetPlayerProfile(tornado.web.RequestHandler):
             player_id = self.get_argument('player_id')
             profile = list(football_player_stats_collection.find({'player_id': player_id},projection={'_id': False,
                            'team': True, 'name': True, 'player_id': True, 'player_image': True, 'profile': True,
-                           'other_competitions': True}))
+                           'other_competitions': True, 'Nationality':True, 'Position':True, 'Jersey':True, 'Age':True}))
             self.write({'error': False, 'success': True, 'data': profile})
         except PyMongoError as e:
             self.write({'error': True, 'success': False, 'message': 'Database Error: %s' % e})
@@ -67,8 +67,8 @@ class GetPlayerProfile(tornado.web.RequestHandler):
 
 def make_app():
     return tornado.web.Application([
-        (r"/get_football_team_squad", GetSquad),
-        (r"/get_football_player_profile", GetPlayerProfile),
+        (r"//get_football_team_squad", GetSquad),
+        (r"//get_football_player_profile", GetPlayerProfile),
     ],
     )
 

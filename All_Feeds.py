@@ -46,9 +46,9 @@ class AllInstance:
 
         def cricket_instances(self):
 
-                self.Instance_cric1 = CricketBbc(CBUZ_CRIC_FEED)
+                self.Instance_cric1 = CricketBbc(BBC_CRIC_FEED)
                 self.Instance_cric1.run()
-                self.Instance_cric2 = CricketCbuz(BBC_CRIC_FEED)
+                self.Instance_cric2 = CricketCbuz(CBUZ_CRIC_FEED)
                 self.Instance_cric2.run()
                 self.Instance_cric3 = CricketEspn(ESPN_CRIC_FEED)
                 self.Instance_cric3.run()
@@ -160,14 +160,14 @@ class RunTennis(AllInstance):
 
 
 def main():
-        obj = RunBasketball()
-        obj.get_basknews()
+        #obj = RunBasketball()
+        #obj.get_basknews()
 
         obj1 = RunCricket()
         obj1.get_cricnews()
 
-        obj2 = RunF1()
-        obj2.get_f1news()
+        #obj2 = RunF1()
+        #obj2.get_f1news()
 
         obj3 = RunFootball()
         obj3.get_footnews()

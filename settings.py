@@ -12,12 +12,12 @@ ELASTIC_SERVER = '10.0.1.138'
 ELASTIC_PORT = 9200
 
 # new mongo servers
-MONGO_SERVERIP = 'mongodb://10.0.1.205:27017, 10.0.1.139:27017, 10.0.1.151:27017/?replicaSet=SportsNewsReplicaSet'
+MONGO_SERVERIP = 'mongodb://10.0.4.225:27017,10.0.2.249:27018, 10.0.2.117:27019/?replicaSet=fetchfeedReplicaSet'
 MONGO_PORT = 27017
 
 #SCORES server config
-SCORES_SERVERIP = 'ScoresLB-822670678.ap-northeast-2.elb.amazonaws.com'
-SCORES_SERVER_PORT = 80
+SCORES_SERVERIP = 'http://52.74.75.79'
+SCORES_SERVER_PORT = 8080
 
 # teams_elasicsearch.py settings
 FOOTBALL_LEAGUE_IDS = ['1269','1399','1229','1221','1204']
