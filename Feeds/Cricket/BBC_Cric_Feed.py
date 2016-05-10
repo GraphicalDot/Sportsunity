@@ -83,7 +83,7 @@ class CricketBbc(MainCricketFeedHandler):
                 'mdpi': all_formats_image['mdpi'],
                 'hdpi': all_formats_image['hdpi'],
                 "time_of_storing": time.mktime(time.localtime()),
-                'favicon':'http://www.bbc.co.uk/favicon.ico'})
+                'favicon':'https://upload.wikimedia.org/wikipedia/commons/e/eb/BBC.svg'})
 
             try:
                 news_dict.update({'summary': summarization_instance.summarization(full_text)})

@@ -87,7 +87,7 @@ class CricketEspn(MainCricketFeedHandler):
                               'hdpi': all_formats_image['hdpi'],
                               "time_of_storing": time.mktime(time.localtime()),
                               'type':'cricket',
-                              'favicon':'http://www.espncricinfo.com/favicon.ico'
+                              'favicon':'http://i.imgci.com/espncricinfo/espncricinfologo.png'
             })
 
             try:

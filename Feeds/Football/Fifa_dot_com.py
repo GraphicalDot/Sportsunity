@@ -86,7 +86,7 @@ class FootballFifa(MainFootballFeedHandler):
                 'hdpi': all_formats_image['hdpi'],
                 "time_of_storing": time.mktime(time.localtime()),
                 'type':'football',
-                'favicon':'http://www.fifa.com/favicon.ico'})
+                'favicon':'http://img.fifa.com/images/layout/brand/fifa-logo.jpg'})
 
             try:
                 news_dict.update({'summary': summarization_instance.summarization(full_text)})
