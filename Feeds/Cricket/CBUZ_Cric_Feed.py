@@ -88,7 +88,7 @@ class CricketCbuz(MainCricketFeedHandler):
                 'hdpi': all_formats_image['hdpi'],
                 "time_of_storing": time.mktime(time.localtime()),
                 'type': 'cricket',
-                'favicon': 'http://www.cricbuzz.com/favicon.ico'
+                'favicon': 'https://upload.wikimedia.org/wikipedia/en/2/20/Coast_cricbuzz_logo.png'
             })
             try:
                 news_dict.update({'summary': summarization_instance.summarization(full_text)})

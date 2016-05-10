@@ -84,7 +84,7 @@ class FootballGoal(MainFootballFeedHandler):
                 'hdpi': all_formats_image['hdpi'],
                 "time_of_storing": time.mktime(time.localtime()),
                 'type':'football',
-                'favicon':'http://www.goal.com/favicon.ico'})
+                'favicon':'https://fcbarcatimes.files.wordpress.com/2014/11/goal-com-logo-eps-vector-image.png'})
 
             try:
                 news_dict.update({'summary': summarization_instance.summarization(full_text)})

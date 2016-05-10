@@ -121,6 +121,8 @@ class NewsApiTornado(tornado.web.RequestHandler):
             result = elasticsearch_db.ElasticSearchApis.do_query(image_size=self.image_size, text_to_search=self.search,
                                     skip=self.skip, limit=self.limit, timestamp=int(self.timestamp) if self.timestamp else None,
                                     direction=self.direction, type_1=self.type_1 if self.type_1 else ['cricket','football'])
+            for post in list(result):
+                post['image_link'] = post.pop(self.image_size)
             result = sorted(result, key=itemgetter('publish_epoch'),reverse=True)
             result = result[self.skip:]
 

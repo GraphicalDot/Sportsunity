@@ -83,7 +83,7 @@ class FootballFancast(MainFootballFeedHandler):
                 'hdpi': all_formats_image['hdpi'],
                 "time_of_storing": time.mktime(time.localtime()),
                 'type':'football',
-                'favicon':'http://www.footballfancast.com/favicon.ico'})
+                'favicon':'http://www.footballfancast.com/wp-content/themes/ffc-2013/layout/logo_ffc.png'})
             try:
                 news_dict.update({'summary': summarization_instance.summarization(full_text)})
             except:
