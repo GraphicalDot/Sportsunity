@@ -24,5 +24,5 @@ def get_mongo_connection():
     from gevent import monkey
     monkey.patch_all()
     connection = pymongo.MongoClient(settings.MONGO_SERVERIP, settings.MONGO_PORT) \
-        if pwd.getpwuid(os.getuid())[0] == 'root' else pymongo.MongoClient()
+        if pwd.getpwuid(os.getuid())[0] in ['ubuntu', 'root'] else pymongo.MongoClient()
     return connection
