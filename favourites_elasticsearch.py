@@ -66,7 +66,7 @@ class GetLeague(tornado.web.RequestHandler):
         try:
             league = self.get_argument('league')
             body = {
-                "_source": ['league_name','league_id'],
+                "_source": ['league_name','league_id', 'region'],
                 "query": {
                     "match_phrase" : {
                         "league_autocomplete": {
