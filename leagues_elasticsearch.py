@@ -59,7 +59,7 @@ class GetTeams:
 
 
         def index_data(self):
-                response = requests.get('http://52.74.75.79:8000/get_football_leagues')
+                response = requests.get('http://ScoresLB-822670678.ap-northeast-2.elb.amazonaws.com/get_football_leagues')
                 data = json.loads(response.content)
                 for league in data['data']:
                         print ES_CLIENT.index(index="leagues", doc_type="leagues", body=league)

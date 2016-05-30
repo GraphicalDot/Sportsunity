@@ -128,12 +128,53 @@ class GetPlayer(tornado.web.RequestHandler):
             self.finish()
             return
 
+class GetAll(tornado.web.RequestHandler):
+      """
+    
+      """
+      @asynchronous
+      @tornado.gen.coroutine
+      def get(self):
+        response = {}
+        try:
+            search = self.get_argument('search')
+            sport_type = self.get_argument('sport_type')
+            body = {
+                "_source": ['name','id','image', 'region', 'sport_type', 'search_type'],
+                "query": {
+                    "and":[
+                        { "match_phrase_prefix" : {
+                            "name": {
+                                "query": search,
+                                "fuzziness": 10,
+                                "operator": "and"
+                            }
+                        }
+                        },
+                        { "match" : {
+                            "sport_type": sport_type
+                        }
+                        }
+                    ]
+                }}
+            result = es.search(index='all', doc_type='all', body=body)
+            res = [l["_source"] for l in result["hits"]["hits"]]
+
+            response.update({'error': False, 'success': True, 'message': 'Success', 'data': res})
+        except Exception as e:
+            response.update({'error': True, 'success': False, 'message': 'Error: %s' % e})
+        finally:
+            self.write(response)
+            self.finish()
+            return
+
 
 def make_app():
     return tornado.web.Application([
         (r"/fav_team", GetTeam),
         (r"/fav_league", GetLeague),
-        (r"/fav_player", GetPlayer)
+        (r"/fav_player", GetPlayer),
+        (r"/fav_anything", GetAll)
     ],
     )
 
