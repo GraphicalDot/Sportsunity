@@ -12,6 +12,7 @@ from tornado.log import enable_pretty_logging
 from tornado.web import asynchronous
 terminal = Terminal()
 
+import requests
 import connection
 MONGO_CONNECTION = connection.get_mongo_connection()
 football_collection = MONGO_CONNECTION.test
@@ -51,10 +52,19 @@ class GetPlayerProfile(tornado.web.RequestHandler):
     def get(self):
         response = {}
         try:
+            player_id = int(self.get_argument("player_id"))
+        except Exception,e:
+            player_id = self.get_argument("player_id")
+
+        try:
             player_id = self.get_argument('player_id')
-            profile = list(football_player_stats_collection.find({'player_id': player_id},projection={'_id': False,
-                           'team': True, 'name': True, 'player_id': True, 'player_image': True, 'profile': True,
-                           'other_competitions': True}))
+            url_player_profile = 'http://scoreslb-822670678.ap-northeast-2.elb.amazonaws.com/get_football_player_stats?player_id={}'.format(player_id)
+            response = requests.get(url_player_profile)
+            profile = response.json()['data']
+            if not profile:
+                profile = list(football_player_stats_collection.find({'player_id': player_id},{'_id': False,
+                            'team': True, 'name': True, 'player_id': True, 'player_image': True, 'profile': True,
+                            'other_competitions': True}))
             self.write({'error': False, 'success': True, 'data': profile})
         except PyMongoError as e:
             self.write({'error': True, 'success': False, 'message': 'Database Error: %s' % e})
