@@ -8,7 +8,7 @@ ERROR_404 = 404
 
 ERROR_LIST = [ERROR_500, ERROR_400, ERROR_402, ERROR_404]
 
-ELASTIC_SERVER = '10.0.1.138'
+ELASTIC_SERVER = '10.0.1.242'
 ELASTIC_PORT = 9200
 
 # new mongo servers
@@ -20,5 +20,5 @@ SCORES_SERVERIP = 'ScoresLB-822670678.ap-northeast-2.elb.amazonaws.com'
 SCORES_SERVER_PORT = 80
 
 # teams_elasicsearch.py settings
-FOOTBALL_LEAGUE_IDS = ['1269','1399','1229','1221','1204']
+FOOTBALL_LEAGUE_IDS = ['1269','1399','1229','1221','1204','364']
 GET_LEAGUE_STANDINGS_URL = 'http://{}:{}/get_league_standings?league_id={}'

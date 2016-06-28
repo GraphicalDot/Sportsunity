@@ -135,32 +135,66 @@ class GetAll(tornado.web.RequestHandler):
       @asynchronous
       @tornado.gen.coroutine
       def get(self):
+        all_search_types = ['news', 'team', 'match', 'league', 'player']
         response = {}
         try:
             search = self.get_argument('search')
-            sport_type = self.get_argument('sport_type')
+            sport_type = self.get_arguments('sport_type', strip=True)
+            search_type = self.get_arguments('search_type', strip=True)
+            if 'all' in search_type:
+                search_type = all_search_types
+            if not sport_type:
+                sport_type = ['cricket', 'football']
             body = {
-                "_source": ['name','id','image', 'region', 'sport_type', 'search_type'],
+                "_source": ['name','id','image', 'region', 'sport_type', 'search_type', 'series_id', 'home_team', 'away_team', 'result', 'status', 'summary', 'title', 'publish_epoch', 'favicon',\
+                            'home_team_flag', 'away_team_flag', 'news_link', 'match_widget', 'venue', 'home_team_short_name', 'away_team_short_name'],
                 "query": {
-                    "and":[
-                        { "match_phrase_prefix" : {
-                            "name": {
+                    'filtered':{
+                        'query':{
+                            "multi_match": {
+                            #"match_phrase_prefix" : {
+                                #"name": {
                                 "query": search,
                                 "fuzziness": 10,
-                                "operator": "and"
+                                "operator": "and",
+                                "fields": ["name^3", "home_team", "away_team", "title^2", 'news'],
+                                "type": "most_fields",
+                                "analyzer":   "standard"
+                                        }
+                                },#},
+                        "filter": {
+                            "terms": {
+                                "sport_type": sport_type},
+                            "terms": {
+                                "search_type": search_type,
+                                    }
+                                }
                             }
-                        }
                         },
-                        { "match" : {
-                            "sport_type": sport_type
-                        }
-                        }
-                    ]
-                }}
+                "sort": { "publish_epoch": { "order": "desc" }},
+                "size": 20
+                    }
+
             result = es.search(index='all', doc_type='all', body=body)
             res = [l["_source"] for l in result["hits"]["hits"]]
 
-            response.update({'error': False, 'success': True, 'message': 'Success', 'data': res})
+            new_res = {}
+
+            for item in res:
+                new_res.setdefault(item['search_type'], list()).append(item)
+            if res:
+                for key in all_search_types:
+                    if key not in new_res.keys():
+                        new_res.update({key: list()})
+            else:
+                for val in search_type:
+                    new_res.update({val: list()})
+
+            if search_type == all_search_types:
+                for new_key in new_res:
+                    new_res.update({new_key: new_res.get(new_key,[])[:2]})
+
+            response.update({'error': False, 'success': True, 'message': 'Success', 'data': new_res})
         except Exception as e:
             response.update({'error': True, 'success': False, 'message': 'Error: %s' % e})
         finally:
