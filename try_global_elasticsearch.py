@@ -10,7 +10,7 @@ from pyfiglet import figlet_format
 from termcolor import cprint
 import connection
 
-ES_CLIENT = Elasticsearch()
+ES_CLIENT = connection.get_elastic_search_connection()
 
 conn = connection.get_mongo_connection()
 
@@ -112,6 +112,7 @@ class GetTeams:
         'home_team_short_name': {'index': 'not_analyzed', 'type': 'string'},
         'away_team_short_name': {'index': 'not_analyzed', 'type': 'string'},
         'news_link': {'index': 'not_analyzed', 'type': 'string'},
+        'match_number': {'index': 'not_analyzed', 'type': 'string'},
         }}
 
 
@@ -136,7 +137,7 @@ class GetTeams:
         def index_data(self):
                 
                 for article in news_conn.find({}, {'_id': False, 'title': True, 'summary': True, 'news_id': True, 'news': True, 'publish_epoch': True, 'image_link': True, 'type': True, 'favicon': True, 'news_link': True}):
-                        if 'type' in article.keys():
+                        if 'type' and 'favicon' in article.keys():
                             article.update({'id': article.pop('news_id'), 'image': article.pop('image_link'), 'sport_type': article.pop('type'), 'title': article.pop('title'),'favicon':\
                                         article.pop('favicon'),'summary': article.pop('summary'), 'news': article.pop('news'), 'publish_epoch': article.pop('publish_epoch'), 'news_link': article.pop('news_link'),'search_type': 'news'})
 
@@ -150,7 +151,8 @@ class GetTeams:
                                 match.update({'name': match['home_team'] + ' vs ' + match['away_team'], 'id': match.pop('match_id'), 'series_id': match.pop('series_id'), 'home_team_flag': match.pop('home_team_flag'),\
                                         'away_team_flag': match.pop('away_team_flag'), 'result': match.pop('result'), 'status': match.pop('status'), 'sport_type': 'cricket', 'search_type': \
                                         'match', 'home_team': match.pop('home_team'), 'away_team': match.pop('away_team'), 'publish_epoch': match.pop('match_time'), 'venue': match.pop('venue'),\
-                                        'home_team_short_name': match.pop('home_team_short_name'), 'away_team_short_name': match.pop('away_team_short_name')})
+                                        'home_team_short_name': match.pop('home_team_short_name'), 'away_team_short_name': match.pop('away_team_short_name'), 'match_widget': match.pop('match_widget'),\
+                                        'match_number': match.pop('match_name')})
 
                                 print ES_CLIENT.index(index="all", doc_type="all", body=match)
                             except Exception,e:
