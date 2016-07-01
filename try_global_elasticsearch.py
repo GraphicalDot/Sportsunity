@@ -18,6 +18,7 @@ news_conn = conn.SPORTS_UNITY_NEWS.SPORTS_UNITY_NEWS_ALL
 football_player_stats_conn = conn.test.football_player_stats
 players_conn = conn.cricket.players
 matches_conn = conn.cricket.matches
+football_matches_conn = conn.football.new_football_fixtures
 infoplum_team_flags_conn = conn.test.infoplum_team_flags
 
 class GetTeams:
@@ -113,6 +114,11 @@ class GetTeams:
         'away_team_short_name': {'index': 'not_analyzed', 'type': 'string'},
         'news_link': {'index': 'not_analyzed', 'type': 'string'},
         'match_number': {'index': 'not_analyzed', 'type': 'string'},
+        #football specific indexes
+        'home_team_score': {'index': 'not_analyzed', 'type': 'string'},
+        'away_team_score': {'index': 'not_analyzed', 'type': 'string'},
+        'timer': {'index': 'not_analyzed', 'type': 'string'},
+        'live': {'index': 'not_analyzed', 'type': 'string'},
         }}
 
 
@@ -137,9 +143,11 @@ class GetTeams:
         def index_data(self):
                 
                 for article in news_conn.find({}, {'_id': False, 'title': True, 'summary': True, 'news_id': True, 'news': True, 'publish_epoch': True, 'image_link': True, 'type': True, 'favicon': True, 'news_link': True}):
-                        if 'type' and 'favicon' in article.keys():
+                        if 'favicon' and 'type' in article.keys():
+                            print article.keys()
                             article.update({'id': article.pop('news_id'), 'image': article.pop('image_link'), 'sport_type': article.pop('type'), 'title': article.pop('title'),'favicon':\
-                                        article.pop('favicon'),'summary': article.pop('summary'), 'news': article.pop('news'), 'publish_epoch': article.pop('publish_epoch'), 'news_link': article.pop('news_link'),'search_type': 'news'})
+                                        article.pop('favicon'),'summary': article.pop('summary'), 'news': article.pop('news'), 'publish_epoch': article.pop('publish_epoch'), 'news_link':\
+                                        article.pop('news_link'),'search_type': 'news'})
 
                             print ES_CLIENT.index(index="all", doc_type="all", body=article)
 
@@ -157,6 +165,20 @@ class GetTeams:
                                 print ES_CLIENT.index(index="all", doc_type="all", body=match)
                             except Exception,e:
                                 print e
+
+                for football_match in football_matches_conn.find({}, {'_id': False, 'match_id': True, 'league_id': True, 'home_team_flag': True, 'away_team_flag': True, 'result': True, 'live': True, 'home_team':\
+                                        True, 'away_team': True, 'stadium': True, 'match_date_epoch': True, 'away_team_score': True, 'home_team_score': True, 'timer': True, 'match_status': True}):
+
+                        try:
+                            football_match.update({'name': football_match['home_team'] + ' vs ' + football_match['away_team'], 'id': football_match.pop('match_id'), 'series_id': football_match.pop('league_id'),\
+                                        'home_team_flag': football_match.pop('home_team_flag'), 'away_team_flag': football_match.pop('away_team_flag'), 'result': football_match.pop('result'), 'sport_type':\
+                                        'football', 'search_type': 'match', 'home_team': football_match.pop('home_team'), 'away_team': football_match.pop('away_team'), 'publish_epoch':\
+                                        football_match.pop('match_date_epoch'), 'venue': football_match.pop('stadium'), 'away_team_score': football_match.pop('away_team_score'), 'home_team_score':\
+                                        football_match.pop('home_team_score'), 'timer': football_match.pop('timer', ''), 'live': football_match.pop('live'), 'status': football_match.pop('match_status', '')})
+
+                            print ES_CLIENT.index(index="all", doc_type="all", body=football_match)
+                        except Exception,e:
+                            print e
 
                 
                 teams = []
