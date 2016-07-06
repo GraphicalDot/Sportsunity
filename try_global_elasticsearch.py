@@ -135,7 +135,7 @@ class GetTeams:
         def index_data(self):
                 
                 for article in news_conn.find({}, {'_id': False, 'title': True, 'summary': True, 'news_id': True, 'news': True, 'publish_epoch': True, 'image_link': True, 'type': True, 'favicon': True, 'news_link': True}):
-                        if 'favicon' and 'type' in article.keys():
+                        if 'type' in article.keys() and 'favicon' in  article.keys():
                             print article.keys()
                             article.update({'id': article.pop('news_id'), 'image': article.pop('image_link'), 'sport_type': article.pop('type'), 'title': article.pop('title'),'favicon':\
                                         article.pop('favicon'),'summary': article.pop('summary'), 'news': article.pop('news'), 'publish_epoch': article.pop('publish_epoch'), 'news_link':\
