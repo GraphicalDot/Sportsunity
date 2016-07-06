@@ -153,17 +153,17 @@ class GetAll(tornado.web.RequestHandler):
                     'filtered':{
                         'query':{
                             "multi_match": {
-                                "default": {
+                                #"default": {
 
                             #"match_phrase_prefix" : {
                                 #"name": {
                                     "query": search,
                                     "fuzziness": 10,
                                     "operator": "and",
-                                    "fields": ["name^2", "home_team", "away_team", "title^2"],
+                                    "fields": ["name", "home_team", "away_team", "title^2"],
                                     "type": "best_fields",
                                     "analyzer":   "standard"
-                                            }
+                                            #}
                                         }
                                 },#},
                         "filter": {
