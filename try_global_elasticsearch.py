@@ -49,16 +49,6 @@ class GetTeams:
           }
         },
         "analyzer": {
-          "didYouMean": {
-            "filter": [
-              "lowercase"
-            ],
-            "char_filter": [
-              "html_strip"
-            ],
-            "type": "custom",
-            "tokenizer": "standard"
-          },
           "autocomplete": {
             "filter": [
               "lowercase",
@@ -90,8 +80,8 @@ class GetTeams:
 
                 self.mappings = {'dynamic': False,
         'properties': {'autocomplete': {'analyzer': 'autocomplete', 'type':'string'},
-        'did_you_mean': {'analyzer': 'didYouMean', 'type': 'string'},
-        'name': {'copy_to': ['autocomplete','did_you_mean'], 'type': 'string'},
+        'default': {'analyzer': 'default', 'type':'string'},
+        'name': {'copy_to': ['default'], 'type': 'string'},
         'home_team': {'copy_to': ['autocomplete', 'did_you_mean'], 'type': 'string'},
         'away_team': {'copy_to': ['autocomplete', 'did_you_mean'], 'type': 'string'},
         'id' : {'index': 'not_analyzed', 'type': 'string'},
@@ -104,7 +94,7 @@ class GetTeams:
         'away_team_flag': {'index': 'not_analyzed', 'type': 'string'},
         'result': {'index': 'not_analyzed', 'type': 'string'},
         'status': {'index': 'not_analyzed', 'type': 'string'},
-        'title': {'copy_to': ['autocomplete', 'did_you_mean'], 'type': 'string'},
+        'title': {'copy_to': ['default'], 'type': 'string'},
         'summary': {'index': 'not_analyzed', 'type': 'string'},
         'news': {'copy_to': ['autocomplete', 'did_you_mean'], 'type': 'string'},
         'publish_epoch': {'index': 'not_analyzed', 'type': 'string'},
@@ -119,6 +109,8 @@ class GetTeams:
         'away_team_score': {'index': 'not_analyzed', 'type': 'string'},
         'timer': {'index': 'not_analyzed', 'type': 'string'},
         'live': {'index': 'not_analyzed', 'type': 'string'},
+        'away_team_id': {'index': 'not_analyzed', 'type': 'string'},
+        'home_team_id': {'index': 'not_analyzed', 'type': 'string'},
         }}
 
 
@@ -167,14 +159,16 @@ class GetTeams:
                                 print e
 
                 for football_match in football_matches_conn.find({}, {'_id': False, 'match_id': True, 'league_id': True, 'home_team_flag': True, 'away_team_flag': True, 'result': True, 'live': True, 'home_team':\
-                                        True, 'away_team': True, 'stadium': True, 'match_date_epoch': True, 'away_team_score': True, 'home_team_score': True, 'timer': True, 'match_status': True}):
+                        True, 'away_team': True, 'stadium': True, 'match_date_epoch': True, 'away_team_score': True, 'home_team_score': True, 'timer': True, 'match_status': True, 'home_team_id':\
+                        True, 'away_team_id': True}):
 
                         try:
                             football_match.update({'name': football_match['home_team'] + ' vs ' + football_match['away_team'], 'id': football_match.pop('match_id'), 'series_id': football_match.pop('league_id'),\
                                         'home_team_flag': football_match.pop('home_team_flag'), 'away_team_flag': football_match.pop('away_team_flag'), 'result': football_match.pop('result'), 'sport_type':\
                                         'football', 'search_type': 'match', 'home_team': football_match.pop('home_team'), 'away_team': football_match.pop('away_team'), 'publish_epoch':\
                                         football_match.pop('match_date_epoch'), 'venue': football_match.pop('stadium'), 'away_team_score': football_match.pop('away_team_score'), 'home_team_score':\
-                                        football_match.pop('home_team_score'), 'timer': football_match.pop('timer', ''), 'live': football_match.pop('live'), 'status': football_match.pop('match_status', '')})
+                                        football_match.pop('home_team_score'), 'timer': football_match.pop('timer', ''), 'live': football_match.pop('live'), 'status': football_match.pop('match_status', ''),\
+                                        'home_team_id': football_match.pop('home_team_id'), 'away_team_id': football_match.pop('away_team_id')})
 
                             print ES_CLIENT.index(index="all", doc_type="all", body=football_match)
                         except Exception,e:

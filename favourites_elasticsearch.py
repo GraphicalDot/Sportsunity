@@ -147,7 +147,8 @@ class GetAll(tornado.web.RequestHandler):
                 sport_type = ['cricket', 'football']
             body = {
                 "_source": ['name','id','image', 'region', 'sport_type', 'search_type', 'series_id', 'home_team', 'away_team', 'result', 'status', 'summary', 'title', 'publish_epoch', 'favicon',\
-                            'home_team_flag', 'away_team_flag', 'news_link', 'match_widget', 'venue', 'home_team_short_name', 'away_team_short_name', 'match_number', 'away_team_score', 'home_team_score', 'timer'],
+                            'home_team_flag', 'away_team_flag', 'news_link', 'match_widget', 'venue', 'home_team_short_name', 'away_team_short_name', 'match_number', 'away_team_score', 'home_team_score',\
+                            'timer', 'home_team_id', 'away_team_id', 'live'],
                 "query": {
                     'filtered':{
                         'query':{
@@ -166,13 +167,13 @@ class GetAll(tornado.web.RequestHandler):
                             "terms": {
                                 "sport_type": sport_type},
                             "terms": {
-                                "search_type": search_type,
-                                    }
+                                "search_type": search_type
+                                    },
                                 }
                             }
                         },
                 "sort": { "publish_epoch": { "order": "desc" }},
-                "size": 80
+                "size": 1000
                     }
 
             result = es.search(index='all', doc_type='all', body=body)
