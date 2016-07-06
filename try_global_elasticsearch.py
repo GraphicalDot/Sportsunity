@@ -183,10 +183,10 @@ class GetTeams:
                         response = requests.get('http://ScoresLB-822670678.ap-northeast-2.elb.amazonaws.com/get_league_standings?league_id=%s'%league_id)
                         data = json.loads(response.content)
                         for team in data['data']:
-                                team.update({'name':team.pop('team_name'),'id':team.pop('team_id'),'sport_type':team.pop('sport_type'),'image':team.pop('flag_image'), 'search_type': 'team', 'publish_epoch':calendar.timegm(time.gmtime())})
-                                print teams,'*'*10
+                                team_name = {'name':team.pop('team_name'),'id':team.pop('team_id'),'sport_type':team.pop('sport_type'),'image':team.pop('flag_image'), 'search_type': 'team', 'publish_epoch':calendar.timegm(time.gmtime())}
+                                print team_name,'*'*10
                 #for name in teams:
-                                print ES_CLIENT.index(index="all", doc_type="all", body=team)
+                                print ES_CLIENT.index(index="all", doc_type="all", body=team_name)
 
 
                 team_ids_list = []
