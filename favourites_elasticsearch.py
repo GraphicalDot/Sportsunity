@@ -15,7 +15,7 @@ from tornado.log import enable_pretty_logging
 from tornado.web import asynchronous
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 terminal = Terminal()
-
+from pprint import pprint
 import connection
 
 reload(sys)
@@ -195,9 +195,8 @@ class GetAll(tornado.web.RequestHandler):
                     new_res.update({val: list()})
 
             if search_type == all_search_types:
-                for new_key in new_res:
+                for new_key in new_res.keys():
                     new_res.update({new_key: new_res.get(new_key,[])[:2]})
-
             response.update({'error': False, 'success': True, 'message': 'Success', 'data': new_res})
         except Exception as e:
             response.update({'error': True, 'success': False, 'message': 'Error: %s' % e})
