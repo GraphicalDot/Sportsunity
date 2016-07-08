@@ -5,6 +5,7 @@
 import os
 import signal
 import sys
+import pprint
 import tornado
 import tornado.autoreload
 import tornado.httpserver
@@ -145,6 +146,7 @@ class GetAll(tornado.web.RequestHandler):
                 search_type = all_search_types
             if not sport_type:
                 sport_type = ['cricket', 'football']
+            print sport_type
             body = {
                 "_source": ['name','id','image', 'region', 'sport_type', 'search_type', 'series_id', 'home_team', 'away_team', 'result', 'status', 'summary', 'title', 'publish_epoch', 'favicon',\
                             'home_team_flag', 'away_team_flag', 'news_link', 'match_widget', 'venue', 'home_team_short_name', 'away_team_short_name', 'match_number', 'away_team_score', 'home_team_score',\
@@ -167,19 +169,21 @@ class GetAll(tornado.web.RequestHandler):
                                         }
                                 },#},
                         "filter": {
-                            "terms": {
-                                "sport_type": sport_type},
-                            "terms": {
-                                "search_type": search_type
-                                    },
+                            "bool": {
+                                "must": [
+                                    {"terms": {
+                                        "sport_type": sport_type}},
+                                    {"terms": {
+                                        "search_type": search_type
+                                        }}]},
+                                    }
                                 }
-                            }
                         },
                 "sort": { "publish_epoch": { "order": "desc" }},
-                "size": 1000
+                "size": 1000,
                     }
 
-            result = es.search(index='all', doc_type='all', body=body)
+            result = es.search(index='all', doc_type='all', search_type='dfs_query_then_fetch', body=body)
             res = [l["_source"] for l in result["hits"]["hits"]]
 
             new_res = {}

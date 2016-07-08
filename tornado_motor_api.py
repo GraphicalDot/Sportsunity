@@ -99,7 +99,7 @@ class NewsApiTornado(tornado.web.RequestHandler):
                         return
                 
                 self.projection = { "summary": True, "custom_summary": True, "title": True, "website": True, "news_id": True,
-                                "published": True, "publish_epoch": True, "news_link": True, "type": True, "gmt_epoch":True,
+                                "published": True, "publish_epoch": True, "news_link": True, "type": True, "gmt_epoch":True, "blog": True,
                                 self.image_size: True, "_id": False, "time_of_storing": True, "favicon":True, self.get_argument("image_size"): True}
 
 
