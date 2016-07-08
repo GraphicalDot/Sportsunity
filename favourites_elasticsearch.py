@@ -183,7 +183,7 @@ class GetAll(tornado.web.RequestHandler):
                 "size": 1000,
                     }
 
-            result = es.search(index='all', doc_type='all', search_type='dfs_query_then_fetch', body=body)
+            result = es.search(index='all', doc_type='all', search_type= 'dfs_query_then_fetch', body=body)
             res = [l["_source"] for l in result["hits"]["hits"]]
 
             new_res = {}

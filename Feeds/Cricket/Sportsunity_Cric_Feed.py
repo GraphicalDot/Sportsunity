@@ -131,14 +131,13 @@ class CricketSportsunity:
 						"custom_summary":news_dict['summary'], "news": news_dict['cleaned_text'], "image_link":news_dict['image_link'],'gmt_epoch':\
                                                 gmt_epoch,'publish_epoch': publish_epoch, "day": day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'],\
 						'mdpi': all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing": time.mktime(time.localtime()),'type':\
-                                                'cricket','favicon':'http://resized.player.images.s3.amazonaws.com/favicon.png'})
+                                                'cricket','favicon':'http://resized.player.images.s3.amazonaws.com/favicon.png', 'blog': True})
 			except:
-                                news_dict.update({"website": "www.sportsunity.co/blog/", "summary": news_dict['summary'],\
-						"custom_summary":news_dict['summary'], "news": news_dict['cleaned_text'], "image_link":\
-                                                news_dict['image_link'], 'gmt_epoch':gmt_epoch,'publish_epoch': publish_epoch, "day":\
-                                                day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'], 'mdpi':\
-                                                all_formats_image['mdpi'],'hdpi': all_formats_image['hdpi'],"time_of_storing":\
-                                                time.mktime(time.localtime()),'type':'cricket','favicon': 'http://resized.player.images.s3.amazonaws.com/favicon.png'})
+                                news_dict.update({"website": "www.sportsunity.co/blog/", "summary": news_dict['summary'], "custom_summary":news_dict['summary'], "news":\
+                                                news_dict['cleaned_text'], "image_link": news_dict['image_link'], 'gmt_epoch':gmt_epoch,'publish_epoch': publish_epoch, "day":\
+                                                day, "month": month, "year": year,'ldpi': all_formats_image['ldpi'], 'mdpi': all_formats_image['mdpi'],'hdpi':\
+                                                all_formats_image['hdpi'],"time_of_storing": time.mktime(time.localtime()),'type':'cricket','favicon':\
+                                                'http://resized.player.images.s3.amazonaws.com/favicon.png', 'blog': True})
 
                         if news_dict['news'] and not news_dict['summary'] == " ...Read More":
                                 print "Inserting news id %s with news link %s"%(news_dict.get("news_id"), news_dict.get("news_link"))
