@@ -76,7 +76,8 @@ class NewsApiTornado(tornado.web.RequestHandler):
 
         self.projection = { "summary": True, "custom_summary": True, "title": True, "website": True, "news_id": True,
                             "published": True, "publish_epoch": True, "news_link": True, "type": True, "gmt_epoch":True,
-                             self.image_size: True, "_id": False, "time_of_storing": True, "favicon":True, self.get_argument("image_size"): True}
+                            self.image_size: True, "_id": False, "time_of_storing": True, "favicon":True, "blog": True,
+                            self.get_argument("image_size"): True}
 
         if self.news_id:
             self.projection.update({"news": True})
