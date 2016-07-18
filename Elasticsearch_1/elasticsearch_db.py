@@ -79,9 +79,8 @@ class ElasticSearchSetup(object):
                                                         "index": "not_analyzed", 
                                                         },
 
-                                                "news" : 
-                                                    {'copy_to': ['news_autocomplete'],
-
+                                                "news" : {
+                                                        "index":    "not_analyzed",
                                                         "type" : "string"
                                                         },
 
@@ -93,31 +92,31 @@ class ElasticSearchSetup(object):
                                                 "news_link" : {
                                                         "type" : "string",
                                                          "index":    "not_analyzed",
-                                                    },
+                                                        },
 
                                                 "publish_epoch" : {
                                                         "type" : "double",
                                                          "index":    "not_analyzed",
-                                                    },
+                                                        },
                                                 
                                                 "published" : {
                                                         "type" : "string",
                                                          "index":    "not_analyzed",
-                                                    },
+                                                        },
           
                                                 "summary" : {
                                                         "type" : "string",
                                                          "index":    "not_analyzed",
-                                                    },
+                                                        },
                                             
                                                 "time_of_storing" : {
                                                         "type" : "double",
                                                          "index":    "not_analyzed",
-                                                    },
+                                                        },
                                                 
                                                 "title" : {
+                                                        "copy_to": ["news_autocomplete"],
                                                         "type" : "string",
-                                                         "index":    "not_analyzed",
                                                         },
 
                                                 "sport_type" : {
@@ -490,7 +489,7 @@ class PopulateElasticSearch(object):
                 for (i, news_article)  in enumerate(self.articles):
                             print news_article.keys()
                             _id = news_article.pop("_id")
-                            sport_type = news_article.pop("type")
+                            sport_type = news_article.pop("type", '')
                             news_article.update({"mongo_id": str(_id) ,"sport_type": sport_type})
                             try:
                                     ES_CLIENT.index(index="news", doc_type="news", body=news_article)
