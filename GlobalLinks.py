@@ -19,14 +19,14 @@ REUT_CRIC_FEED1 = "http://feeds.reuters.com/reuters/INcricketNews?format=xml"
 REUT_CRIC_FEED = "http://mf.feeds.reuters.com/reuters/UKCricketNews"
 MAIL_CRIC_FEED = "http://www.dailymail.co.uk/sport/cricket/index.rss"
 GOOG_ALL_FEED = "https://news.google.co.in/news?cf=all&ned=country_name&hl=en&topic=s&output=rss"
-SPOUNI_CRIC_FEED = "https://www.sportsunity.co/blog/wp-json/wp/v2/posts?filter[cat]=2"
+SPOUNI_CRIC_FEED = "https://www.sportsunity.co/blog/wp-json/wp/v2/posts?filter[cat]=136"
 
 
 Fifa_dot_com = 'http://www.fifa.com/rss/index.xml'  #favicon_link - http://www.fifa.com/favicon.ico
 Football_uk = 'http://www.football.co.uk/news/rss.xml'  #favicon_link - http://www.football.co.uk/img/football-logo-new-small.png
 Goal_dot_com = 'http://www.goal.com/en-gb/feeds/news?fmt=rss&ICID=HP'   #favicon_link - http://www.goal.com/favicon.ico
 Football_Fancast = 'http://www.footballfancast.com/feed'    #favicon_link - http://www.footballfancast.com/favicon.ico
-SPOUNI_FOOT_FEED = "https://www.sportsunity.co/blog/wp-json/wp/v2/posts?filter[cat]=3" 
+SPOUNI_FOOT_FEED = "https://www.sportsunity.co/blog/wp-json/wp/v2/posts?filter[cat]=112" 
 
 Crash_dot_net = 'http://www.motorsport.com/rss/category/f1/news'    #favicon_link - http://www.motorsport.com/favicon.ico
 Grandprix_dot_com = 'http://grandprix.com/rss.xml'  #favicon_link - http://grandprix.com/favicon.ico
