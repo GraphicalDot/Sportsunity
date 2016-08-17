@@ -138,6 +138,7 @@ class GetAll(tornado.web.RequestHandler):
       def get(self):
         all_search_types = ['news', 'team', 'match', 'league', 'player']
         response = {}
+        item_list = []
         try:
             search = self.get_argument('search')
             sport_type = self.get_arguments('sport_type', strip=True)
@@ -189,7 +190,9 @@ class GetAll(tornado.web.RequestHandler):
             new_res = {}
 
             for item in res:
-                new_res.setdefault(item['search_type'], list()).append(item)
+                if item not in item_list:
+                    new_res.setdefault(item['search_type'], list()).append(item)
+                    item_list.append(item)
             if res:
                 for key in all_search_types:
                     if key not in new_res.keys():

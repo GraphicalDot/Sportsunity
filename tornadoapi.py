@@ -52,6 +52,7 @@ class NewsApiTornado(tornado.web.RequestHandler):
         self.collection = MONGO_CONNECTION[MONGO_SPORTS_UNITY_NEWS_DB][MONGO_SPORTS_UNITY_NEWS_ALL_COLL]
         self.set_status(200)
 
+
     @asynchronous
     @tornado.gen.coroutine
     def get(self):
@@ -92,6 +93,8 @@ class NewsApiTornado(tornado.web.RequestHandler):
                 self.write(self.error)
             return
 
+
+
         if not self.search:
             query = {}
             if self.type_1:
@@ -99,11 +102,13 @@ class NewsApiTornado(tornado.web.RequestHandler):
                 print query
 
             if self.timestamp and self.direction:
+                self.get_direction(query)
+                """
                 print self.direction, self.timestamp
                 query.update({'publish_epoch':{"$gt": int(self.timestamp)}}) if self.direction == "up" else \
                     query.update({'publish_epoch':{"$lt": int(self.timestamp)}})
                 print query
-
+                """
             try:
                 result = self.collection.find(query, projection=self.projection).sort('publish_epoch',-1).limit(self.limit).skip(self.skip)
                 new_list = list()
@@ -132,6 +137,19 @@ class NewsApiTornado(tornado.web.RequestHandler):
 
         self.finish()
         return
+
+    def get_direction(self, query):
+        query.update({'publish_epoch':{"$gt": int(self.timestamp)}}) if self.direction == "up" else \
+                query.update({'publish_epoch':{"$lt": int(self.timestamp)}})
+
+        return
+        
+        @asynchronous
+        @tornado.gen.coroutine
+        def post(self):
+                data = json.loads(self.request.body)
+                print data.prettify()
+        
 
 
 app = tornado.web.Application([

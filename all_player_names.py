@@ -14,7 +14,7 @@ from tornado.web import asynchronous
 terminal = Terminal()
 
 MONGO_CONNECTION  = connection.get_mongo_connection()
-football_player_stats_collection = MONGO_CONNECTION.football.player_stats
+football_player_stats_collection = MONGO_CONNECTION.football.new_player_profile
 players_collection = MONGO_CONNECTION.cricket.players
 
 class GetPlayerNames(tornado.web.RequestHandler):
@@ -48,7 +48,6 @@ class GetAllCricketTeams(tornado.web.RequestHandler):
         teams_list = []
         team_ids_list = []
         try:
-            players_collection = MONGO_CONNECTION.cricket.players
             for player in players_collection.find({},{'_id': False, 'team': True, 'team_id': True}):
                 if player['team_id'] not in team_ids_list:
                     teams_list.append({'team_name': player['team'], 'team_id': player['team_id']})
