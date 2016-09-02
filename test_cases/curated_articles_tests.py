@@ -94,10 +94,10 @@ class NewsApiTornadoForCuratedArticlesTests(unittest.TestCase):
                                   'news_type': 'curated'},
                                  {'title': 'article_2', 'article_type': 'carousel', 'sport_type': 'football', 'news': 'TEXT',
                                   'publish_epoch': 1422601610, 'question': 'text', 'news_id': '1368', 'published': '31/09/2016',
-                                  'news_type': 'curated'},
+                                  'news_type': 'curated', 'priority': '101'},
                                  {'title': 'article_3', 'article_type': 'carousel', 'sport_type': 'cricket', 'news': 'TEXT',
                                   'publish_epoch': 1472601620, 'question': 'text', 'news_id': '1369', 'published': '31/10/2016',
-                                  'news_type': 'curated'}]
+                                  'news_type': 'curated', 'priority': '100'}]
         for article in self.curated_articles:
             curated_articles_collection.insert(article)
 
@@ -107,8 +107,15 @@ class NewsApiTornadoForCuratedArticlesTests(unittest.TestCase):
 
     def test_get(self):
 
-        # sport type = cricket
+        # sport_type = cricket, without 'curated' query parameter
         response = requests.get(self.get_news_url + '?image_size=hdpi&limit=5&type_1=cricket')
+        res = json.loads(response.text)
+        self.assertEqual(res['success'], True)
+        self.assertTrue(set(['news_article_1']).issubset([article['title'] for article in res['result']]))
+        self.assertTrue(set(['article_3']).issubset([article['title'] for article in res['carousel']]))
+
+        # sport_type = cricket, with 'curated' query parameter
+        response = requests.get(self.get_news_url + '?image_size=hdpi&limit=5&type_1=cricket&curated=true')
         res = json.loads(response.text)
         self.assertEqual(res['success'], True)
         self.assertTrue(set(['news_article_1', 'article_1']).issubset([article['title'] for article in res['result']]))
@@ -122,11 +129,23 @@ class NewsApiTornadoForCuratedArticlesTests(unittest.TestCase):
         self.assertTrue(set(['article_2']).issubset([article['title'] for article in res['carousel']]))
 
         # filter on timestamp and direction
-        response = requests.get(self.get_news_url + '?image_size=hdpi&limit=5&timestamp=1447739320&direction=up')
+        response = requests.get(self.get_news_url + '?image_size=hdpi&limit=5&timestamp=1447739320&direction=up&curated=true')
         res = json.loads(response.text)
         self.assertEqual(res['success'], True)
         self.assertTrue(set(['article_1']).issubset([article['title'] for article in res['result']]))
         self.assertTrue(set(['article_3']).issubset([article['title'] for article in res['carousel']]))
+
+        # filter on news_id of curated article
+        response = requests.get(self.get_news_url + '?image_size=ldpi&news_id=1368')
+        res = json.loads(response.text)
+        self.assertEqual(res['success'], True)
+        self.assertEqual(res['result']['title'], 'article_2')
+
+        # test carousel articles order
+        response = requests.get(self.get_news_url + '?image_size=ldpi')
+        res = json.loads(response.text)
+        self.assertEqual(res['success'], True)
+        self.assertEqual([article['title'] for article in res['carousel'] if article['priority'] in ['100', '101']], ['article_3', 'article_2'])
 
     def tearDown(self):
         news_collection.remove(self.news_articles)
