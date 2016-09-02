@@ -6,6 +6,7 @@ import sys
 import time
 import pymongo
 from Elasticsearch_1 import elasticsearch_db
+from Feeds.amazon_s3 import AmazonS3
 from operator import itemgetter
 from blessings import Terminal
 import connection
@@ -70,7 +71,6 @@ class NewsApiTornado(tornado.web.RequestHandler):
         self.error = {"error": True, "success": False, "messege": None, "status": None}
         self.news_id = self.get_argument("news_id", None)
         self.curated = self.get_argument("curated", None)
-
         curated_articles_collection = MONGO_CONNECTION[MONGO_SPORTS_UNITY_NEWS_DB][MONGO_SPORTS_UNITY_NEWS_CURATED_COLL]
 
         if self.image_size not in ["ldpi", "mdpi", "hdpi", "xhdpi"]:
@@ -82,10 +82,11 @@ class NewsApiTornado(tornado.web.RequestHandler):
             return
 
         if self.news_id:
-            # self.projection.update({"news": True})
             try:
-                result = self.collection.find_one({"news_id": self.news_id}, projection={'_id': False})
-                result["image_link"] = result.pop(self.image_size)
+                result = self.collection.find_one({"news_id": self.news_id}, {'_id': False})
+                if not result:
+                    result = curated_articles_collection.find_one({'news_id': str(self.news_id)}, {'_id': False})
+                result["image_link"] = result.pop(self.image_size, '')
                 self.success.update({"result": result})
                 self.write(self.success)
             except Exception, e:
@@ -121,13 +122,16 @@ class NewsApiTornado(tornado.web.RequestHandler):
 
             try:
                 news = list(self.collection.find(query, {'_id': False}).sort('publish_epoch',-1).limit(self.limit).skip(self.skip))
-                published_query.update({'article_type': 'published'})
-                published_curated_news = list(curated_articles_collection.find(published_query, {'_id': False}).sort('publish_epoch',-1).limit(self.limit))
-                news.extend(published_curated_news)
+
+                if self.curated == 'true':
+                    published_query.update({'article_type': 'published'})
+                    published_curated_news = list(curated_articles_collection.find(published_query, {'_id': False}).sort('publish_epoch',-1).limit(self.limit))
+                    news.extend(published_curated_news)
+
                 news_list = self.pop_image(news)
 
                 curated_query.update({'article_type': 'carousel'})
-                carousel_result = curated_articles_collection.find(curated_query, {'_id': False}).sort('publish_epoch',-1).limit(3)
+                carousel_result = curated_articles_collection.find(curated_query, {'_id': False}).sort('priority').limit(3)
                 carousel_list = self.pop_image(list(carousel_result))
 
                 self.write({"error": False,
@@ -166,7 +170,6 @@ class NewsApiTornado(tornado.web.RequestHandler):
     def get_direction(self, query):
         query.update({'publish_epoch':{"$gt": int(self.timestamp)}}) if self.direction == "up" else \
                 query.update({'publish_epoch':{"$lt": int(self.timestamp)}})
-
         return
         
         @asynchronous
@@ -197,11 +200,26 @@ class PublishCuratedArticleTornado(tornado.web.RequestHandler):
             datetime_tuple = datetime.timetuple(date)
             publish_epoch = int(calendar.timegm(datetime_tuple))
             sport_type = 'cricket' if self.sport_type == 'c' else 'football'
+            time_of_storing = int(time.mktime(time.localtime()))
 
-            projection = {'title': self.headline, 'image_link': self.article_image, 'sport_type': sport_type,
-                          'news': self.content, 'published': self.publish_date, 'publish_epoch': publish_epoch,
+            try:
+                all_format_images = AmazonS3(self.article_image, self.article_id).run()
+            except Exception, e:
+                print e
+                all_format_images = {"mdpi": None,
+                                     "ldpi": None,
+                                     "hdpi": None,
+                                     "xhdpi": None}
+
+            projection = {'website': 'https://www.sportsunity.co/', 'title': self.headline,
+                          'image_link': self.article_image, 'news_link': 'https://www.sportsunity.co/', 'sport_type': sport_type,
+                          'summary': self.content, 'published': self.publish_date, 'publish_epoch': publish_epoch,
                           'news_type': 'curated', 'article_type': self.article_type, 'question': self.poll_question,
-                          'notification_content': self.notification_content, 'news_id': str(self.article_id)}
+                          'notification_content': self.notification_content, 'news_id': str(self.article_id), 'month': int(date.month),
+                          'day': int(date.day), 'year': int(date.year), 'gmt_epoch': publish_epoch,
+                          'favicon': 'http://resized.player.images.s3.amazonaws.com/favicon.png', 'custom_summary': self.content,
+                          'time_of_storing': time_of_storing, 'mdpi': all_format_images['mdpi'], 'ldpi': all_format_images['ldpi'],
+                          'hdpi': all_format_images['hdpi'], 'xhdpi': all_format_images['xhdpi']}
 
             collection.update({'news_id': str(self.article_id)}, {'$set': projection}, upsert=True)
             response.update({'status': settings.STATUS_200, 'info': 'Success'})
@@ -225,7 +243,8 @@ class PostCarouselArticleTornado(tornado.web.RequestHandler):
             article_type = body.get('type')
 
             for priority, article_id in articles.items():
-                collection.update({'news_id': str(article_id)}, {'$set': {'priority': str(priority), 'article_type': article_type}}, upsert=True)
+                collection.update({'news_id': str(article_id)}, {'$set': {'priority': str(priority),
+                                                                          'article_type': article_type}}, upsert=True)
 
             response.update({'status': settings.STATUS_200, 'info': 'Success'})
         except Exception, e:
