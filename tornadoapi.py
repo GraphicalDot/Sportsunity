@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-
+import calendar
+import json
 import signal
 import sys
 import time
@@ -8,7 +9,7 @@ from Elasticsearch_1 import elasticsearch_db
 from operator import itemgetter
 from blessings import Terminal
 import connection
-from GlobalConfigs import MONGO_SPORTS_UNITY_NEWS_DB, MONGO_SPORTS_UNITY_NEWS_ALL_COLL
+from GlobalConfigs import MONGO_SPORTS_UNITY_NEWS_DB, MONGO_SPORTS_UNITY_NEWS_ALL_COLL, MONGO_SPORTS_UNITY_NEWS_CURATED_COLL
 import settings
 import tornado
 import tornado.autoreload
@@ -16,7 +17,10 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 from tornado.log import enable_pretty_logging
-from tornado.web import asynchronous
+from tornado.web import asynchronous, MissingArgumentError
+from dateutil.parser import parse
+from datetime import datetime
+
 terminal = Terminal()
 
 
@@ -52,7 +56,6 @@ class NewsApiTornado(tornado.web.RequestHandler):
         self.collection = MONGO_CONNECTION[MONGO_SPORTS_UNITY_NEWS_DB][MONGO_SPORTS_UNITY_NEWS_ALL_COLL]
         self.set_status(200)
 
-
     @asynchronous
     @tornado.gen.coroutine
     def get(self):
@@ -66,6 +69,9 @@ class NewsApiTornado(tornado.web.RequestHandler):
         self.success = {"error": False, "success": True, "result": None}
         self.error = {"error": True, "success": False, "messege": None, "status": None}
         self.news_id = self.get_argument("news_id", None)
+        self.curated = self.get_argument("curated", None)
+
+        curated_articles_collection = MONGO_CONNECTION[MONGO_SPORTS_UNITY_NEWS_DB][MONGO_SPORTS_UNITY_NEWS_CURATED_COLL]
 
         if self.image_size not in ["ldpi", "mdpi", "hdpi", "xhdpi"]:
             self.clear()
@@ -75,15 +81,10 @@ class NewsApiTornado(tornado.web.RequestHandler):
             self.finish()
             return
 
-        self.projection = { "summary": True, "custom_summary": True, "title": True, "website": True, "news_id": True,
-                            "published": True, "publish_epoch": True, "news_link": True, "type": True, "gmt_epoch":True,
-                            self.image_size: True, "_id": False, "time_of_storing": True, "favicon":True, "blog": True,
-                            self.get_argument("image_size"): True}
-
         if self.news_id:
-            self.projection.update({"news": True})
+            # self.projection.update({"news": True})
             try:
-                result = self.collection.find_one({"news_id": self.news_id}, projection=self.projection)
+                result = self.collection.find_one({"news_id": self.news_id}, projection={'_id': False})
                 result["image_link"] = result.pop(self.image_size)
                 self.success.update({"result": result})
                 self.write(self.success)
@@ -93,30 +94,47 @@ class NewsApiTornado(tornado.web.RequestHandler):
                 self.write(self.error)
             return
 
-
-
         if not self.search:
             query = {}
+            curated_query = {}
+            published_query = {}
             if self.type_1:
                 query.update({'type':{'$in':self.type_1}})
-                print query
+                curated_query.update({'sport_type':{'$in':self.type_1}})
+                published_query.update({'sport_type':{'$in':self.type_1}})
+                # print query
 
             if self.timestamp and self.direction:
                 self.get_direction(query)
+                self.get_direction(curated_query)
+                self.get_direction(published_query)
                 """
                 print self.direction, self.timestamp
                 query.update({'publish_epoch':{"$gt": int(self.timestamp)}}) if self.direction == "up" else \
                     query.update({'publish_epoch':{"$lt": int(self.timestamp)}})
                 print query
                 """
-            try:
-                result = self.collection.find(query, projection=self.projection).sort('publish_epoch',-1).limit(self.limit).skip(self.skip)
-                new_list = list()
-                for post in list(result):
-                    post["image_link"] = post.pop(self.image_size)
-                    new_list.append(post)
 
-                self.write({"error": False, "success": True, "result": new_list})
+            # if self.curated == "False":
+            #     query.update({'news_type': {'$in': ['other', 'blog']}})
+            # print query
+
+            try:
+                news = list(self.collection.find(query, {'_id': False}).sort('publish_epoch',-1).limit(self.limit).skip(self.skip))
+                published_query.update({'article_type': 'published'})
+                published_curated_news = list(curated_articles_collection.find(published_query, {'_id': False}).sort('publish_epoch',-1).limit(self.limit))
+                news.extend(published_curated_news)
+                news_list = self.pop_image(news)
+
+                curated_query.update({'article_type': 'carousel'})
+                carousel_result = curated_articles_collection.find(curated_query, {'_id': False}).sort('publish_epoch',-1).limit(3)
+                carousel_list = self.pop_image(list(carousel_result))
+
+                self.write({"error": False,
+                            "success": True,
+                            "result": news_list,
+                            "carousel": carousel_list
+                            })
 
             except Exception as e:
                 print terminal.on_red(str(e))
@@ -138,6 +156,13 @@ class NewsApiTornado(tornado.web.RequestHandler):
         self.finish()
         return
 
+    def pop_image(self, list_of_articles):
+        article_list = list()
+        for post in list_of_articles:
+            post["image_link"] = post.pop(self.image_size, '')
+            article_list.append(post)
+        return article_list
+
     def get_direction(self, query):
         query.update({'publish_epoch':{"$gt": int(self.timestamp)}}) if self.direction == "up" else \
                 query.update({'publish_epoch':{"$lt": int(self.timestamp)}})
@@ -149,11 +174,70 @@ class NewsApiTornado(tornado.web.RequestHandler):
         def post(self):
                 data = json.loads(self.request.body)
                 print data.prettify()
-        
+
+
+class PublishCuratedArticleTornado(tornado.web.RequestHandler):
+    @asynchronous
+    @tornado.gen.coroutine
+    def post(self):
+        response = {}
+        try:
+            collection = MONGO_CONNECTION[MONGO_SPORTS_UNITY_NEWS_DB][MONGO_SPORTS_UNITY_NEWS_CURATED_COLL]
+            self.article_id = self.get_argument('article_id')
+            self.headline = str(self.get_argument('article_headline'))
+            self.article_image = str(self.get_argument('article_image'))
+            self.sport_type = str(self.get_argument('article_sport_type'))
+            self.content = str(self.get_argument('article_content'))
+            self.publish_date = str(self.get_argument('article_publish_date'))
+            self.article_type = str(self.get_argument('type'))
+            self.poll_question = str(self.get_argument('article_poll_question'))
+            self.notification_content = str(self.get_argument('article_notification_content'))
+
+            date = parse(self.publish_date)
+            datetime_tuple = datetime.timetuple(date)
+            publish_epoch = int(calendar.timegm(datetime_tuple))
+            sport_type = 'cricket' if self.sport_type == 'c' else 'football'
+
+            projection = {'title': self.headline, 'image_link': self.article_image, 'sport_type': sport_type,
+                          'news': self.content, 'published': self.publish_date, 'publish_epoch': publish_epoch,
+                          'news_type': 'curated', 'article_type': self.article_type, 'question': self.poll_question,
+                          'notification_content': self.notification_content, 'news_id': str(self.article_id)}
+
+            collection.update({'news_id': str(self.article_id)}, {'$set': projection}, upsert=True)
+            response.update({'status': settings.STATUS_200, 'info': 'Success'})
+        except MissingArgumentError, status:
+            response.update({'status': settings.ERROR_400, 'info': status.log_message})
+        except Exception, e:
+            response.update({'status': settings.ERROR_500, 'info': str(e)})
+        finally:
+            self.write(response)
+
+
+class PostCarouselArticleTornado(tornado.web.RequestHandler):
+    @asynchronous
+    @tornado.gen.coroutine
+    def post(self):
+        response = {}
+        try:
+            collection = MONGO_CONNECTION[MONGO_SPORTS_UNITY_NEWS_DB][MONGO_SPORTS_UNITY_NEWS_CURATED_COLL]
+            body = json.loads(self.request.body)
+            articles = body.get('articles')
+            article_type = body.get('type')
+
+            for priority, article_id in articles.items():
+                collection.update({'news_id': str(article_id)}, {'$set': {'priority': str(priority), 'article_type': article_type}}, upsert=True)
+
+            response.update({'status': settings.STATUS_200, 'info': 'Success'})
+        except Exception, e:
+            response.update({'status': settings.ERROR_500, 'info': str(e)})
+        finally:
+            self.write(response)
 
 
 app = tornado.web.Application([
     (r"/mixed", NewsApiTornado),
+    (r"/publish_article", PublishCuratedArticleTornado),
+    (r"/post_carousel_article", PostCarouselArticleTornado),
 ])
 
 
