@@ -187,6 +187,7 @@ class PublishCuratedArticleTornado(tornado.web.RequestHandler):
         try:
             collection = MONGO_CONNECTION[MONGO_SPORTS_UNITY_NEWS_DB][MONGO_SPORTS_UNITY_NEWS_CURATED_COLL]
             self.article_id = self.get_argument('article_id')
+            self.article_group_name = str(self.get_argument('article_group_name'))
             self.headline = str(self.get_argument('article_headline'))
             self.article_image = str(self.get_argument('article_image'))
             self.sport_type = str(self.get_argument('article_sport_type'))
@@ -216,10 +217,10 @@ class PublishCuratedArticleTornado(tornado.web.RequestHandler):
                           'summary': self.content, 'published': self.publish_date, 'publish_epoch': publish_epoch,
                           'news_type': 'curated', 'article_type': self.article_type, 'question': self.poll_question,
                           'notification_content': self.notification_content, 'news_id': str(self.article_id), 'month': int(date.month),
-                          'day': int(date.day), 'year': int(date.year), 'gmt_epoch': publish_epoch,
+                          'day': int(date.day), 'year': int(date.year), 'gmt_epoch': publish_epoch, 'news': self.content,
                           'favicon': 'http://resized.player.images.s3.amazonaws.com/favicon.png', 'custom_summary': self.content,
                           'time_of_storing': time_of_storing, 'mdpi': all_format_images['mdpi'], 'ldpi': all_format_images['ldpi'],
-                          'hdpi': all_format_images['hdpi'], 'xhdpi': all_format_images['xhdpi']}
+                          'hdpi': all_format_images['hdpi'], 'xhdpi': all_format_images['xhdpi'], 'group_name': self.article_group_name}
 
             collection.update({'news_id': str(self.article_id)}, {'$set': projection}, upsert=True)
             response.update({'status': settings.STATUS_200, 'info': 'Success'})
@@ -240,11 +241,15 @@ class PostCarouselArticleTornado(tornado.web.RequestHandler):
             collection = MONGO_CONNECTION[MONGO_SPORTS_UNITY_NEWS_DB][MONGO_SPORTS_UNITY_NEWS_CURATED_COLL]
             body = json.loads(self.request.body)
             articles = body.get('articles')
-            article_type = body.get('type')
+            article_type = str(body.get('type'))
 
-            for priority, article_id in articles.items():
-                collection.update({'news_id': str(article_id)}, {'$set': {'priority': str(priority),
-                                                                          'article_type': article_type}}, upsert=True)
+            collection.update({'article_type': 'carousel'}, {'$unset': {'priority': ""}, '$set': {'article_type': 'published'}}, False, True)
+            collection.update({'article_type': 'carousel'}, {'$set': {'article_type': 'published'}}, False, True)
+
+            if articles:
+                for priority, article_id in articles.items():
+                    collection.update({'news_id': str(article_id)}, {'$set': {'priority': str(priority),
+                                                                              'article_type': article_type}}, upsert=True)
 
             response.update({'status': settings.STATUS_200, 'info': 'Success'})
         except Exception, e:

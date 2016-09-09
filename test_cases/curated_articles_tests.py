@@ -40,7 +40,7 @@ class PublishCuratedArticleTornadoTests(unittest.TestCase):
         self.assertEqual(res['info'], 'Missing argument article_id')
 
         # valid GET data
-        self.data = {'article_id': '1367', 'article_headline': 'article_1', 'article_image': 'text',
+        self.data = {'article_id': '1367', 'article_group_name': 'test_group', 'article_headline': 'article_1', 'article_image': 'text',
                      'article_sport_type': 'c', 'article_content': 'text', 'article_publish_date': '31/08/2016',
                      'type': 'published', 'article_poll_question': 'text', 'article_notification_content': 'text'}
         response = requests.post(self.publish_curated_article_url, self.data)
