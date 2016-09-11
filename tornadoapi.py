@@ -83,9 +83,10 @@ class NewsApiTornado(tornado.web.RequestHandler):
 
         if self.news_id:
             try:
-                result = self.collection.find_one({"news_id": self.news_id}, {'_id': False})
+                news_detail_projection = {'_id': False, 'notification_content': False}
+                result = self.collection.find_one({"news_id": self.news_id}, news_detail_projection)
                 if not result:
-                    result = curated_articles_collection.find_one({'news_id': str(self.news_id)}, {'_id': False})
+                    result = curated_articles_collection.find_one({'news_id': str(self.news_id)}, news_detail_projection)
                 result["image_link"] = result.pop(self.image_size, '')
                 self.success.update({"result": result})
                 self.write(self.success)
@@ -121,17 +122,20 @@ class NewsApiTornado(tornado.web.RequestHandler):
             # print query
 
             try:
-                news = list(self.collection.find(query, {'_id': False}).sort('publish_epoch',-1).limit(self.limit).skip(self.skip))
+                projection = {'_id': False, 'article_type': False, 'question': False, 'notification_content': False,
+                              'news': False, 'favicon': False, 'custom_summary': False, 'time_of_storing': False,
+                              'mdpi': False, 'ldpi': False, 'hdpi': False, 'xhdpi': False, 'group_name': False}
+                news = list(self.collection.find(query, projection).sort('publish_epoch',-1).limit(self.limit).skip(self.skip))
 
                 if self.curated == 'true':
                     published_query.update({'article_type': 'published'})
-                    published_curated_news = list(curated_articles_collection.find(published_query, {'_id': False}).sort('publish_epoch',-1).limit(self.limit))
+                    published_curated_news = list(curated_articles_collection.find(published_query, projection).sort('publish_epoch',-1).limit(self.limit))
                     news.extend(published_curated_news)
 
                 news_list = self.pop_image(news)
 
                 curated_query.update({'article_type': 'carousel'})
-                carousel_result = curated_articles_collection.find(curated_query, {'_id': False}).sort('priority').limit(3)
+                carousel_result = curated_articles_collection.find(curated_query, projection).sort('priority').limit(3)
                 carousel_list = self.pop_image(list(carousel_result))
 
                 self.write({"error": False,
@@ -243,8 +247,18 @@ class PostCarouselArticleTornado(tornado.web.RequestHandler):
             articles = body.get('articles')
             article_type = str(body.get('type'))
 
-            collection.update({'article_type': 'carousel'}, {'$unset': {'priority': ""}, '$set': {'article_type': 'published'}}, False, True)
-            collection.update({'article_type': 'carousel'}, {'$set': {'article_type': 'published'}}, False, True)
+            old_carousel_articles = list(collection.find({'article_type': 'carousel'}, {'priority': False, '_id': False,
+                                                        'article_type': False, 'website': False, 'title': False,
+                                                        'image_link': False, 'news_link': False, 'sport_type': False,
+                                                        'summary': False, 'published': False, 'publish_epoch': False,
+                                                        'news_type': False, 'article_type': False, 'question': False,
+                                                        'notification_content': False, 'month': False, 'day': False,
+                                                        'year': False, 'gmt_epoch': False, 'news': False, 'favicon': False,
+                                                        'custom_summary': False, 'time_of_storing': False, 'mdpi': False,
+                                                        'ldpi': False, 'hdpi': False, 'xhdpi': False, 'group_name': False}))
+
+            for article in old_carousel_articles:
+                collection.update({'news_id': article['news_id']}, {'$unset': {"priority": ""}, '$set': {"article_type": "published"}})
 
             if articles:
                 for priority, article_id in articles.items():
@@ -258,10 +272,27 @@ class PostCarouselArticleTornado(tornado.web.RequestHandler):
             self.write(response)
 
 
+class DeleteCuratedArticleTornado(tornado.web.RequestHandler):
+    @asynchronous
+    @tornado.gen.coroutine
+    def post(self):
+        response = {}
+        try:
+            article_id = str(self.get_argument('article_id'))
+            collection = MONGO_CONNECTION[MONGO_SPORTS_UNITY_NEWS_DB][MONGO_SPORTS_UNITY_NEWS_CURATED_COLL]
+            collection.remove({'news_id': article_id})
+            response.update({'status': settings.STATUS_200, 'info': 'Success'})
+        except Exception, e:
+            response.update({'status': settings.ERROR_500, 'info': str(e)})
+        finally:
+            self.write(response)
+
+
 app = tornado.web.Application([
     (r"/mixed", NewsApiTornado),
     (r"/publish_article", PublishCuratedArticleTornado),
     (r"/post_carousel_article", PostCarouselArticleTornado),
+    (r"/delete_curated_article", DeleteCuratedArticleTornado),
 ])
 
 
