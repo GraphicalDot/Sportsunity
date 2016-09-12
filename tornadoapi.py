@@ -131,6 +131,7 @@ class NewsApiTornado(tornado.web.RequestHandler):
                     published_curated_news = list(curated_articles_collection.find(published_query, projection).sort('publish_epoch',-1).limit(self.limit))
                     news.extend(published_curated_news)
 
+                news = sorted(news, key=lambda k: k['publish_epoch'], reverse=True)
                 news_list = self.pop_image(news)
 
                 curated_query.update({'article_type': 'carousel'})
