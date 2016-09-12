@@ -108,7 +108,6 @@ class NewsApiTornado(tornado.web.RequestHandler):
 
             if self.timestamp and self.direction:
                 self.get_direction(query)
-                self.get_direction(curated_query)
                 self.get_direction(published_query)
                 """
                 print self.direction, self.timestamp
