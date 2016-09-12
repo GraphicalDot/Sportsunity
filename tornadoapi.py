@@ -123,8 +123,7 @@ class NewsApiTornado(tornado.web.RequestHandler):
 
             try:
                 projection = {'_id': False, 'article_type': False, 'question': False, 'notification_content': False,
-                              'news': False, 'favicon': False, 'time_of_storing': False,
-                              'mdpi': False, 'ldpi': False, 'hdpi': False, 'xhdpi': False, 'group_name': False}
+                              'news': False, 'time_of_storing': False, 'group_name': False}
                 news = list(self.collection.find(query, projection).sort('publish_epoch',-1).limit(self.limit).skip(self.skip))
 
                 if self.curated == 'true':
